@@ -11,7 +11,7 @@
 </template>
 
 <script>
-// import sound from '@/assets/sounds/33.mp3'
+import sound from '@/assets/sounds/33.mp3'
 
 export default {
   name: 'IndexPage',
@@ -24,17 +24,17 @@ export default {
   },
   methods: {
     onClickPointer() {
+      const audio = new Audio(sound)
+      audio.currentTime = 0 // 連続で鳴らせるように
+      audio.play() // 鳴らす
+
       const positions = ["1", "2", "3", "4", "5"]
       positions.splice(this.currentPosition - 1, 1)
       const newPosition = positions[Math.floor(Math.random()*positions.length)]
 
-      const zooms = ["1", "2", "3"]
+      const zooms = ["1", "2", "3", "4"]
       zooms.splice(this.currentZoom - 1, 1)
       const newZoom = zooms[Math.floor(Math.random()*zooms.length)]
-
-      // const audio = new Audio(sound)
-      // audio.currentTime = 0 // 連続で鳴らせるように
-      // audio.play() // 鳴らす
 
       this.pointClass = "position" + newPosition + " " + "zoom" + newZoom
       this.currentPosition = newPosition
@@ -63,9 +63,9 @@ export default {
 .point {
   display: inline-block;
   position: relative;
-  width: 50px;
-  height: 50px;
-  margin: 0 50px;
+  width: 60px;
+  height: 60px;
+  margin: 0 60px;
   background-color: #ccc;
   border-radius: 50%;
   transition: background-color cubic-bezier(0.215, 0.61, 0.355, 1) .4s;
@@ -87,18 +87,23 @@ export default {
 }
 
 .zoom1 {
-  transition: 1.5s;
+  transition: 1.2s;
   transform: scale(1);
 }
 
 .zoom2 {
-  transition: 1.5s;
+  transition: 1.2s;
   transform: scale(2);
 }
 
 .zoom3 {
-  transition: 1.5s;
+  transition: 1.2s;
   transform: scale(3);
+}
+
+.zoom4 {
+  transition: 1.2s;
+  transform: scale(4);
 }
 
 .position1 {
