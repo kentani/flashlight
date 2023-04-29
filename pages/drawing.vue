@@ -33,7 +33,11 @@ export default {
     this.ctx = this.canvas.getContext("2d");
   },
   methods: {
-    startDraw() {
+    startDraw(e) {
+      if (e.type === "touchstart") {
+        e.preventDefault();
+      }
+
       this.ctx.beginPath();
       this.isDrag = true;
     },
@@ -43,14 +47,26 @@ export default {
       this.isDrag = false;
       this.lastPosition.x = null;
       this.lastPosition.y = null;
+      // console.log("endDraw", e.originalEvent.changedTouches)
     },
 
     inDraw(e) {
       if(!this.isDrag) return;
 
+      let x = 0;
+      let y = 0;
+
+      if (e.type === "touchmove") {
+        x = e.changedTouches[0].pageX;
+        y = e.changedTouches[0].pageY;
+      } else {
+        x = e.clientX;
+        y = e.clientY;
+      }
+
       this.rect = this.canvas.getBoundingClientRect();
-      this.mouseX = e.clientX - this.rect.left;
-      this.mouseY = e.clientY - this.rect.top;
+      this.mouseX = x - this.rect.left;
+      this.mouseY = y - this.rect.top;
 
       this.ctx.lineCap = 'round';
       this.ctx.lineJoin = 'round';
@@ -67,6 +83,8 @@ export default {
 
       this.lastPosition.x = this.mouseX;
       this.lastPosition.y = this.mouseY;
+
+      // console.log("inDraw", e.originalEvent.changedTouches)
     }
   }
 }
