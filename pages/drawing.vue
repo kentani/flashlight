@@ -43,9 +43,6 @@ export default {
     },
 
     inDraw(e) {
-      this.ctx.beginPath();
-      this.isDrag = true;
-
       if(!this.isDrag) return;
 
       this.rect = this.canvas.getBoundingClientRect();
@@ -67,11 +64,6 @@ export default {
 
       this.lastPosition.x = this.mouseX;
       this.lastPosition.y = this.mouseY;
-
-      this.ctx.closePath();
-      this.isDrag = false;
-      this.lastPosition.x = null;
-      this.lastPosition.y = null;
     }
   }
 }
