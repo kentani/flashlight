@@ -7,7 +7,7 @@ export default {
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
   router: {
-    base: '/flashlight/'
+    base: '/'
   },
   generate: {
     dir: 'docs'
@@ -15,10 +15,10 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - flashlight',
-    title: 'flashlight',
+    titleTemplate: 'ToyBox',
+    title: 'ToyBox',
     htmlAttrs: {
-      lang: 'en'
+      lang: 'ja'
     },
     meta: [
       { charset: 'utf-8' },
@@ -56,7 +56,7 @@ export default {
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
     theme: {
-      dark: true,
+      dark: false,
       themes: {
         dark: {
           primary: colors.blue.darken2,

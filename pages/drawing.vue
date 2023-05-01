@@ -1,7 +1,6 @@
 <template>
   <div>
     <canvas
-      style="border: 1px solid white;"
       ref="canvas"
       width="2000"
       height="1000"
@@ -23,7 +22,7 @@ export default {
     return {
       isDraw: false,
       lastPosition: { x: null, y: null },
-      currentColor: "#fff",
+      currentColor: "#000",
       mouseX: 0,
       mouseY: 0
     }

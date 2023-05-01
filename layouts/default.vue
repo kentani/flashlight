@@ -1,11 +1,29 @@
 <template>
-  <v-app dark>
-    <v-main>
-      <v-container fluid>
-        <Nuxt />
-      </v-container>
-    </v-main>
-  </v-app>
+  <div>
+    <v-app-bar
+      dense
+      color="#26c6da"
+      dark
+    >
+      <v-btn icon nuxt to="/" active-class="">
+        <v-icon>mdi-teddy-bear</v-icon>
+      </v-btn>
+      <v-app-bar-title class="font-weight-bold">ToyBox</v-app-bar-title>
+
+      <v-spacer />
+
+      <v-btn icon nuxt to="/">
+        <v-icon>mdi-apps</v-icon>
+      </v-btn>
+    </v-app-bar>
+    <v-app>
+      <v-main>
+        <v-container fluid pa-0>
+          <nuxt />
+        </v-container>
+      </v-main>
+    </v-app>
+  </div>
 </template>
 
 <script>
@@ -36,3 +54,9 @@ export default {
   }
 }
 </script>
+
+<style>
+.container {
+  height: 100%;
+}
+</style>
