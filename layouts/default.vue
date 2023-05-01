@@ -5,7 +5,7 @@
       color="#26c6da"
       dark
     >
-      <v-btn icon nuxt to="/" active-class="">
+      <v-btn icon nuxt to="/">
         <v-icon>mdi-teddy-bear</v-icon>
       </v-btn>
       <v-app-bar-title class="font-weight-bold">ToyBox</v-app-bar-title>

@@ -1,9 +1,70 @@
 <template>
   <div>
+    <v-app-bar
+      dense
+      elevation="0"
+    >
+
+      <v-icon class="ml-3 mr-2 mt-1" size="30">mdi-format-color-fill</v-icon>
+      <v-btn
+        v-for="(backColorName, i) in backColorList" :key="`back-${i}`"
+        fab
+        x-small
+        depressed
+        :ripple="false"
+        :color="backColorName"
+        class="mx-1"
+        @click="changeBackColor(backColorName)"
+      >
+        <v-icon v-if="currentBackColor == backColorName" :color="currentBackColor === '#fff' ? '#121212' : 'white'">mdi-check</v-icon>
+      </v-btn>
+
+      <v-icon class="ml-6 mr-2" size="28">mdi-pencil</v-icon>
+      <v-btn
+        v-for="(penColorName, i) in penColorList" :key="`pen-${i}`"
+        fab
+        x-small
+        depressed
+        :ripple="false"
+        :color="penColorName"
+        class="mx-1"
+        @click="changePenColor(penColorName)"
+      >
+        <v-icon v-if="currentPenColor == penColorName" :color="currentPenColor === '#fff' ? '#121212' : 'white'">mdi-check</v-icon>
+      </v-btn>
+      <v-slider
+        v-model="currentPenSize"
+        :max="2"
+        step="1"
+        ticks="always"
+        tick-size="2"
+        color="#26c6da"
+        thumb-color="#26c6da"
+        track-color="grey"
+        always-dirty
+        dense
+        hide-details
+        class="mx-2"
+        style="max-width: 200px;"
+      >
+        <template v-slot:prepend>
+          <v-icon>
+            mdi-minus
+          </v-icon>
+        </template>
+
+        <template v-slot:append>
+          <v-icon>
+            mdi-plus
+          </v-icon>
+        </template>
+      </v-slider>
+    </v-app-bar>
     <canvas
       ref="canvas"
       width="2000"
       height="1000"
+      :style="`background-color: ${currentBackColor};`"
       @touchstart="startDraw"
       @touchend="endDraw"
       @touchmove="inDraw"
@@ -22,9 +83,24 @@ export default {
     return {
       isDraw: false,
       lastPosition: { x: null, y: null },
-      currentColor: "#000",
       mouseX: 0,
-      mouseY: 0
+      mouseY: 0,
+      currentBackColor: "#fff",
+      backColorList: [
+        "#121212",
+        "#fff",
+        "#00331b",
+      ],
+      currentPenSize: 1,
+      currentPenColor: "#121212",
+      penColorList: [
+        "#121212",
+        "#fff",
+        "#26c6da",
+        "#a52a2a",
+        "#ffd700",
+        "#32cd32"
+      ]
     }
   },
   mounted () {
@@ -63,14 +139,23 @@ export default {
         y = e.clientY;
       }
 
+      let pensile = 0;
+      if (this.currentPenSize === 0) {
+        pensile = 1
+      } else if (this.currentPenSize === 1) {
+        pensile = 5
+      } else if (this.currentPenSize === 2) {
+        pensile = 10
+      }
+
       this.rect = this.canvas.getBoundingClientRect();
       this.mouseX = x - this.rect.left;
       this.mouseY = y - this.rect.top;
 
       this.ctx.lineCap = 'round';
       this.ctx.lineJoin = 'round';
-      this.ctx.lineWidth = 5;
-      this.ctx.strokeStyle = this.currentColor;
+      this.ctx.lineWidth = pensile;
+      this.ctx.strokeStyle = this.currentPenColor;
 
       if (this.lastPosition.x === null || this.lastPosition.y === null) {
         this.ctx.moveTo(this.mouseX, this.mouseY);
@@ -82,8 +167,13 @@ export default {
 
       this.lastPosition.x = this.mouseX;
       this.lastPosition.y = this.mouseY;
+    },
 
-      // console.log("inDraw", e.originalEvent.changedTouches)
+    changeBackColor(color) {
+      this.currentBackColor = color;
+    },
+    changePenColor(color) {
+      this.currentPenColor = color;
     }
   }
 }
