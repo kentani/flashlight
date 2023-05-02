@@ -94,7 +94,7 @@ export default {
         "#00331b",
       ],
       currentPenSize: 5,
-      currentPenColor: "#121212",
+      currentPenColor: "#26c6da",
       penColorList: [
         "#121212",
         "#fff",
