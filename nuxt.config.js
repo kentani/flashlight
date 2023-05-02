@@ -46,6 +46,7 @@ export default {
   buildModules: [
     // https://go.nuxtjs.dev/vuetify
     '@nuxtjs/vuetify',
+    '@nuxtjs/pwa',
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -82,5 +83,59 @@ export default {
         },
       })
     },
+  },
+
+  pwa: {
+    icon: {
+      source: '/static/teddy.png',
+      fileName: 'teddy.png'
+    },
+    meta: {
+      mobileApp: true,
+      mobileAppIOS: true,
+      appleStatusBarStyle: '#26c6da',
+    },
+    manifest: {
+      lang: 'ja',
+      name: 'ToyBox',
+      short_name: 'ToyBox',
+      description: 'ToyBox',
+      display: 'standalone',
+      theme_color: '#fff',
+      background_color: '#26c6da',
+      orientation: 'portrait',
+      scope: '/',
+      start_url: '/',
+      icons: [
+        {
+          src: '/flashlight/teddy.png',
+          sizes: '256x256',
+          type: 'image/png'
+        }
+      ]
+    },
+    workbox: {
+      runtimeCaching: [
+        {
+          urlPattern: '^https://kentani.github.io/.*',
+          handler: 'cacheFirst'
+        },
+        {
+          urlPattern: '^https://kentani.github.io/.*',
+          handler: 'staleWhileRevalidate',
+          strategyOptions: {
+            cacheName: 'site-cache',
+          },
+          strategyPlugins: [
+            {
+              use: 'Expiration',
+              config: {
+                maxAgeSeconds: 24 * 60 * 60 * 30
+              }
+            }
+          ]
+        }
+      ]
+    }
   },
 }
