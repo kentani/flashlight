@@ -131,7 +131,6 @@ export default {
         e.preventDefault();
       }
 
-      console.log(this.isEraser)
       if (this.isEraser) {
         this.ctx.globalCompositeOperation = 'destination-out';
       } else {
@@ -147,7 +146,6 @@ export default {
       this.isDrag = false;
       this.lastPosition.x = null;
       this.lastPosition.y = null;
-      // console.log("endDraw", e.originalEvent.changedTouches)
     },
 
     inDraw(e) {
@@ -205,9 +203,6 @@ export default {
     },
     decrementPenSize() {
       this.currentPenSize -= 1;
-    },
-    onclickEraser() {
-      this.isEraser = true;
     }
   }
 }
