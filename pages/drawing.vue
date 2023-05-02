@@ -3,7 +3,7 @@
     <v-app-bar
       dense
       elevation="0"
-      style="overflow-x: scroll;"
+      class="option-bar"
     >
 
       <v-icon class="ml-3 mr-2 mt-1" size="30">mdi-format-color-fill</v-icon>
@@ -196,8 +196,16 @@ export default {
 </script>
 
 <style scoped>
-.canvas-wrapper{
+.canvas-wrapper {
   width: 100%;
   height: 100%;
+}
+
+.option-bar {
+  overflow-x: scroll;
+}
+
+.option-bar::-webkit-scrollbar {
+  display: none;
 }
 </style>
