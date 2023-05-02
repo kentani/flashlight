@@ -4,6 +4,7 @@
       dense
       color="#26c6da"
       dark
+      class="pa-0"
     >
       <v-btn icon nuxt to="/">
         <v-icon>mdi-teddy-bear</v-icon>
@@ -58,5 +59,9 @@ export default {
 <style>
 .container {
   height: 100%;
+}
+
+.v-toolbar__content, .v-toolbar__extension {
+  padding: 0px;
 }
 </style>

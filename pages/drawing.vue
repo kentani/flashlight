@@ -1,8 +1,9 @@
 <template>
-  <div>
+  <div style="width: 100%; height: 100%;">
     <v-app-bar
       dense
       elevation="0"
+      style="overflow-x: scroll;"
     >
 
       <v-icon class="ml-3 mr-2 mt-1" size="30">mdi-format-color-fill</v-icon>
@@ -32,12 +33,13 @@
       >
         <v-icon v-if="currentPenColor == penColorName" :color="currentPenColor === '#fff' ? '#121212' : 'white'">mdi-check</v-icon>
       </v-btn>
+
       <v-slider
         v-model="currentPenSize"
-        :max="2"
+        :max="20"
         step="1"
         ticks="always"
-        tick-size="2"
+        tick-size="0"
         color="#26c6da"
         thumb-color="#26c6da"
         track-color="grey"
@@ -45,34 +47,34 @@
         dense
         hide-details
         class="mx-2"
-        style="max-width: 200px;"
+        style="min-width: 200px; max-width: 200px;"
       >
         <template v-slot:prepend>
-          <v-icon>
+          <v-icon @click="decrementPenSize">
             mdi-minus
           </v-icon>
         </template>
 
         <template v-slot:append>
-          <v-icon>
+          <v-icon @click="incrementPenSize">
             mdi-plus
           </v-icon>
         </template>
       </v-slider>
     </v-app-bar>
-    <canvas
-      ref="canvas"
-      width="2000"
-      height="1000"
-      :style="`background-color: ${currentBackColor};`"
-      @touchstart="startDraw"
-      @touchend="endDraw"
-      @touchmove="inDraw"
-      @mousedown="startDraw"
-      @mouseup="endDraw"
-      @mouseout="endDraw"
-      @mousemove="inDraw">
-    </canvas>
+    <div class="canvas-wrapper" ref="canvasWrapper">
+      <canvas
+        ref="canvas"
+        :style="`background-color: ${currentBackColor};`"
+        @touchstart="startDraw"
+        @touchend="endDraw"
+        @touchmove="inDraw"
+        @mousedown="startDraw"
+        @mouseup="endDraw"
+        @mouseout="endDraw"
+        @mousemove="inDraw">
+      </canvas>
+    </div>
   </div>
 </template>
 
@@ -91,7 +93,7 @@ export default {
         "#fff",
         "#00331b",
       ],
-      currentPenSize: 1,
+      currentPenSize: 5,
       currentPenColor: "#121212",
       penColorList: [
         "#121212",
@@ -106,6 +108,14 @@ export default {
   mounted () {
     this.canvas = this.$refs.canvas;
     this.ctx = this.canvas.getContext("2d");
+
+    const wrapper = this.$refs.canvasWrapper;
+    console.log(wrapper.clientWidth)
+    this.canvas.width = wrapper.clientWidth;
+    this.canvas.height = wrapper.clientHeight;
+    // var w = $('.wrapper').width();
+    // var h = $('.wrapper').height();
+    // console.log(w, h)
   },
   methods: {
     startDraw(e) {
@@ -154,7 +164,7 @@ export default {
 
       this.ctx.lineCap = 'round';
       this.ctx.lineJoin = 'round';
-      this.ctx.lineWidth = pensile;
+      this.ctx.lineWidth = this.currentPenSize + 1;
       this.ctx.strokeStyle = this.currentPenColor;
 
       if (this.lastPosition.x === null || this.lastPosition.y === null) {
@@ -174,10 +184,20 @@ export default {
     },
     changePenColor(color) {
       this.currentPenColor = color;
+    },
+    incrementPenSize() {
+      this.currentPenSize += 1;
+    },
+    decrementPenSize() {
+      this.currentPenSize -= 1;
     }
   }
 }
 </script>
 
 <style scoped>
+.canvas-wrapper{
+  width: 100%;
+  height: 100%;
+}
 </style>

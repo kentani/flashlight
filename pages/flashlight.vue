@@ -1,5 +1,5 @@
 <template>
-  <div id="flashlight" style="height: 100%; background-color: #121212;">
+  <div id="flashlight" style="height: 100%; width: 100%; background-color: #121212;">
     <div
       class="inner"
       :class="pointClass"
