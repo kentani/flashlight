@@ -110,12 +110,8 @@ export default {
     this.ctx = this.canvas.getContext("2d");
 
     const wrapper = this.$refs.canvasWrapper;
-    console.log(wrapper.clientWidth)
     this.canvas.width = wrapper.clientWidth;
     this.canvas.height = wrapper.clientHeight;
-    // var w = $('.wrapper').width();
-    // var h = $('.wrapper').height();
-    // console.log(w, h)
   },
   methods: {
     startDraw(e) {

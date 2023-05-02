@@ -57,6 +57,10 @@ export default {
 </script>
 
 <style>
+body::-webkit-scrollbar {
+  display: none;
+}
+
 .container {
   height: 100%;
 }

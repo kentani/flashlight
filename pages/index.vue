@@ -1,6 +1,6 @@
 <template>
-  <v-row align="center" justify="center" style="height: 100%; width: 100%;">
-    <v-col cols="9" md="3" lg="2">
+  <v-row no-gutters align="center" justify="center" style="height: 100%; width: 100%;">
+    <v-col cols="9" md="3" lg="2" class="mx-2">
       <v-hover>
         <template v-slot:default="{ hover }">
           <v-card
@@ -20,7 +20,7 @@
       </v-hover>
     </v-col>
 
-    <v-col cols="9" md="3" lg="2">
+    <v-col cols="9" md="3" lg="2" class="mx-2">
       <v-hover>
         <template v-slot:default="{ hover }">
           <v-card

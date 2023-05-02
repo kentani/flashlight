@@ -58,7 +58,7 @@ export default {
     background-color: rgba(170, 143, 123, 0.4)
   }
   100% {
-    transform: translate(-50%, -50%) scale(6.5, 6.5);
+    transform: translate(-50%, -50%) scale(3, 3);
     background-color: rgba(170, 143, 123, 0)
   }
 }
@@ -72,7 +72,7 @@ export default {
   position: relative;
   width: 60px;
   height: 60px;
-  margin: 0 60px;
+  margin: 0px;
   background-color: #ccc;
   border-radius: 50%;
   transition: background-color cubic-bezier(0.215, 0.61, 0.355, 1) .4s;
