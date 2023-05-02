@@ -51,11 +51,11 @@
       "purpose": "any maskable"
     }
   ],
-  "start_url": "/",
+  "start_url": "/flashlight/",
   "display": "standalone",
   "background_color": "#26c6da",
-  "theme_color": "#fff",
+  "theme_color": "#26c6da",
   "lang": "ja",
   "orientation": "portrait",
-  "scope": "/"
+  "scope": "/flashlight/"
 }

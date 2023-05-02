@@ -101,11 +101,11 @@ export default {
       short_name: 'ToyBox',
       description: 'ToyBox',
       display: 'standalone',
-      theme_color: '#fff',
+      theme_color: '#26c6da',
       background_color: '#26c6da',
       orientation: 'portrait',
-      scope: '/',
-      start_url: '/',
+      scope: '/flashlight/',
+      start_url: '/flashlight/',
       icons: [
         {
           src: '/flashlight/teddy.png',
