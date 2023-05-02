@@ -61,6 +61,17 @@
           </v-icon>
         </template>
       </v-slider>
+
+      <v-icon class="mx-2" size="28">mdi-eraser</v-icon>
+      <v-switch
+        v-model="isEraser"
+        inset
+        :ripple="false"
+        dense
+        hide-details
+        color="#26c6da"
+        class="mx-2 mt-1"
+      ></v-switch>
     </v-app-bar>
     <div class="canvas-wrapper" ref="canvasWrapper">
       <canvas
@@ -84,6 +95,7 @@ export default {
   data () {
     return {
       isDraw: false,
+      isEraser: false,
       lastPosition: { x: null, y: null },
       mouseX: 0,
       mouseY: 0,
@@ -117,6 +129,13 @@ export default {
     startDraw(e) {
       if (e.type === "touchstart") {
         e.preventDefault();
+      }
+
+      console.log(this.isEraser)
+      if (this.isEraser) {
+        this.ctx.globalCompositeOperation = 'destination-out';
+      } else {
+        this.ctx.globalCompositeOperation = 'source-over';
       }
 
       this.ctx.beginPath();
@@ -186,6 +205,9 @@ export default {
     },
     decrementPenSize() {
       this.currentPenSize -= 1;
+    },
+    onclickEraser() {
+      this.isEraser = true;
     }
   }
 }
