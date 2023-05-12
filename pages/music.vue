@@ -1,49 +1,77 @@
 <template>
-  <v-row
-    no-gutters
-    align="center"
-    justify="center"
-    style="height: 100%; width: 100%;"
-  >
-    <v-col
-      v-for="(music, key) in musicList"
-      :key="key"
-      cols="9"
-      md="3"
-      lg="2"
-      class="mx-2"
+  <div style="width: 100%; height: 100%;">
+    <v-app-bar
+      dense
+      elevation="0"
+      class="option-bar"
     >
-      <v-hover>
-        <template v-slot:default="{ hover }">
-          <v-card
-            color="#26c6da"
-            dark
-            rounded="xl"
-            :elevation="hover? 24 : 8"
-            nuxt
-          >
-            <v-card-text
-              class="text-body-1 font-weight-bold text-center pb-0"
-              @click="onClickMusicBtn(key)"
-            >
-              <v-icon size="150">
-                {{ music.icon }}
-              </v-icon>
-              <p class="mb-0">{{ music.title }}</p>
-            </v-card-text>
 
-            <v-card-actions class="pt-0">
-              <v-slider
-                v-model="musicList[key]['currentTime']"
-                hide-details
-                min="0"
-              ></v-slider>
-            </v-card-actions>
-          </v-card>
-        </template>
-      </v-hover>
-    </v-col>
-  </v-row>
+      <v-btn
+        fab
+        small
+        depressed
+        :ripple="false"
+        class="ml-2 mr-0"
+        :disabled="currentMusic === '-'"
+        @click="onclickPlay(currentMusic)"
+      >
+        <v-icon color="#26c6da">{{ isPlaying ? 'mdi-pause' : 'mdi-play' }}</v-icon>
+      </v-btn>
+
+      <v-card
+        class="pb-0"
+        color="#f5f5f5"
+        style="min-height: 100%; min-width: 70%;"
+        elevation="0"
+      >
+        <v-card-text class="pt-1 pb-0 px-2">
+          {{ musicTitle() }}
+        </v-card-text>
+        <v-card-actions class="pb-0">
+          <v-progress-linear
+            v-model="currentTime"
+            color="#26c6da"
+            class="ma-0 pa-0"
+          ></v-progress-linear>
+        </v-card-actions>
+      </v-card>
+    </v-app-bar>
+
+    <v-row
+      no-gutters
+      align="center"
+      justify="center"
+      style="height: 100%; width: 100%;"
+    >
+      <v-col
+        v-for="(music, key) in musicList"
+        :key="key"
+        cols="9"
+        md="3"
+        lg="2"
+        class="mx-2"
+      >
+        <v-hover>
+          <template v-slot:default="{ hover }">
+            <v-card
+              color="#26c6da"
+              dark
+              rounded="xl"
+              :elevation="hover? 24 : 8"
+              @click="onclickPlay(key)"
+            >
+              <v-card-text class="text-body-1 font-weight-bold text-center">
+                <v-icon size="150">
+                  {{ music.icon }}
+                </v-icon>
+                <p class="mb-0">{{ music.title }}</p>
+              </v-card-text>
+            </v-card>
+          </template>
+        </v-hover>
+      </v-col>
+    </v-row>
+  </div>
 </template>
 
 <script>
@@ -55,28 +83,49 @@ export default {
   data () {
     return {
       musicList: {
-        'sarada': { 'title': '幸せのサラダ', 'icon': 'mdi-play', 'currentTime': 0 },
-        'shu': { 'title': 'シュッ', 'icon': 'mdi-play', 'currentTime': 0 }
+        'sarada': { 'title': '幸せのサラダ', 'icon': 'mdi-play' },
+        'shu': { 'title': 'シュッ', 'icon': 'mdi-play' }
       },
-      playingMusic: '',
-      audio: {}
+      currentMusic: '-',
+      audio: {},
+      currentTime: 0,
+      isPlaying: false
     }
   },
   mounted() {
   },
   methods: {
-    onClickMusicBtn(selectedMusic) {
-      if (this.playingMusic === selectedMusic) {
-        this.audio.pause();
-        this.playingMusic = '';
-        this.musicList[selectedMusic]['currentTime'] = this.audio.currentTime;
-        this.musicList[selectedMusic]['icon'] = 'mdi-play';
+    musicTitle() {
+      if (this.currentMusic === '-') {
+        return '-';
       } else {
-        const music = this.fetchMusic(selectedMusic);
-        this.audio = new Audio(music);
-        this.audio.play();
-        this.playingMusic = selectedMusic;
+        return this.musicList[this.currentMusic]['title'];
+      }
+    },
+    onclickPlay(selectedMusic) {
+      if (this.currentMusic === selectedMusic) {
+        if (this.isPlaying) {
+          this.isPlaying = false;
+          this.currentTime = this.audio.currentTime;
+          this.musicList[selectedMusic]['icon'] = 'mdi-play';
+
+          this.audio.pause();
+        } else {
+          this.isPlaying = true;
+          this.musicList[selectedMusic]['icon'] = 'mdi-pause';
+
+          this.audio.currentTime = this.audio.currentTime;;
+          this.audio.play();
+        }
+      } else {
+        this.isPlaying = true;
+        this.currentTime = 0;
+        this.currentMusic = selectedMusic;
         this.musicList[selectedMusic]['icon'] = 'mdi-pause';
+
+        this.audio = new Audio(this.fetchMusic(selectedMusic));
+        this.audio.currentTime = 0;
+        this.audio.play();
       }
     },
     fetchMusic(selectedMusic) {
