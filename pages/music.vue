@@ -55,10 +55,12 @@ export default {
       musicList: {
         'sarada': { 'title': '幸せのサラダ', 'icon': 'mdi-play' }
       },
-      playingMusic: ''
+      playingMusic: '',
+      musicSarada: ''
     }
   },
   mounted () {
+    this.musicSarada = new Audio(sarada)
   },
   methods: {
     onClickMusicBtn(selectedMusic) {
@@ -66,13 +68,13 @@ export default {
       const audio = new Audio(music);
 
       if (this.playingMusic === selectedMusic) {
-        audio.pause();
-        audio.currentTime = 0;
+        this.musicSarada.pause();
+        this.musicSarada.currentTime = 0;
         this.playingMusic = '';
         this.musicList[selectedMusic]['icon'] = 'mdi-play';
       } else {
-        audio.currentTime = 0;
-        audio.play();
+        this.musicSarada.currentTime = 0;
+        this.musicSarada.play();
         this.playingMusic = selectedMusic;
         this.musicList[selectedMusic]['icon'] = 'mdi-pause';
       }
