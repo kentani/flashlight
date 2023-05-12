@@ -21,7 +21,10 @@
             :elevation="hover? 24 : 8"
             nuxt
           >
-            <v-card-text class="text-body-1 font-weight-bold text-center pb-0" @click="onClickMusicBtn(key)">
+            <v-card-text
+              class="text-body-1 font-weight-bold text-center pb-0"
+              @click="onClickMusicBtn(key)"
+            >
               <v-icon size="150">
                 {{ music.icon }}
               </v-icon>
@@ -64,6 +67,7 @@ export default {
 
       if (this.playingMusic === selectedMusic) {
         audio.pause();
+        audio.currentTime = 0;
         this.playingMusic = '';
         this.musicList[selectedMusic]['icon'] = 'mdi-play';
       } else {
