@@ -7,6 +7,7 @@
   >
     <v-col
       v-for="(music, key) in musicList"
+      :key="key"
       cols="9"
       md="3"
       lg="2"
@@ -33,9 +34,9 @@
 
             <v-card-actions class="pt-0">
               <v-slider
+                v-model="currentTime"
                 hide-details
-                max="50"
-                min="-50"
+                min="0"
               ></v-slider>
             </v-card-actions>
           </v-card>
@@ -56,25 +57,23 @@ export default {
         'sarada': { 'title': '幸せのサラダ', 'icon': 'mdi-play' }
       },
       playingMusic: '',
-      musicSarada: ''
+      audio: {},
+      currentTime: 0
     }
   },
-  mounted () {
-    this.musicSarada = new Audio(sarada)
+  mounted() {
+    // const music = this.fetchMusic(selectedMusic);
+    this.audio = new Audio(sarada);
   },
   methods: {
     onClickMusicBtn(selectedMusic) {
-      const music = this.fetchMusic(selectedMusic);
-      const audio = new Audio(music);
-
       if (this.playingMusic === selectedMusic) {
-        this.musicSarada.pause();
-        this.musicSarada.currentTime = 0;
+        this.audio.pause();
+        this.currentTime = this.audio.currentTime;
         this.playingMusic = '';
         this.musicList[selectedMusic]['icon'] = 'mdi-play';
       } else {
-        this.musicSarada.currentTime = 0;
-        this.musicSarada.play();
+        this.audio.play();
         this.playingMusic = selectedMusic;
         this.musicList[selectedMusic]['icon'] = 'mdi-pause';
       }

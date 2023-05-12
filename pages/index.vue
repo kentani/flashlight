@@ -7,6 +7,7 @@
   >
     <v-col
       v-for="toy in toyList"
+      :key="toy.icon"
       cols="9"
       md="3"
       lg="2"
