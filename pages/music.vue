@@ -106,8 +106,8 @@ export default {
       if (this.currentMusic === selectedMusic) {
         if (this.isPlaying) {
           this.isPlaying = false;
-          this.currentTime = this.audio.currentTime;
           this.musicList[selectedMusic]['icon'] = 'mdi-play';
+          this.currentTime = this.audio.currentTime;
 
           this.audio.pause();
         } else {
@@ -120,8 +120,13 @@ export default {
       } else {
         this.isPlaying = true;
         this.currentTime = 0;
-        this.currentMusic = selectedMusic;
+        if (this.currentMusic !== '-') {
+          this.musicList[this.currentMusic]['icon'] = 'mdi-play';
+          this.audio.pause();
+          this.audio.currentTime = 0;
+        }
         this.musicList[selectedMusic]['icon'] = 'mdi-pause';
+        this.currentMusic = selectedMusic;
 
         this.audio = new Audio(this.fetchMusic(selectedMusic));
         this.audio.currentTime = 0;
