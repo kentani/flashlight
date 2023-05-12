@@ -27,11 +27,13 @@
         <v-card-text class="pt-1 pb-0 px-2">
           {{ musicTitle() }}
         </v-card-text>
-        <v-card-actions class="pb-0">
+        <v-card-actions class="pb-0" style="min-width: 100%;">
           <v-progress-linear
             v-model="currentTime"
             color="#26c6da"
             class="ma-0 pa-0"
+            style="min-width: 100%;"
+            :buffer-value="musicTime"
           ></v-progress-linear>
         </v-card-actions>
       </v-card>
@@ -43,7 +45,7 @@
         elevation="0"
       >
         <v-card-text class="pt-1 pb-0 px-2">
-          {{ currentTime }}
+          {{ currentTime }} / {{ musicTime }}
         </v-card-text>
       </v-card>
     </v-app-bar>
@@ -100,6 +102,7 @@ export default {
       currentMusic: '-',
       audio: {},
       currentTime: 0,
+      musicTime: 0,
       isPlaying: false
     }
   },
@@ -137,6 +140,7 @@ export default {
         this.musicList[selectedMusic]['icon'] = 'mdi-pause';
         this.currentMusic = selectedMusic;
         this.audio = new Audio(this.fetchMusic(selectedMusic));
+        this.musicTime = this.audio.duration;
         this.audio.currentTime = 0;
         this.audio.play();
         this.audio.ontimeupdate = this.updateCurrentTime();
