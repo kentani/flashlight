@@ -48,24 +48,11 @@ export default {
       const audio = new Audio(music);
       audio.currentTime = 0 // 連続で鳴らせるように
       audio.play() // 鳴らす
-
-      const positions = ["1", "2", "3", "4", "5"]
-      positions.splice(this.currentPosition - 1, 1)
-      const newPosition = positions[Math.floor(Math.random()*positions.length)]
-
-      const zooms = ["1", "2", "3", "4"]
-      zooms.splice(this.currentZoom - 1, 1)
-      const newZoom = zooms[Math.floor(Math.random()*zooms.length)]
-
-      this.pointClass = "position" + newPosition + " " + "zoom" + newZoom
-      this.currentPosition = newPosition
-      this.currentZoom = newZoom
     },
     fetchMusic(selectedMusic) {
       switch (selectedMusic) {
         case 'sarada':
-          sarada;
-          break;
+          return sarada;
       }
     }
   }
