@@ -1,5 +1,10 @@
 <template>
-  <v-row no-gutters align="center" justify="center" style="height: 100%; width: 100%;">
+  <v-row
+    no-gutters
+    align="center"
+    justify="center"
+    style="height: 100%; width: 100%;"
+  >
     <v-col
       v-for="music in musicList"
       cols="9"
@@ -46,8 +51,8 @@ export default {
     onClickPlay(selectedMusic) {
       const music = this.fetchMusic(selectedMusic);
       const audio = new Audio(music);
-      audio.currentTime = 0 // 連続で鳴らせるように
-      audio.play() // 鳴らす
+      audio.currentTime = 0;
+      audio.play();
     },
     fetchMusic(selectedMusic) {
       switch (selectedMusic) {

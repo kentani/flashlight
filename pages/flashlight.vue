@@ -1,5 +1,8 @@
 <template>
-  <div id="flashlight" style="height: 100%; width: 100%; background-color: #121212;">
+  <div
+    id="flashlight"
+    style="height: 100%; width: 100%; background-color: #121212;"
+  >
     <div
       class="inner"
       :class="pointClass"
@@ -26,21 +29,21 @@ export default {
   },
   methods: {
     onClickPointer() {
-      const audio = new Audio(sound)
-      audio.currentTime = 0 // 連続で鳴らせるように
-      audio.play() // 鳴らす
+      const audio = new Audio(sound);
+      audio.currentTime = 0;
+      audio.play();
 
-      const positions = ["1", "2", "3", "4", "5"]
-      positions.splice(this.currentPosition - 1, 1)
-      const newPosition = positions[Math.floor(Math.random()*positions.length)]
+      const positions = ["1", "2", "3", "4", "5"];
+      positions.splice(this.currentPosition - 1, 1);
+      const newPosition = positions[Math.floor(Math.random()*positions.length)];
 
-      const zooms = ["1", "2", "3", "4"]
-      zooms.splice(this.currentZoom - 1, 1)
-      const newZoom = zooms[Math.floor(Math.random()*zooms.length)]
+      const zooms = ["1", "2", "3", "4"];
+      zooms.splice(this.currentZoom - 1, 1);
+      const newZoom = zooms[Math.floor(Math.random()*zooms.length)];
 
-      this.pointClass = "position" + newPosition + " " + "zoom" + newZoom
-      this.currentPosition = newPosition
-      this.currentZoom = newZoom
+      this.pointClass = "position" + newPosition + " " + "zoom" + newZoom;
+      this.currentPosition = newPosition;
+      this.currentZoom = newZoom;
     }
   }
 }
