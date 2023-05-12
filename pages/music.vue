@@ -35,6 +35,17 @@
           ></v-progress-linear>
         </v-card-actions>
       </v-card>
+
+      <v-card
+        class="pb-0 mx-2 mt-3"
+        color="#f5f5f5"
+        style="min-height: 80%;"
+        elevation="0"
+      >
+        <v-card-text class="pt-1 pb-0 px-2">
+          {{ currentTime }}
+        </v-card-text>
+      </v-card>
     </v-app-bar>
 
     <v-row
@@ -108,14 +119,12 @@ export default {
           this.isPlaying = false;
           this.musicList[selectedMusic]['icon'] = 'mdi-play';
           this.currentTime = this.audio.currentTime;
-
           this.audio.pause();
         } else {
           this.isPlaying = true;
           this.musicList[selectedMusic]['icon'] = 'mdi-pause';
-
-          this.audio.currentTime = this.audio.currentTime;;
           this.audio.play();
+          this.audio.ontimeupdate = this.updateCurrentTime();
         }
       } else {
         this.isPlaying = true;
@@ -127,11 +136,14 @@ export default {
         }
         this.musicList[selectedMusic]['icon'] = 'mdi-pause';
         this.currentMusic = selectedMusic;
-
         this.audio = new Audio(this.fetchMusic(selectedMusic));
         this.audio.currentTime = 0;
         this.audio.play();
+        this.audio.ontimeupdate = this.updateCurrentTime();
       }
+    },
+    updateCurrentTime() {
+      this.currentTime = this.audio.currentTime;
     },
     fetchMusic(selectedMusic) {
       switch (selectedMusic) {
