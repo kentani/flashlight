@@ -140,14 +140,21 @@ export default {
         this.musicList[selectedMusic]['icon'] = 'mdi-pause';
         this.currentMusic = selectedMusic;
         this.audio = new Audio(this.fetchMusic(selectedMusic));
-        this.musicTime = this.audio.duration;
+        this.audio.preload = 'metadata';
+        this.audio.load();
+        this.audio.onloadedmetadata = this.setMusicTime();
+        this.audio.ontimeupdate = this.updateCurrentTime();
         this.audio.currentTime = 0;
         this.audio.play();
-        this.audio.ontimeupdate = this.updateCurrentTime();
+        console.log('onloadedmetadata', this.audio.onloadedmetadata)
+        console.log('src', this.audio)
       }
     },
     updateCurrentTime() {
       this.currentTime = this.audio.currentTime;
+    },
+    setMusicTime() {
+      this.musicTime = this.audio.duration;
     },
     fetchMusic(selectedMusic) {
       switch (selectedMusic) {
