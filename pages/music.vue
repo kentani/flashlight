@@ -113,7 +113,7 @@ export default {
     this.currentTimeBar = this.currentTime / time
   },
   watch: {
-    currentTimeBar: function() {
+    currentTime: function() {
       const time = this.musicTime / 100;
       this.currentTimeBar = this.currentTime / time
     }
