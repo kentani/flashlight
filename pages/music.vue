@@ -33,7 +33,6 @@
             v-model="currentTime"
             color="#26c6da"
             class="ma-0 pa-0"
-            :buffer-value="musicTime"
           ></v-progress-linear>
         </v-card-actions>
       </v-card>
@@ -132,6 +131,7 @@ export default {
           this.currentTime = this.audio.currentTime;
           };
           this.audio.onended = () => {
+            this.isPlaying = false;
             this.musicList[this.currentMusic]['icon'] = 'mdi-play';
             this.audio.currentTime = 0;
           };
