@@ -24,13 +24,13 @@
         style="min-height: 100%; width: 100%;"
         elevation="0"
       >
-        <v-card-text class="pt-1 pb-0 px-2">
+        <v-card-text class="pt-1 pb-0 pl-2 pr-0">
           {{ musicTitle() }}
         </v-card-text>
 
-        <v-card-actions class="pb-0">
+        <v-card-actions class="pb-0 pl-2 pr-0">
           <v-progress-linear
-            v-model="currentTime"
+            v-model="currentTimeBar"
             color="#26c6da"
             class="ma-0 pa-0"
           ></v-progress-linear>
@@ -104,10 +104,19 @@ export default {
       audio: {},
       currentTime: 0,
       musicTime: 0,
-      isPlaying: false
+      isPlaying: false,
+      currentTimeBar: 0
     }
   },
   mounted() {
+    const time = this.musicTime / 100;
+    this.currentTimeBar = this.currentTime / time
+  },
+  watch: {
+    currentTimeBar: function() {
+      const time = this.musicTime / 100;
+      this.currentTimeBar = this.currentTime / time
+    }
   },
   methods: {
     musicTitle() {
