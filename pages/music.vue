@@ -142,8 +142,14 @@ export default {
         this.audio = new Audio(this.fetchMusic(selectedMusic));
         this.audio.preload = 'metadata';
         this.audio.load();
-        this.audio.onloadedmetadata = this.setMusicTime();
-        this.audio.ontimeupdate = this.updateCurrentTime();
+        this.audio.onloadedmetadata = function(e) {
+          console.log('onloadedmetadata', e);
+          this.setMusicTime();
+        };
+        this.audio.ontimeupdate = function(e) {
+          console.log('ontimeupdate', e);
+          this.updateCurrentTime();
+        };
         this.audio.currentTime = 0;
         this.audio.play();
         console.log('onloadedmetadata', this.audio.onloadedmetadata)
