@@ -21,22 +21,24 @@
       <v-card
         class="pb-0"
         color="#f5f5f5"
-        style="min-height: 100%; min-width: 70%;"
+        style="min-height: 100%"
         elevation="0"
       >
         <v-card-text class="pt-1 pb-0 px-2">
           {{ musicTitle() }}
         </v-card-text>
-        <v-card-actions class="pb-0" style="min-width: 100%;">
+
+        <v-card-actions class="pb-0">
           <v-progress-linear
             v-model="currentTime"
             color="#26c6da"
             class="ma-0 pa-0"
-            style="min-width: 100%;"
             :buffer-value="musicTime"
           ></v-progress-linear>
         </v-card-actions>
       </v-card>
+
+      <v-spacer></v-spacer>
 
       <v-card
         class="pb-0 mx-2 mt-3"
@@ -45,7 +47,7 @@
         elevation="0"
       >
         <v-card-text class="pt-1 pb-0 px-2">
-          {{ currentTime }} / {{ musicTime }}
+          {{ convertTime(currentTime) }} / {{ convertTime(musicTime) }}
         </v-card-text>
       </v-card>
     </v-app-bar>
@@ -126,8 +128,14 @@ export default {
         } else {
           this.isPlaying = true;
           this.musicList[selectedMusic]['icon'] = 'mdi-pause';
+          this.audio.ontimeupdate = () => {
+          this.currentTime = this.audio.currentTime;
+          };
+          this.audio.onended = () => {
+            this.musicList[this.currentMusic]['icon'] = 'mdi-play';
+            this.audio.currentTime = 0;
+          };
           this.audio.play();
-          this.audio.ontimeupdate = this.updateCurrentTime();
         }
       } else {
         this.isPlaying = true;
@@ -142,23 +150,19 @@ export default {
         this.audio = new Audio(this.fetchMusic(selectedMusic));
         this.audio.preload = 'metadata';
         this.audio.load();
-        this.audio.onloadedmetadata = (e) => {
-          console.log('onloadedmetadata', e);
+        this.audio.onloadedmetadata = () => {
           this.musicTime = this.audio.duration;
         };
-        this.audio.ontimeupdate = (e) => {
-          console.log('ontimeupdate', e);
+        this.audio.ontimeupdate = () => {
           this.currentTime = this.audio.currentTime;
+        };
+        this.audio.onended = () => {
+          this.musicList[this.currentMusic]['icon'] = 'mdi-play';
+          this.audio.currentTime = 0;
         };
         this.audio.currentTime = 0;
         this.audio.play();
       }
-    },
-    updateCurrentTime() {
-      this.currentTime = this.audio.currentTime;
-    },
-    setMusicTime() {
-      this.musicTime = this.audio.duration;
     },
     fetchMusic(selectedMusic) {
       switch (selectedMusic) {
@@ -167,6 +171,19 @@ export default {
         case 'shu':
           return shu;
       }
+    },
+    convertTime(time) {
+      const min = this.convertMin(time);
+      const sec = this.convertSec(time);
+      const mm = ( '00' + min ).slice( -2 );
+      const ss = ( '00' + sec ).slice( -2 );
+      return `${mm}:${ss}`;
+    },
+    convertMin(time) {
+      return Math.floor(time / 60);
+    },
+    convertSec(time) {
+      return Math.floor(time % 60);
     }
   }
 }
