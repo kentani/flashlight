@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 100%; height: 100%;">
+  <div style="height: 100%; width: 100%;">
     <v-app-bar
       dense
       elevation="0"
@@ -21,7 +21,7 @@
       <v-card
         class="pb-0"
         color="#f5f5f5"
-        style="min-height: 100%"
+        style="min-height: 100%; width: 100%;"
         elevation="0"
       >
         <v-card-text class="pt-1 pb-0 px-2">
@@ -40,12 +40,12 @@
       <v-spacer></v-spacer>
 
       <v-card
-        class="pb-0 mx-2 mt-3"
+        class="pb-0 mx-0 mt-3"
         color="#f5f5f5"
-        style="min-height: 80%;"
+        style="min-height: 80%; min-width: 30%;"
         elevation="0"
       >
-        <v-card-text class="pt-1 pb-0 px-2">
+        <v-card-text class="pt-1 pb-0 px-0 text-center">
           {{ convertTime(currentTime) }} / {{ convertTime(musicTime) }}
         </v-card-text>
       </v-card>
