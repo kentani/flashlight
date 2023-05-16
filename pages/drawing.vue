@@ -1,9 +1,11 @@
 <template>
   <div style="width: 100%; height: 100%;">
     <v-app-bar
+      fixed
       dense
+      flat
       elevation="0"
-      class="option-bar"
+      class="option-bar mt-12"
     >
 
       <v-icon class="ml-3 mr-2 mt-1" size="30">mdi-format-color-fill</v-icon>

@@ -1,9 +1,11 @@
 <template>
   <div style="height: 100%; width: 100%;">
     <v-app-bar
+      fixed
       dense
+      flat
       elevation="0"
-      class="option-bar"
+      class="option-bar mt-12"
     >
 
       <v-btn
@@ -90,14 +92,15 @@
 
 <script>
 import shu from '@/assets/sounds/33.mp3'
-import sarada from '@/assets/sounds/shiawasenosarada.mp3'
+import sarada1 from '@/assets/sounds/shiawasenosarada.mp3'
 
 export default {
   name: 'music',
   data () {
     return {
       musicList: {
-        'sarada': { 'title': '幸せのサラダ', 'icon': 'mdi-play' },
+        'sarada1': { 'title': '幸せのサラダ1', 'icon': 'mdi-play' },
+        'sarada2': { 'title': '幸せのサラダ2', 'icon': 'mdi-play' },
         'shu': { 'title': 'シュッ', 'icon': 'mdi-play' }
       },
       currentMusic: '-',
@@ -176,8 +179,10 @@ export default {
     },
     fetchMusic(selectedMusic) {
       switch (selectedMusic) {
-        case 'sarada':
-          return sarada;
+        case 'sarada1':
+          return sarada1;
+        case 'sarada2':
+          return sarada1;
         case 'shu':
           return shu;
       }

@@ -1,9 +1,11 @@
 <template>
   <div>
     <v-app-bar
+      fixed
       dense
-      color="#26c6da"
       dark
+      color="#26c6da"
+      elevation="0"
       class="pa-0"
     >
       <v-btn icon nuxt to="/">
