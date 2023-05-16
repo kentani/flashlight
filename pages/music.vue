@@ -157,6 +157,7 @@ export default {
           this.currentTime = this.audio.currentTime;
         };
         this.audio.onended = () => {
+          this.isPlaying = false;
           this.musicList[this.currentMusic]['icon'] = 'mdi-play';
           this.audio.currentTime = 0;
         };
