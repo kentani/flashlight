@@ -144,16 +144,14 @@ export default {
         this.audio.load();
         this.audio.onloadedmetadata = function(e) {
           console.log('onloadedmetadata', e);
-          this.setMusicTime();
+          this.musicTime = this.audio.duration;
         };
         this.audio.ontimeupdate = function(e) {
           console.log('ontimeupdate', e);
-          this.updateCurrentTime();
+          this.currentTime = this.audio.currentTime;
         };
         this.audio.currentTime = 0;
         this.audio.play();
-        console.log('onloadedmetadata', this.audio.onloadedmetadata)
-        console.log('src', this.audio)
       }
     },
     updateCurrentTime() {
