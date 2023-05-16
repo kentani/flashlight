@@ -3,8 +3,8 @@
     no-gutters
     align="center"
     justify="center"
-    style="height: 100%; width: 100%;"
     class="mt-12"
+    style="height: 100%; width: 100%;"
   >
     <v-col
       v-for="toy in toyList"

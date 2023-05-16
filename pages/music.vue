@@ -44,7 +44,7 @@
       <v-card
         class="pb-0 mx-0 mt-3"
         color="#f5f5f5"
-        style="min-height: 80%; min-width: 30%;"
+        style="min-height: 75%; min-width: 30%;"
         elevation="0"
       >
         <v-card-text class="pt-1 pb-0 px-0 text-center">
@@ -57,6 +57,7 @@
       no-gutters
       align="center"
       justify="center"
+      class="mt-24"
       style="height: 100%; width: 100%;"
     >
       <v-col
@@ -205,4 +206,7 @@ export default {
 </script>
 
 <style scoped>
+.mt-24 {
+  margin-top: 96px !important;
+}
 </style>
