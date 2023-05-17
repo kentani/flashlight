@@ -94,6 +94,7 @@
 <script>
 import shu from '@/assets/sounds/33.mp3'
 import sarada1 from '@/assets/sounds/shiawasenosarada.mp3'
+import summer from '@/assets/sounds/summer.mp3'
 
 export default {
   name: 'music',
@@ -101,7 +102,7 @@ export default {
     return {
       musicList: {
         'sarada1': { 'title': '幸せのサラダ1', 'icon': 'mdi-play' },
-        'sarada2': { 'title': '幸せのサラダ2', 'icon': 'mdi-play' },
+        'summer': { 'title': 'summer', 'icon': 'mdi-play' },
         'shu': { 'title': 'シュッ', 'icon': 'mdi-play' }
       },
       currentMusic: '-',
@@ -182,8 +183,8 @@ export default {
       switch (selectedMusic) {
         case 'sarada1':
           return sarada1;
-        case 'sarada2':
-          return sarada1;
+        case 'summer':
+          return summer;
         case 'shu':
           return shu;
       }
