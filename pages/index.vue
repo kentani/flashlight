@@ -45,7 +45,8 @@ export default {
       toyList: [
         { 'title': 'ライト', 'to': '/flashlight', 'icon': 'mdi-flashlight' },
         { 'title': 'おえかき', 'to': '/drawing', 'icon': 'mdi-palette' },
-        { 'title': 'おんがく', 'to': '/music', 'icon': 'mdi-music' }
+        { 'title': 'おんがく', 'to': '/music', 'icon': 'mdi-music' },
+        { 'title': 'スイッチ', 'to': '/switch', 'icon': 'mdi-light-switch-off' },
       ]
 
     }
