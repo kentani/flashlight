@@ -109,7 +109,7 @@ export default {
       icons: [
         {
           src: '/flashlight/teddy.png',
-          sizes: '256x256',
+          sizes: '512x512',
           type: 'image/png'
         }
       ]
