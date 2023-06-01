@@ -87,8 +87,8 @@ export default {
 
   pwa: {
     icon: {
-      source: '/static/teddy.png',
-      fileName: 'teddy.png'
+      source: '/static/teddy2.png',
+      fileName: 'teddy2.png'
     },
     meta: {
       mobileApp: true,
@@ -108,7 +108,7 @@ export default {
       start_url: '/flashlight/',
       icons: [
         {
-          src: '/flashlight/teddy.png',
+          src: '/flashlight/teddy2.png',
           sizes: '512x512',
           type: 'image/png'
         }
