@@ -103,7 +103,7 @@ export default {
       display: 'standalone',
       theme_color: '#26c6da',
       background_color: '#26c6da',
-      orientation: 'portrait',
+      orientation: 'any',
       scope: '/flashlight/',
       start_url: '/flashlight/',
       icons: [
