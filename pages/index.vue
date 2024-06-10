@@ -12,7 +12,6 @@
       cols="9"
       md="3"
       lg="2"
-      class="mx-2"
     >
       <v-hover>
         <template v-slot:default="{ hover }">
@@ -22,11 +21,12 @@
             rounded="xl"
             :elevation="hover? 24 : 8"
             nuxt
+            class="my-4"
             :to="toy.to"
           >
             <v-card-text class="text-body-1 font-weight-bold text-center">
               <v-icon size="150">{{ toy.icon }}</v-icon>
-              <p class="mb-0">{{ toy.title }}</p>
+              <p class="mb-0" style="font-family: 'Yomogi', cursive; font-weight: bold;">{{ toy.title }}</p>
             </v-card-text>
           </v-card>
         </template>
@@ -47,6 +47,7 @@ export default {
         { 'title': 'おえかき', 'to': '/drawing', 'icon': 'mdi-palette' },
         { 'title': 'おんがく', 'to': '/music', 'icon': 'mdi-music' },
         { 'title': 'スイッチ', 'to': '/switch', 'icon': 'mdi-light-switch-off' },
+        { 'title': 'もじえらび', 'to': '/word', 'icon': 'mdi-alpha-a-circle-outline' },
       ]
 
     }

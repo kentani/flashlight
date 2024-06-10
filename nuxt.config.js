@@ -15,8 +15,8 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: 'ToyBox',
-    title: 'ToyBox',
+    titleTemplate: 'おもちゃばこ',
+    title: 'おもちゃばこ',
     htmlAttrs: {
       lang: 'ja'
     },
@@ -27,7 +27,7 @@ export default {
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
     ]
   },
 
@@ -51,7 +51,13 @@ export default {
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
+    '@nuxtjs/google-fonts',
   ],
+  googleFonts: {
+    families: {
+      'Yomogi': true,
+    },
+  },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {

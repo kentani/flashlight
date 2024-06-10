@@ -11,7 +11,8 @@
       <v-btn icon nuxt to="/">
         <v-icon>mdi-teddy-bear</v-icon>
       </v-btn>
-      <v-app-bar-title class="font-weight-bold">ToyBox</v-app-bar-title>
+
+      <v-app-bar-title class="font-weight-bold">おもちゃばこ</v-app-bar-title>
 
       <v-spacer />
 
@@ -37,6 +38,8 @@ export default {
       clipped: false,
       drawer: false,
       fixed: false,
+      active: false,
+      ripple: false,
       items: [
         {
           icon: 'mdi-apps',
@@ -65,9 +68,18 @@ body::-webkit-scrollbar {
 
 .container {
   height: 100%;
+  background: #f5f8fa;
+  color: #4c4c4c;
+  font-family: "Yomogi", cursive !important;
 }
 
 .v-toolbar__content, .v-toolbar__extension {
   padding: 0px;
+  font-family: "Yomogi", cursive;
+  font-weight: bold;
+}
+
+.theme--dark.v-btn--active:hover::before, .theme--dark.v-btn--active::before {
+  opacity: 0;
 }
 </style>
