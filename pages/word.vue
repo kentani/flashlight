@@ -41,29 +41,56 @@
 </template>
 
 <script>
+import okSound from '@/assets/sounds/ok.mp3'
+import ngSound from '@/assets/sounds/ng.mp3'
+
 export default {
   name: 'word',
   data: () => ({
-    themeWord: "あ",
+    themeWord: "",
     words: [{}, {}, {}, {}],
     timer: 10,
     timerStyle: "conic-gradient(#26c6da 0deg 100deg, #26c6da 100deg 360deg)",
     cardClassList: ["a", "b", "c", "d"],
     cardTitleClassList: ["sm", "md", "lg", "xl"],
     hiraganaList: ["あ", "い", "う", "え", "お", "か", "き", "く", "け", "こ", "さ", "し", "す", "せ", "そ", "た", "ち", "つ", "て", "と", "な", "に", "ぬ", "ね", "の", "は", "ひ", "ふ", "へ", "ほ", "ま", "み", "む", "め", "も", "や", "ゆ", "よ", "ら", "り", "る", "れ", "ろ", "わ", "を", "ん"],
+    clearId: null,
 
   }),
   mounted() {
+    this.themeWord = "";
+
+    this.words = [{}, {}, {}, {}];
+
+    this.timer = 10;
+
+    document.getElementById("theme-word-card")?.classList?.remove("result");
+    Array.from(document.getElementsByClassName("selectable-card")).forEach(el => el?.classList?.remove("selected", "result"));
+    this.timerStyle = `background-image: conic-gradient(#26c6da 0deg 360deg)`;
+
+    clearInterval(this.clearId);
+
     this.setWord();
     this.timerExec();
   },
+  unmounted() {
+    this.themeWord = "";
+
+    this.words = [{}, {}, {}, {}];
+
+    this.timer = 10;
+
+    document.getElementById("theme-word-card")?.classList?.remove("result");
+    Array.from(document.getElementsByClassName("selectable-card")).forEach(el => el?.classList?.remove("selected", "result"));
+    this.timerStyle = `background-image: conic-gradient(#26c6da 0deg 360deg)`;
+
+    clearInterval(this.clearId);
+  },
   methods: {
     timerExec() {
-      let clearId = setInterval(() => {
-        this.timer--;
-
+      this.clearId = setInterval(() => {
         if (this.timer === 0) {
-          document.getElementById("theme-word-card").classList.add("result");
+          document.getElementById("theme-word-card")?.classList?.add("result");
 
           this.words.forEach(word => {
             if (word.text === this.themeWord) {
@@ -73,17 +100,19 @@ export default {
 
           this.timerStyle = `background-image: conic-gradient(#e0e0e0 0deg 360deg)`;
 
-          clearInterval(clearId);
+          clearInterval(this.clearId);
 
           setTimeout(() => {
             this.timer = 10;
-            document.getElementById("theme-word-card").classList.remove("result");
-            Array.from(document.getElementsByClassName("selectable-card")).forEach(el => el.classList.remove("selected", "result"));
+            document.getElementById("theme-word-card")?.classList?.remove("result");
+            Array.from(document.getElementsByClassName("selectable-card")).forEach(el => el?.classList?.remove("selected", "result"));
             this.timerStyle = `background-image: conic-gradient(#26c6da 0deg 360deg)`;
             this.timerExec();
             this.setWord();
           }, 2000)
         } else if (this.timer > 0) {
+          this.timer--;
+
           let diff = 10 - this.timer;
           let grayArea = 36 * diff;
 
@@ -117,9 +146,33 @@ export default {
         if (word.id === wordId && !word.selected) {
           word.selected = true;
           word.class += " selected";
+          if (word.text === this.themeWord) {
+            word.class += " result";
+
+            document.getElementById("theme-word-card")?.classList?.add("result");
+
+            this.audio = new Audio(okSound);
+            this.audio.currentTime = 0;
+            this.audio.play();
+
+            clearInterval(this.clearId);
+
+            setTimeout(() => {
+              this.timer = 10;
+              document.getElementById("theme-word-card")?.classList?.remove("result");
+              Array.from(document.getElementsByClassName("selectable-card")).forEach(el => el?.classList?.remove("selected", "result"));
+              this.timerStyle = `background-image: conic-gradient(#26c6da 0deg 360deg)`;
+              this.timerExec();
+              this.setWord();
+            }, 500)
+          }
         } else {
           word.selected = false;
           word.class = word.class.replace(" selected", "");
+
+          this.audio = new Audio(ngSound);
+          this.audio.currentTime = 0;
+          this.audio.play();
         }
       })
     }
