@@ -55,7 +55,7 @@ export default {
     cardTitleClassList: ["sm", "md", "lg", "xl"],
     hiraganaList: ["あ", "い", "う", "え", "お", "か", "き", "く", "け", "こ", "さ", "し", "す", "せ", "そ", "た", "ち", "つ", "て", "と", "な", "に", "ぬ", "ね", "の", "は", "ひ", "ふ", "へ", "ほ", "ま", "み", "む", "め", "も", "や", "ゆ", "よ", "ら", "り", "る", "れ", "ろ", "わ", "を", "ん"],
     clearId: null,
-
+    correct: false,
   }),
   mounted() {
     this.themeWord = "";
@@ -75,15 +75,12 @@ export default {
   },
   unmounted() {
     this.themeWord = "";
-
     this.words = [{}, {}, {}, {}];
-
     this.timer = 10;
-
+    this.correct = false;
     document.getElementById("theme-word-card")?.classList?.remove("result");
     Array.from(document.getElementsByClassName("selectable-card")).forEach(el => el?.classList?.remove("selected", "result"));
     this.timerStyle = `background-image: conic-gradient(#26c6da 0deg 360deg)`;
-
     clearInterval(this.clearId);
   },
   methods: {
@@ -104,6 +101,7 @@ export default {
 
           setTimeout(() => {
             this.timer = 10;
+            this.correct = false;
             document.getElementById("theme-word-card")?.classList?.remove("result");
             Array.from(document.getElementsByClassName("selectable-card")).forEach(el => el?.classList?.remove("selected", "result"));
             this.timerStyle = `background-image: conic-gradient(#26c6da 0deg 360deg)`;
@@ -142,8 +140,6 @@ export default {
       });
     },
     selectWord(wordId) {
-      let correct = false;
-
       this.words.forEach(word => {
         if (word.id === wordId && !word.selected) {
           word.selected = true;
@@ -153,34 +149,35 @@ export default {
 
             document.getElementById("theme-word-card")?.classList?.add("result");
 
-            this.okAudio = new Audio(okSound);
-            this.okAudio.currentTime = 0;
-            this.okAudio.play();
-
             clearInterval(this.clearId);
 
             setTimeout(() => {
               this.timer = 10;
+              this.correct = false;
               document.getElementById("theme-word-card")?.classList?.remove("result");
               Array.from(document.getElementsByClassName("selectable-card")).forEach(el => el?.classList?.remove("selected", "result"));
               this.timerStyle = `background-image: conic-gradient(#26c6da 0deg 360deg)`;
               this.timerExec();
               this.setWord();
-            }, 500)
+            }, 1000)
 
             this.correct = true;
           }
         } else {
           word.selected = false;
           word.class = word.class.replace(" selected", "");
-
-          if (this.correct) return;
-
-          this.ngAudio = new Audio(ngSound);
-          this.ngAudio.currentTime = 0;
-          this.ngAudio.play();
         }
       })
+
+      if (this.correct) {
+        this.okAudio = new Audio(okSound);
+        this.okAudio.currentTime = 0;
+        this.okAudio.play();
+      } else {
+        this.ngAudio = new Audio(ngSound);
+        this.ngAudio.currentTime = 0;
+        this.ngAudio.play();
+      }
     }
   }
 }
