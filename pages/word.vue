@@ -151,9 +151,9 @@ export default {
 
             document.getElementById("theme-word-card")?.classList?.add("result");
 
-            this.audio = new Audio(okSound);
-            this.audio.currentTime = 0;
-            this.audio.play();
+            this.okAudio = new Audio(okSound);
+            this.okAudio.currentTime = 0;
+            this.okAudio.play();
 
             clearInterval(this.clearId);
 
@@ -170,9 +170,9 @@ export default {
           word.selected = false;
           word.class = word.class.replace(" selected", "");
 
-          this.audio = new Audio(ngSound);
-          this.audio.currentTime = 0;
-          this.audio.play();
+          this.ngAudio = new Audio(ngSound);
+          this.ngAudio.currentTime = 0;
+          this.ngAudio.play();
         }
       })
     }
