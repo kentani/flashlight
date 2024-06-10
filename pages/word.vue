@@ -165,6 +165,8 @@ export default {
               this.timerExec();
               this.setWord();
             }, 500)
+
+            return;
           }
         } else {
           word.selected = false;
