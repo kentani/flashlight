@@ -142,6 +142,8 @@ export default {
       });
     },
     selectWord(wordId) {
+      let correct = false;
+
       this.words.forEach(word => {
         if (word.id === wordId && !word.selected) {
           word.selected = true;
@@ -166,11 +168,13 @@ export default {
               this.setWord();
             }, 500)
 
-            return;
+            this.correct = true;
           }
         } else {
           word.selected = false;
           word.class = word.class.replace(" selected", "");
+
+          if (this.correct) return;
 
           this.ngAudio = new Audio(ngSound);
           this.ngAudio.currentTime = 0;
