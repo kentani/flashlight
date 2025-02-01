@@ -16,10 +16,9 @@ export default {
       crack.className = 'crack';
       crack.style.left = `${x - 100}px`;
       crack.style.top = `${y - 100}px`;
-      const basePath = (process.env.BASE_URL || '/');
-      crack.style.background = `url(${basePath}/${number}.png')`;
+      const basePath = (process.env.BASE_URL || '..');
+      crack.style.background = `url('${basePath}/${number}.png')`;
       crack.style.backgroundSize = 'cover';
-
       screen.appendChild(crack);
 
       // Remove the crack after animation
