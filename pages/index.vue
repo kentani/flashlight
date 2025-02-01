@@ -1,10 +1,8 @@
 <template>
   <v-row
-    no-gutters
     align="center"
     justify="center"
     class="mt-12"
-    style="height: 100%; width: 100%;"
   >
     <v-col
       v-for="toy in toyList"
@@ -21,8 +19,8 @@
             rounded="xl"
             :elevation="hover? 24 : 8"
             nuxt
-            class="my-4"
             :to="toy.to"
+            class="menu"
           >
             <v-card-text class="text-body-1 font-weight-bold text-center">
               <v-icon size="150">{{ toy.icon }}</v-icon>
@@ -36,8 +34,6 @@
 </template>
 
 <script>
-import sound from '@/assets/sounds/33.mp3'
-
 export default {
   name: 'IndexPage',
   data () {
@@ -48,6 +44,7 @@ export default {
         { 'title': 'おんがく', 'to': '/music', 'icon': 'mdi-music' },
         { 'title': 'スイッチ', 'to': '/switch', 'icon': 'mdi-light-switch-off' },
         { 'title': 'もじえらび', 'to': '/word', 'icon': 'mdi-alpha-a-circle-outline' },
+        { 'title': 'おさかな', 'to': '/fish', 'icon': 'mdi-fish' },
       ]
 
     }
@@ -56,8 +53,7 @@ export default {
 </script>
 
 <style scoped>
-.zoom1 {
-  transition: 1.2s;
-  transform: scale(1);
-}
+  .menu {
+    flex: 1
+  }
 </style>

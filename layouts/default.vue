@@ -67,10 +67,13 @@ body::-webkit-scrollbar {
 }
 
 .container {
-  height: 100%;
+  min-height: 100vh;
   background: #f5f8fa;
   color: #4c4c4c;
   font-family: "Yomogi", cursive !important;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
 }
 
 .v-toolbar__content, .v-toolbar__extension {
