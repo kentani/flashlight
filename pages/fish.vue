@@ -16,7 +16,6 @@ export default {
       crack.className = 'crack';
       crack.style.left = `${x - 100}px`;
       crack.style.top = `${y - 100}px`;
-      const basePath = (`${process.env.BASE_URL}flashlight` || '..');
       crack.style.background = `url('${number}.png')`;
       crack.style.backgroundSize = 'cover';
       screen.appendChild(crack);

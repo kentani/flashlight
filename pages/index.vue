@@ -45,6 +45,7 @@ export default {
         { 'title': 'スイッチ', 'to': '/switch', 'icon': 'mdi-light-switch-off' },
         { 'title': 'もじえらび', 'to': '/word', 'icon': 'mdi-alpha-a-circle-outline' },
         { 'title': 'おさかな', 'to': '/fish', 'icon': 'mdi-fish' },
+        { 'title': 'あなごぬき', 'to': '/anago', 'icon': 'mdi-fish' },
       ]
 
     }
