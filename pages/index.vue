@@ -2,7 +2,7 @@
   <v-row
     align="center"
     justify="center"
-    class="mt-12"
+    class="my-12"
   >
     <v-col
       v-for="toy in toyList"

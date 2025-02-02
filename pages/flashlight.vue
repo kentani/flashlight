@@ -1,7 +1,7 @@
 <template>
   <div
     id="flashlight"
-    style="height: 100%; width: 100%; background-color: #121212;"
+    style="height: 100%; width: 100%; background-color: #121212; overflow: hidden;"
   >
     <div
       class="inner"
