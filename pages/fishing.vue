@@ -109,7 +109,7 @@ body {
   height: 150px;
   background-color: brown;
   border-radius: 20px;
-  top: 0;
+  top: 50px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10; /* 釣り竿を魚より上に表示 */

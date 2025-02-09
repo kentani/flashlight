@@ -6,7 +6,7 @@
   >
     <v-col
       v-for="toy in toyList"
-      :key="toy.icon"
+      :key="toy.to"
       cols="9"
       md="3"
       lg="2"
@@ -46,6 +46,7 @@ export default {
         { 'title': 'もじえらび', 'to': '/word', 'icon': 'mdi-alpha-a-circle-outline' },
         { 'title': 'おさかな', 'to': '/fish', 'icon': 'mdi-fish' },
         { 'title': 'あなごぬき', 'to': '/anago', 'icon': 'mdi-fish' },
+        { 'title': 'つり', 'to': '/fishing', 'icon': 'mdi-fish' },
       ]
 
     }
