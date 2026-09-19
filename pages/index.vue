@@ -121,13 +121,7 @@ export default {
 
 .menu-grid {
   margin: 0 !important;
-  padding: 16px 12px !important;
-  background:
-    repeating-linear-gradient(90deg, rgba(123, 70, 35, .12) 0 2px, transparent 2px 18px),
-    linear-gradient(135deg, #d9924e, #f2ba70 45%, #c9783d);
-  border: 8px solid #9b5c32;
-  border-radius: 28px;
-  box-shadow: inset 0 0 0 4px #ffd794, 0 9px 0 rgba(89, 52, 31, .16);
+  padding: 8px 4px !important;
 }
 
 .menu-column {
@@ -225,9 +219,7 @@ export default {
   }
 
   .menu-grid {
-    padding: 8px 5px !important;
-    border-width: 6px;
-    border-radius: 22px;
+    padding: 4px !important;
   }
 
   .menu-card__content p {
