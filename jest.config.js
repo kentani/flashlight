@@ -20,5 +20,13 @@ module.exports = {
     '<rootDir>/components/**/*.vue',
     '<rootDir>/pages/**/*.vue'
   ],
+  coverageThreshold: {
+    global: {
+      branches: 45,
+      functions: 15,
+      lines: 22,
+      statements: 22
+    }
+  },
   testEnvironment: 'jsdom'
 }

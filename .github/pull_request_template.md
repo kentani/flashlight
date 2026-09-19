@@ -11,8 +11,12 @@
 ## 確認したこと
 
 - [ ] `yarn test:ci`
+- [ ] `yarn lint`
+- [ ] `yarn lint:pwa`（PWA Service Worker）
 - [ ] `yarn build`
 - [ ] ブラウザ確認（UI変更時：モバイル・PC）
+- [ ] 実装担当と独立したCodexレビュー
+- [ ] UI/UXレビュー（UI変更時：実装担当と独立、モバイル・PC）
 
 <!-- 未実施または失敗した項目は、理由と影響を明記する。 -->
 

@@ -162,7 +162,9 @@ export default {
         this.bestScore = this.score
         try {
           window.localStorage.setItem('mole-best-score', String(this.bestScore))
-        } catch (_error) {}
+        } catch (_error) {
+          // localStorage が使えない環境でもゲームを続ける。
+        }
       }
       this.clearTimers()
     },
@@ -180,7 +182,9 @@ export default {
     loadBestScore () {
       try {
         this.bestScore = Number(window.localStorage.getItem('mole-best-score')) || 0
-      } catch (_error) {}
+      } catch (_error) {
+        // localStorage が使えない環境では記録を復元しない。
+      }
     },
     prepareAudio () {
       if (!this.whackAudio) this.whackAudio = this.createAudio(whackSound)
