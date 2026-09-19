@@ -48,9 +48,9 @@ describe('mole game', () => {
     expect(wrapper.vm.isPlaying).toBe(true)
   })
 
-  test('ends the game after thirty seconds', async () => {
+  test('ends the game after fifteen seconds', async () => {
     await wrapper.find('.start-button').trigger('click')
-    jest.advanceTimersByTime(30000)
+    jest.advanceTimersByTime(15000)
     await wrapper.vm.$nextTick()
 
     expect(wrapper.vm.isPlaying).toBe(false)
