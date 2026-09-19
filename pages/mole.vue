@@ -20,13 +20,14 @@
           :key="hole"
           type="button"
           class="hole"
-          :class="{ 'has-mole': activeHole === hole, whacked: whackedHole === hole }"
-          :aria-label="activeHole === hole ? 'もぐらをたたく' : 'もぐらの穴'"
+          :class="{ 'has-mole': activeHole === hole, 'bonus-mole': activeHole === hole && isBonusMole, whacked: whackedHole === hole }"
+          :aria-label="activeHole === hole ? isBonusMole ? 'たくさんたたけるモグラをたたく' : 'もぐらをたたく' : 'もぐらの穴'"
           :disabled="!isPlaying || activeHole !== hole"
           @click="whack(hole)"
         >
           <span class="dirt"></span>
           <span class="mole" aria-hidden="true">🐹</span>
+          <span v-if="activeHole === hole && isBonusMole" class="bonus-mark" aria-hidden="true">たくさん！</span>
           <span v-if="whackedHole === hole" class="hit-effect" aria-hidden="true">
             <span class="impact">💥</span>
             <span class="hammer">🔨</span>
@@ -36,14 +37,31 @@
         </button>
       </div>
 
+      <div v-if="hasPlayed && !isPlaying" class="game-result" role="alert">
+        <div class="game-result__card">
+          <p class="game-result__title">{{ resultTitle }}</p>
+          <p>こんかいのスコア</p>
+          <strong>{{ score }}<small>てん</small></strong>
+          <p class="game-result__hint">{{ resultMessage }}</p>
+          <button type="button" class="result-button" @click="startGame">もういちど あそぶ</button>
+        </div>
+      </div>
+
       <button type="button" class="start-button" @click="startGame">
-        {{ isPlaying ? 'もういちど はじめる' : hasPlayed ? 'もういちど あそぶ' : 'はじめる' }}
+        {{ isPlaying ? 'さいしょから やりなおす' : hasPlayed ? 'もういちど あそぶ' : 'はじめる' }}
       </button>
     </div>
   </section>
 </template>
 
 <script>
+import moleSound from '@/assets/sounds/switch1.mp3'
+import whackSound from '@/assets/sounds/ok.mp3'
+
+const MIN_MOLE_DURATION = 1250
+const MAX_MOLE_DURATION = 2200
+const BONUS_MOLE_DURATION = 3800
+
 export default {
   name: 'MolePage',
   data () {
@@ -53,17 +71,37 @@ export default {
       timeLeft: 30,
       activeHole: null,
       whackedHole: null,
+      isBonusMole: false,
       isPlaying: false,
       hasPlayed: false,
+      bestScore: 0,
+      isNewRecord: false,
       moleTimer: null,
       countdownTimer: null,
       whackTimer: null,
-      audioContext: null
+      moleAudio: null,
+      whackAudio: null
     }
+  },
+  computed: {
+    resultTitle () {
+      if (this.isNewRecord) return 'しんきろく！'
+      if (this.score >= 20) return 'マスターです！'
+      if (this.score >= 10) return 'すごい！'
+      return 'じかんだよ！'
+    },
+    resultMessage () {
+      if (this.isNewRecord) return 'ベストスコアを こうしんしたよ！'
+      if (this.score >= 20) return 'もぐらたたきの たつじんだね！'
+      if (this.score >= 10) return 'とっても じょうず！'
+      return 'もういちど あそぶ？'
+    }
+  },
+  mounted () {
+    this.loadBestScore()
   },
   beforeDestroy () {
     this.clearTimers()
-    if (this.audioContext) this.audioContext.close()
   },
   methods: {
     startGame () {
@@ -72,6 +110,8 @@ export default {
       this.timeLeft = 30
       this.activeHole = null
       this.whackedHole = null
+      this.isBonusMole = false
+      this.isNewRecord = false
       this.isPlaying = true
       this.hasPlayed = true
       this.prepareAudio()
@@ -88,27 +128,38 @@ export default {
         nextHole = (nextHole + 1) % this.holes.length
       }
       this.activeHole = nextHole
+      this.isBonusMole = Math.random() > 0.75
       this.playMoleSound()
       this.moleTimer = setTimeout(() => {
         this.activeHole = null
         this.showMole()
-      }, 750)
+      }, this.isBonusMole ? BONUS_MOLE_DURATION : this.moleDuration())
     },
     whack (hole) {
       if (!this.isPlaying || hole !== this.activeHole) return
-      clearTimeout(this.moleTimer)
-      this.activeHole = null
+      if (!this.isBonusMole) {
+        clearTimeout(this.moleTimer)
+        this.activeHole = null
+      }
       this.whackedHole = hole
       this.score += 1
       this.playWhackSound()
       this.whackTimer = setTimeout(() => {
         this.whackedHole = null
-        this.showMole()
+        if (!this.isBonusMole) this.showMole()
       }, 180)
     },
     finishGame () {
       this.isPlaying = false
       this.activeHole = null
+      this.isBonusMole = false
+      this.isNewRecord = this.score > this.bestScore
+      if (this.isNewRecord) {
+        this.bestScore = this.score
+        try {
+          window.localStorage.setItem('mole-best-score', String(this.bestScore))
+        } catch (_error) {}
+      }
       this.clearTimers()
     },
     clearTimers () {
@@ -119,34 +170,54 @@ export default {
       this.whackTimer = null
       this.countdownTimer = null
     },
-    prepareAudio () {
-      const AudioContext = window.AudioContext || window.webkitAudioContext
-      if (!AudioContext) return
-      if (!this.audioContext) this.audioContext = new AudioContext()
-      if (this.audioContext.state === 'suspended') this.audioContext.resume()
+    moleDuration () {
+      return MIN_MOLE_DURATION + Math.floor(Math.random() * (MAX_MOLE_DURATION - MIN_MOLE_DURATION + 1))
     },
-    playTone (startFrequency, endFrequency, duration, volume) {
-      if (!this.audioContext) return
-      const now = this.audioContext.currentTime
-      const oscillator = this.audioContext.createOscillator()
-      const gain = this.audioContext.createGain()
-      oscillator.type = 'sine'
-      oscillator.frequency.setValueAtTime(startFrequency, now)
-      oscillator.frequency.exponentialRampToValueAtTime(endFrequency, now + duration)
-      gain.gain.setValueAtTime(0.001, now)
-      gain.gain.exponentialRampToValueAtTime(volume, now + 0.015)
-      gain.gain.exponentialRampToValueAtTime(0.001, now + duration)
-      oscillator.connect(gain)
-      gain.connect(this.audioContext.destination)
-      oscillator.start(now)
-      oscillator.stop(now + duration)
+    loadBestScore () {
+      try {
+        this.bestScore = Number(window.localStorage.getItem('mole-best-score')) || 0
+      } catch (_error) {}
+    },
+    prepareAudio () {
+      if (!this.moleAudio) this.moleAudio = this.createAudio(moleSound)
+      if (!this.whackAudio) this.whackAudio = this.createAudio(whackSound)
+      this.unlockAudio(this.moleAudio)
+      this.unlockAudio(this.whackAudio)
+    },
+    createAudio (sound) {
+      const audio = new Audio(sound)
+      audio.preload = 'auto'
+      audio.playsInline = true
+      return audio
+    },
+    unlockAudio (audio) {
+      audio.muted = true
+      audio.currentTime = 0
+      const playback = audio.play()
+      if (playback && playback.then) {
+        playback.then(() => {
+          audio.pause()
+          audio.currentTime = 0
+          audio.muted = false
+        }).catch(() => {
+          audio.muted = false
+        })
+      } else {
+        audio.muted = false
+      }
+    },
+    playSound (audio) {
+      if (!audio) return
+      audio.muted = false
+      audio.currentTime = 0
+      const playback = audio.play()
+      if (playback && playback.catch) playback.catch(() => {})
     },
     playMoleSound () {
-      this.playTone(440, 660, 0.12, 0.09)
+      this.playSound(this.moleAudio)
     },
     playWhackSound () {
-      this.playTone(190, 95, 0.11, 0.16)
-      this.playTone(520, 780, 0.16, 0.07)
+      this.playSound(this.whackAudio)
     }
   }
 }
@@ -222,11 +293,27 @@ p { font-size: 1.1rem; font-weight: bold; margin: 0; }
 .star { animation: star .3s ease-out forwards; color: #fff4a7; font-size: clamp(1.3rem, 5vw, 2.2rem); position: absolute; text-shadow: 0 2px #d9792e; }
 .star-one { left: 2%; top: 8%; }
 .star-two { right: 4%; top: 28%; }
+.bonus-mole .mole { animation: bonus-wiggle .45s ease-in-out infinite alternate; filter: drop-shadow(0 0 7px #fff6a6); }
+.bonus-mark { animation: bonus-mark .5s ease-in-out infinite alternate; background: #e85d42; border: 2px solid #fff8dc; border-radius: 999px; color: #fff; font-size: clamp(.65rem, 2.8vw, 1rem); font-weight: bold; left: 50%; padding: 3px 7px; position: absolute; top: 0; transform: translateX(-50%) rotate(-8deg); z-index: 6; }
+
+.game-result { align-items: center; background: rgba(52, 34, 20, .55); display: flex; inset: 0; justify-content: center; padding: 20px; position: fixed; z-index: 10; }
+.game-result__card { animation: result-pop .3s ease-out; background: #fff8dc; border: 6px solid #765334; border-radius: 28px; box-shadow: 0 9px 0 #4f301d; color: #55402a; max-width: 360px; padding: 28px 20px 24px; text-align: center; width: 100%; }
+.game-result__card p { font-size: 1.25rem; }
+.game-result__card .game-result__title { color: #e05b3f; font-size: clamp(2rem, 10vw, 3.2rem); margin-bottom: 12px; }
+.game-result__card strong { color: #e05b3f; display: block; font-size: clamp(3.5rem, 18vw, 5.5rem); line-height: 1; margin: 8px 0; }
+.game-result__card strong small { color: #55402a; font-size: 1.2rem; margin-left: 5px; }
+.game-result__hint { margin-bottom: 14px; }
+.result-button { animation: button-bounce 1s ease-in-out infinite; background: #f3a344; border: 4px solid #765334; border-radius: 999px; box-shadow: 0 5px 0 #765334; color: #fff; cursor: pointer; font: bold 1.35rem "Yomogi", cursive; padding: 12px 26px; }
+.result-button:active { box-shadow: 0 1px 0 #765334; transform: translateY(4px); }
 
 @keyframes mole-pop { from { transform: translate(-50%, 40%) scale(.7); } to { transform: translate(-50%, 0) scale(1); } }
 @keyframes impact { from { opacity: 0; transform: translateX(-50%) scale(.3); } 55% { opacity: 1; } to { opacity: 0; transform: translateX(-50%) scale(1.25); } }
 @keyframes hammer { from { transform: rotate(-45deg) scale(1.15); } to { transform: rotate(25deg) scale(.85); } }
 @keyframes star { from { opacity: 1; transform: scale(.4) rotate(0); } to { opacity: 0; transform: translateY(-28px) scale(1.15) rotate(100deg); } }
+@keyframes result-pop { from { opacity: 0; transform: scale(.7); } to { opacity: 1; transform: scale(1); } }
+@keyframes button-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+@keyframes bonus-wiggle { from { transform: translate(-50%, 0) rotate(-5deg) scale(1.04); } to { transform: translate(-50%, 0) rotate(5deg) scale(1.1); } }
+@keyframes bonus-mark { from { transform: translateX(-50%) rotate(-8deg) scale(1); } to { transform: translateX(-50%) rotate(5deg) scale(1.1); } }
 
 .start-button {
   background: #f3a344;
