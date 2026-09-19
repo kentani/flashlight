@@ -74,6 +74,7 @@ export default {
     return {
       goal: GOAL,
       runnerDistance: 0,
+      runnerPosition: 24,
       clownDistance: -3,
       isPlaying: false,
       result: '',
@@ -99,7 +100,7 @@ export default {
       return 'ピエロがくるよ。にげるボタンを タップ！'
     },
     runnerStyle () {
-      return { left: `${10 + this.runnerDistance * 6.8}%` }
+      return { left: `${this.runnerPosition}%` }
     },
     clownStyle () {
       return { left: `${-5 + this.clownDistance * 6.8}%` }
@@ -118,6 +119,7 @@ export default {
     startGame () {
       this.clearTimers()
       this.runnerDistance = 0
+      this.runnerPosition = 24
       this.clownDistance = -3
       this.result = ''
       this.wrongMove = false
@@ -132,6 +134,7 @@ export default {
         return
       }
       this.runnerDistance = Math.min(this.goal, this.runnerDistance + 1)
+      this.moveRunner(move)
       this.showMove(move)
       this.showStepEffect()
       if (this.runnerDistance >= this.goal) {
@@ -167,6 +170,10 @@ export default {
         this.lastMove = move
         this.moveTimer = setTimeout(() => { this.lastMove = '' }, 400)
       })
+    },
+    moveRunner (move) {
+      if (move === 'left') this.runnerPosition = Math.max(10, this.runnerPosition - 7)
+      if (move === 'right') this.runnerPosition = Math.min(76, this.runnerPosition + 7)
     },
     pickNextMove () {
       const choices = this.moves.filter(move => move.id !== this.nextMove)
