@@ -14,7 +14,7 @@
           <button v-else-if="phase === 'reeling'" type="button" class="button reel" :class="{ 'is-nearly-caught': reelProgress >= reelTaps - 2 }" @click="reel"><span class="reel__label" aria-hidden="true">💪 れんだ！</span><span class="reel-meter" aria-hidden="true"><span :style="{ width: `${reelPower}%` }"></span></span><i>{{ reelProgress }} / {{ reelTaps }}</i><b :key="reelProgress" aria-hidden="true">✨</b></button>
           <div v-else-if="phase === 'catching'" class="celebration" aria-live="assertive"><span>{{ targetFish.emoji }}</span><strong>つれた！</strong><i>✨</i></div>
         </template>
-        <div v-if="hasPlayed && !isPlaying" class="result" role="alert"><div><p>{{ resultTitle }}</p><strong>{{ catches }}<small>ひき</small></strong><button type="button" class="button" @click="startGame">もういちど あそぶ</button></div></div>
+        <div v-if="hasPlayed && !isPlaying" class="result" role="alert"><div><p>{{ resultTitle }}</p><strong>{{ catches }}<small>ひき</small></strong><button type="button" class="button" @click="startGame">もういちど あそぶ</button><nuxt-link to="/" class="button">やめる</nuxt-link></div></div>
       </div>
       <div class="caught-fish" aria-label="つれたおさかな" aria-live="polite"><span v-for="(fish, index) in caughtFish" :key="`${fish}-${index}`" aria-hidden="true">{{ fish }}</span></div>
     </div>
