@@ -22,6 +22,7 @@
 
 ## Implementation and validation
 - Keep Japanese UI text and mobile/touch interactions consistent with neighboring pages.
+- For any user-facing UI or interaction change, read and apply `.agents/skills/child-first-uiux/SKILL.md` before designing. It defines the 3〜6歳の子ども persona, child-friendly interaction criteria, and the mobile/desktop checks required for this app. Do not apply it to non-UI-only work.
 - Follow `.editorconfig` (two spaces, LF); avoid unrelated formatting changes.
 - Preserve `/flashlight/` in routing, static asset URLs and the PWA manifest.
 - Browser APIs such as Audio, canvas and timers need mocks/cleanup in tests. Static file imports use `test/mocks/file.js`.
