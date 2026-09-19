@@ -63,4 +63,18 @@ describe('mole game', () => {
     expect(wrapper.vm.score).toBe(2)
     expect(wrapper.vm.activeHole).toBe(0)
   })
+
+  test('shows fever feedback away from the hole and ignores the synthetic click after a touch', async () => {
+    await wrapper.find('.start-button').trigger('click')
+    await wrapper.setData({ isBonusMole: true })
+    const hole = wrapper.findAll('.hole').at(0)
+
+    await hole.trigger('touchend')
+    await hole.trigger('click')
+
+    expect(wrapper.vm.score).toBe(1)
+    expect(wrapper.vm.bonusHits).toBe(1)
+    expect(wrapper.find('.fever-status').text()).toContain('フィーバー！')
+    expect(wrapper.find('.hole .fever-status').exists()).toBe(false)
+  })
 })

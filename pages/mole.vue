@@ -14,7 +14,13 @@
         </div>
       </header>
 
-      <div class="mole-field" :class="{ 'is-playing': isPlaying }">
+      <div class="mole-field" :class="{ 'is-playing': isPlaying, 'is-fever': isFever }">
+        <div v-if="isFever" class="fever-status" aria-live="polite">
+          <span class="fever-status__sparkle" aria-hidden="true">★</span>
+          <strong>フィーバー！</strong>
+          <span class="fever-status__hits">れんだ {{ bonusHits }} かい！</span>
+          <span :key="feverPulse" class="fever-status__burst" aria-hidden="true">✨</span>
+        </div>
         <button
           v-for="hole in holes"
           :key="hole"
@@ -23,12 +29,11 @@
           :class="{ 'has-mole': activeHole === hole, 'bonus-mole': activeHole === hole && isBonusMole, whacked: whackedHole === hole }"
           :aria-label="activeHole === hole ? isBonusMole ? 'たくさんたたけるモグラをたたく' : 'もぐらをたたく' : 'もぐらの穴'"
           :disabled="!isPlaying || activeHole !== hole"
-          @click="whack(hole)"
+          @touchend.prevent="handleHoleTouch(hole)"
+          @click="handleHoleClick(hole)"
         >
           <span class="dirt"></span>
           <span class="mole" aria-hidden="true">🐹</span>
-          <span v-if="activeHole === hole && isBonusMole" class="bonus-mark" aria-hidden="true">フィーバー！</span>
-          <span v-if="activeHole === hole && isBonusMole" class="bonus-count" aria-hidden="true">×{{ bonusHits }}</span>
           <span v-if="whackedHole === hole" class="hit-effect" aria-hidden="true">
             <span class="impact">💥</span>
             <span class="hammer">🔨</span>
@@ -73,6 +78,8 @@ export default {
       whackedHole: null,
       isBonusMole: false,
       bonusHits: 0,
+      feverPulse: 0,
+      lastHoleTouchAt: 0,
       isPlaying: false,
       hasPlayed: false,
       bestScore: 0,
@@ -85,6 +92,9 @@ export default {
     }
   },
   computed: {
+    isFever () {
+      return this.isPlaying && this.activeHole !== null && this.isBonusMole
+    },
     resultTitle () {
       if (this.isNewRecord) return 'しんきろく！'
       if (this.score >= 20) return 'マスターです！'
@@ -113,6 +123,8 @@ export default {
       this.whackedHole = null
       this.isBonusMole = false
       this.bonusHits = 0
+      this.feverPulse = 0
+      this.lastHoleTouchAt = 0
       this.isNewRecord = false
       this.isPlaying = true
       this.hasPlayed = true
@@ -145,12 +157,24 @@ export default {
       }
       this.whackedHole = hole
       this.score += 1
-      if (this.isBonusMole) this.bonusHits += 1
+      if (this.isBonusMole) {
+        this.bonusHits += 1
+        this.feverPulse += 1
+      }
       this.playWhackSound(this.isBonusMole)
       this.whackTimer = setTimeout(() => {
         this.whackedHole = null
         if (!this.isBonusMole) this.showMole()
       }, 180)
+    },
+    handleHoleTouch (hole) {
+      this.lastHoleTouchAt = Date.now()
+      this.whack(hole)
+    },
+    handleHoleClick (hole) {
+      // iOS は touchend の直後に click も発火することがあるため、同じ一打を二重加算しない。
+      if (Date.now() - this.lastHoleTouchAt < 500) return
+      this.whack(hole)
     },
     finishGame () {
       this.isPlaying = false
@@ -272,7 +296,9 @@ p { font-size: 1.1rem; font-weight: bold; margin: 0; }
   gap: clamp(10px, 3vw, 22px);
   grid-template-columns: repeat(3, 1fr);
   padding: clamp(18px, 6vw, 42px);
+  position: relative;
 }
+.mole-field.is-fever { box-shadow: inset 0 0 0 5px #ffe46b, inset 0 0 30px rgba(255, 218, 72, .8), 0 10px 0 rgba(85, 64, 42, .2); padding-top: clamp(68px, 14vw, 86px); }
 
 .hole {
   aspect-ratio: 1;
@@ -300,8 +326,11 @@ p { font-size: 1.1rem; font-weight: bold; margin: 0; }
 .star-one { left: 2%; top: 8%; }
 .star-two { right: 4%; top: 28%; }
 .bonus-mole .mole { animation: bonus-wiggle .45s ease-in-out infinite alternate; filter: drop-shadow(0 0 7px #fff6a6); }
-.bonus-mark { animation: bonus-mark .5s ease-in-out infinite alternate; background: #e85d42; border: 2px solid #fff8dc; border-radius: 999px; color: #fff; font-size: clamp(.65rem, 2.8vw, 1rem); font-weight: bold; left: 50%; padding: 3px 7px; position: absolute; top: 0; transform: translateX(-50%) rotate(-8deg); z-index: 6; }
-.bonus-count { background: #fff8dc; border: 2px solid #e85d42; border-radius: 999px; bottom: 4%; color: #e85d42; font-size: clamp(1rem, 4vw, 1.5rem); font-weight: bold; left: 50%; padding: 1px 7px; position: absolute; transform: translateX(-50%); z-index: 6; }
+.fever-status { align-items: center; animation: fever-status .45s ease-out; background: #e85d42; border: 3px solid #fff8dc; border-radius: 999px; box-shadow: 0 4px 0 #a93b2a, 0 0 0 4px #ffcf4d; color: #fff; display: flex; gap: 7px; left: 50%; min-height: 42px; padding: 5px 13px; position: absolute; top: clamp(7px, 2vw, 14px); transform: translateX(-50%); white-space: nowrap; z-index: 7; }
+.fever-status strong { font-size: clamp(1rem, 4vw, 1.35rem); line-height: 1; }
+.fever-status__hits { background: #fff8dc; border-radius: 999px; color: #d94f36; font-size: clamp(.75rem, 3vw, 1rem); font-weight: bold; padding: 4px 7px; }
+.fever-status__sparkle { animation: sparkle .4s ease-in-out infinite alternate; color: #fff3a3; font-size: 1.2rem; }
+.fever-status__burst { animation: fever-burst .38s ease-out forwards; font-size: 1.5rem; position: absolute; right: -12px; top: -13px; }
 
 .game-result { align-items: center; background: rgba(52, 34, 20, .55); display: flex; inset: 0; justify-content: center; padding: 20px; position: fixed; z-index: 10; }
 .game-result__card { animation: result-pop .3s ease-out; background: #fff8dc; border: 6px solid #765334; border-radius: 28px; box-shadow: 0 9px 0 #4f301d; color: #55402a; max-width: 360px; padding: 28px 20px 24px; text-align: center; width: 100%; }
@@ -320,7 +349,9 @@ p { font-size: 1.1rem; font-weight: bold; margin: 0; }
 @keyframes result-pop { from { opacity: 0; transform: scale(.7); } to { opacity: 1; transform: scale(1); } }
 @keyframes button-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
 @keyframes bonus-wiggle { from { transform: translate(-50%, 0) rotate(-5deg) scale(1.04); } to { transform: translate(-50%, 0) rotate(5deg) scale(1.1); } }
-@keyframes bonus-mark { from { transform: translateX(-50%) rotate(-8deg) scale(1); } to { transform: translateX(-50%) rotate(5deg) scale(1.1); } }
+@keyframes fever-status { from { opacity: 0; transform: translateX(-50%) translateY(-10px) scale(.8); } to { opacity: 1; transform: translateX(-50%) scale(1); } }
+@keyframes sparkle { from { transform: rotate(-12deg) scale(.85); } to { transform: rotate(12deg) scale(1.2); } }
+@keyframes fever-burst { from { opacity: 1; transform: scale(.5) rotate(0); } to { opacity: 0; transform: translate(12px, -17px) scale(1.3) rotate(35deg); } }
 
 .start-button {
   background: #f3a344;
@@ -346,5 +377,7 @@ p { font-size: 1.1rem; font-weight: bold; margin: 0; }
   .game-header { align-items: flex-start; flex-direction: column; }
   .scoreboard { width: 100%; }
   .scoreboard div { flex: 1; }
+  .fever-status { gap: 4px; padding: 4px 9px; }
+  .start-button { font-size: 1.25rem; padding-left: 24px; padding-right: 24px; white-space: nowrap; }
 }
 </style>
