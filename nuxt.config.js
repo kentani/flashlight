@@ -99,7 +99,7 @@ export default {
     meta: {
       mobileApp: true,
       mobileAppIOS: true,
-      appleStatusBarStyle: '#54ACDB',
+      appleStatusBarStyle: 'black-translucent',
     },
     manifest: {
       lang: 'ja',
