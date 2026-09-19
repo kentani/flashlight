@@ -9,13 +9,16 @@
     >
 
       <v-btn
-        outlined
-        color="#00838f"
-        class="reset-button ml-2 mr-3"
+        icon
+        :ripple="false"
+        width="44"
+        height="44"
+        aria-label="リセット"
+        title="リセット"
+        class="reset-button mx-2"
         @click="resetDrawing"
       >
-        <v-icon left>mdi-delete-outline</v-icon>
-        リセット
+        <v-icon size="28">mdi-delete-outline</v-icon>
       </v-btn>
 
       <v-icon class="ml-3 mr-2 mt-1" size="30">mdi-format-color-fill</v-icon>
@@ -228,7 +231,6 @@ export default {
 
 <style scoped>
 .reset-button {
-  min-height: 44px;
   flex-shrink: 0;
 }
 
