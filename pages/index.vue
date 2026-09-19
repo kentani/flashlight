@@ -48,6 +48,7 @@ export default {
         { 'title': 'あなごぬき', 'to': '/anago', 'icon': 'mdi-fish' },
         { 'title': 'つり', 'to': '/fishing', 'icon': 'mdi-fish' },
         { 'title': 'ぽけ', 'to': '/poke', 'icon': 'mdi-card-account-details-outline' },
+        { 'title': 'もぐらたたき', 'to': '/mole', 'icon': 'mdi-hammer' },
       ]
 
     }
