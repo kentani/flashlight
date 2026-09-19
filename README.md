@@ -30,15 +30,19 @@ Nuxt 2.16 の依存パッケージは古い Node バージョン範囲を宣言�
 
 ```sh
 yarn test:ci        # Jest を非対話・単一プロセスで実行
+yarn lint           # ESLint による JavaScript / Vue の静的検査
+yarn lint:pwa       # ビルド後に生成されるPWA Service Workerの静的検査
 yarn build          # 本番ビルド（.nuxt/）
 yarn generate:check # 静的サイトの生成確認（.preview/）
+yarn test:e2e       # Playwrightによるモバイル／PCのUI/UX自動確認
 ```
 
 `yarn test` は通常の Jest 実行です。テストは `test/` に追加します。
 Vue 2 用の Jest 29 transformer と、音声・画像のモックを設定済みです。
 最初の回帰テストはライトのタップによる移動・拡大縮小・音声再生呼び出しを確認します。
 音が実際に出ること、タッチ操作、PWA のオフライン動作はブラウザでも確認してください。
-現在 lint コマンドはありません。
+テストは `pages/` と `components/` のグローバルカバレッジ（branch 45%以上、function 15%以上、line / statement 22%以上）を確認します。既存コードの実測値を下回らない初期基準であり、新しい画面やロジックには対応するテストを追加して段階的に引き上げます。
+`yarn test:e2e` はローカルでChromiumを使い、モバイルとPCの画面幅、主要画面の横スクロール、最初に遊ぶ選択肢のタップ領域、ライトのタップ後の視覚的反応を確認します。CIでは実行しません。実際の音量や子どもの理解しやすさなどの定性的な評価は、独立UI/UXレビューでも確認します。
 
 GitHub Actions は PR と main/master への push で、固定した Node/Yarn による依存インストール・テスト・静的生成を実行します。
 既存の CSS の空の `url()`、古い Browserslist データ、大きなアセットについてビルド警告が出ます。今回の環境整備ではアプリの見た目や依存フレームワークを刷新していません。
@@ -52,6 +56,7 @@ GitHub Actions は PR と main/master への push で、固定した Node/Yarn �
 5. PR 作成または引き継ぎ後にタスクをアーカイブすると、Codex 管理の Worktree は自動クリーンアップの対象になります。
 6. Codex はルートの [AGENTS.md](AGENTS.md) を読み、構成・編集方針・検証コマンドを参照します。
 7. 差分と検証結果を確認し、作業ブランチから PR を作成します。
+8. PR前に、実装を担当していないCodexタスクへ `.github/review-agent.md` の観点で独立レビューを依頼し、指摘を反映します。
 
 依頼例:
 
