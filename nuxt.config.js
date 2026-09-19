@@ -99,7 +99,7 @@ export default {
     meta: {
       mobileApp: true,
       mobileAppIOS: true,
-      appleStatusBarStyle: '#26c6da',
+      appleStatusBarStyle: 'black-translucent',
     },
     manifest: {
       lang: 'ja',
@@ -107,8 +107,8 @@ export default {
       short_name: 'ToyBox',
       description: 'ToyBox',
       display: 'standalone',
-      theme_color: '#26c6da',
-      background_color: '#26c6da',
+      theme_color: '#54ACDB',
+      background_color: '#54ACDB',
       orientation: 'any',
       scope: '/flashlight/',
       start_url: '/flashlight/',
