@@ -1,177 +1,55 @@
 <template>
-  <div>
-    <div id="game-area">
-      <div id="score">スコア: {{ score }}</div>
-      <div class="fishing-rod" ref="rod">
-        <div class="hook" ref="hook"></div>
+  <section class="fishing-game" aria-labelledby="fishing-title">
+    <div class="fishing-game__panel">
+      <header class="fishing-game__header">
+        <div><h1 id="fishing-title">つり</h1><p v-if="!isPlaying && !hasPlayed">おさかなを タップして つりあげよう！</p><p v-else-if="isPlaying">ねらって つりあげよう！</p><p v-else>たくさん つれたね！</p></div>
+        <div class="fishing-game__score" aria-live="polite"><div><span>のこり</span><strong>{{ timeLeft }}</strong><small>びょう</small></div><div><span>つれた</span><strong>{{ catches }}</strong><small>ひき</small></div></div>
+      </header>
+      <div ref="pond" class="pond" :class="{ 'is-playing': isPlaying }">
+        <div class="pond__sunshine" aria-hidden="true">☀️</div><div class="pond__shore" aria-hidden="true">🌿</div>
+        <div class="pond__message" aria-live="polite"><span v-if="isPlaying && combo >= 3">{{ combo }}れんぞく！</span><span v-else-if="isPlaying">おさかなを ねらおう！</span><span v-else-if="hasPlayed">{{ resultTitle }}</span><span v-else>はじめるを おしてね</span></div>
+        <button v-for="fish in fishInPond" :key="fish.id" type="button" class="fish-button" :class="[fish.kind, { 'is-caught': caughtFishId === fish.id }]" :style="fishPosition(fish)" :disabled="!isPlaying" :aria-label="fish.kind === 'gold' ? 'きんいろのおさかなをつりあげる' : 'おさかなをつりあげる'" @touchend.prevent="handleFishTouch(fish)" @click="handleFishClick(fish)">
+          <span class="fish-button__fish" aria-hidden="true">{{ fish.kind === 'gold' ? '🐠' : fish.emoji }}</span><span v-if="fish.kind === 'gold'" class="fish-button__star" aria-hidden="true">★</span><span v-if="caughtFishId === fish.id" class="fish-button__catch" aria-hidden="true">🎣</span>
+        </button>
+        <div class="fishing-rod" :class="{ 'is-casting': isCasting }" aria-hidden="true"></div><div v-if="castingLineStyle" class="casting-line" :style="castingLineStyle" aria-hidden="true"><span>🪝</span></div>
+        <div v-if="hasPlayed && !isPlaying" class="game-result" role="alert"><div class="game-result__card"><p class="game-result__title">{{ resultTitle }}</p><p>こんかいは</p><strong>{{ catches }}<small>ひき</small></strong><p class="game-result__hint">{{ resultMessage }}</p><button type="button" class="start-button" @click="startGame">もういちど あそぶ</button></div></div>
       </div>
+      <div class="caught-fish-row" aria-live="polite"><strong>つった おさかな</strong><span v-for="(fish, index) in basketFish" :key="`${fish}-${index}`" aria-hidden="true">{{ fish }}</span><i v-if="!basketFish.length" aria-hidden="true">まだ いないよ</i></div>
+      <button v-if="!isPlaying && !hasPlayed" type="button" class="start-button fishing-game__start" @click="startGame">はじめる</button>
     </div>
-  </div>
+  </section>
 </template>
 
 <script>
+const GAME_SECONDS = 15
+const FISH_COUNT = 3
+const FISH_EMOJIS = ['🐟', '🐡', '🐬', '🦀', '🐙']
 export default {
-  data() {
-    return {
-      score: 0,
-      isFishing: false,
-    };
+  name: 'FishingPage',
+  data () { return { catches: 0, combo: 0, timeLeft: GAME_SECONDS, isPlaying: false, hasPlayed: false, fishInPond: [], basketFish: [], caughtFishId: null, fishId: 0, isCasting: false, castingLineStyle: null, countdownTimer: null, catchTimer: null, lastFishTouchAt: 0 } },
+  computed: {
+    resultTitle () { if (this.catches >= 20) return 'つりの たつじん！'; if (this.catches >= 12) return 'すごい つりびと！'; return 'じょうずに つれたね！' },
+    resultMessage () { return this.catches >= 20 ? 'きんいろの おさかなも みつけられたかな？' : 'もういちど たくさん つろう！' }
   },
-  mounted() {
-    this.spawnFish();
-    this.spawnBubble();
-    this.$refs.rod.addEventListener("touchstart", this.startFishing);
-    this.$refs.rod.addEventListener("mousedown", this.startFishing);
-  },
+  beforeDestroy () { this.clearTimers() },
   methods: {
-    spawnFish() {
-      setInterval(() => {
-        const fish = document.createElement("div");
-        fish.className = "fish";
-
-        // 魚の位置を釣り竿の高さより下から生成
-        const minY = 150; // 釣り竿の高さ分を避ける
-        const maxY = window.innerHeight - 100;
-        fish.style.top = `${Math.random() * (maxY - minY) + minY}px`;
-
-        const number = Math.floor(Math.random() * 6) + 1;
-        fish.style.background = `url('${number}.png')`;
-        fish.style.backgroundSize = 'cover';
-
-        document.getElementById("game-area").appendChild(fish);
-        setTimeout(() => fish.remove(), 4000);
-      }, 2000);
-    },
-    spawnBubble() {
-      setInterval(() => {
-        const bubble = document.createElement("div");
-        bubble.className = "bubble";
-        bubble.style.left = `${Math.random() * 100}%`;
-        document.getElementById("game-area").appendChild(bubble);
-        setTimeout(() => bubble.remove(), 5000);
-      }, 1000);
-    },
-    startFishing(event) {
-      if (this.isFishing) return;
-      this.isFishing = true;
-
-      const touchY = event.touches ? event.touches[0].clientY : event.clientY;
-
-      this.$refs.hook.style.transition = "transform 0.5s ease";
-      this.$refs.hook.style.transform = `translateY(${touchY}px)`;
-
-      setTimeout(() => this.checkCatch(), 500);
-    },
-    checkCatch() {
-      const fishElements = document.querySelectorAll(".fish");
-
-      fishElements.forEach((fish) => {
-        const fishRect = fish.getBoundingClientRect();
-        const hookRect = this.$refs.hook.getBoundingClientRect();
-
-        if (
-          fishRect.top < hookRect.bottom &&
-          fishRect.bottom > hookRect.top &&
-          fishRect.left < hookRect.right &&
-          fishRect.right > hookRect.left
-        ) {
-          fish.remove();
-          this.score += 10;
-        }
-      });
-
-      setTimeout(() => {
-        this.$refs.hook.style.transition = "transform 0.5s ease";
-        this.$refs.hook.style.transform = "translateY(0)";
-        this.isFishing = false;
-      }, 500);
-    },
-  },
-};
+    startGame () { this.clearTimers(); this.catches = 0; this.combo = 0; this.timeLeft = GAME_SECONDS; this.caughtFishId = null; this.fishId = 0; this.isCasting = false; this.castingLineStyle = null; this.basketFish = []; this.lastFishTouchAt = 0; this.isPlaying = true; this.hasPlayed = true; this.fishInPond = Array.from({ length: FISH_COUNT }, (_, lane) => this.createFish(lane)); this.countdownTimer = setInterval(() => { this.timeLeft -= 1; if (this.timeLeft <= 0) this.finishGame() }, 1000) },
+    createFish (lane) { this.fishId += 1; return { id: this.fishId, lane, x: 8 + Math.floor(Math.random() * 72), emoji: FISH_EMOJIS[Math.floor(Math.random() * FISH_EMOJIS.length)], kind: Math.random() < 0.16 ? 'gold' : 'normal' } },
+    fishPosition (fish) { return { left: `${fish.x}%`, top: `${30 + fish.lane * 21}%` } },
+    catchFish (fish) { if (!this.isPlaying || this.caughtFishId) return; this.caughtFishId = fish.id; this.isCasting = true; this.castingLineStyle = this.createCastingLine(fish); this.catches += fish.kind === 'gold' ? 2 : 1; this.combo += 1; this.basketFish.push(fish.kind === 'gold' ? '🐠' : fish.emoji); this.catchTimer = setTimeout(() => { const index = this.fishInPond.findIndex(item => item.id === fish.id); if (index !== -1 && this.isPlaying) this.$set(this.fishInPond, index, this.createFish(fish.lane)); this.caughtFishId = null; this.isCasting = false; this.castingLineStyle = null }, 500) },
+    createCastingLine (fish) { const pond = this.$refs.pond; if (!pond) return null; const startX = pond.clientWidth * 0.82; const startY = pond.clientHeight * 0.79; const endX = pond.clientWidth * (fish.x / 100); const endY = pond.clientHeight * ((30 + fish.lane * 21) / 100) + 34; const deltaX = endX - startX; const deltaY = endY - startY; return { left: `${startX}px`, top: `${startY}px`, transform: `rotate(${Math.atan2(deltaY, deltaX)}rad)`, width: `${Math.hypot(deltaX, deltaY)}px` } },
+    handleFishTouch (fish) { this.lastFishTouchAt = Date.now(); this.catchFish(fish) },
+    handleFishClick (fish) { if (Date.now() - this.lastFishTouchAt < 500) return; this.catchFish(fish) },
+    finishGame () { this.isPlaying = false; this.caughtFishId = null; this.isCasting = false; this.castingLineStyle = null; this.clearTimers() },
+    clearTimers () { clearInterval(this.countdownTimer); clearTimeout(this.catchTimer); this.countdownTimer = null; this.catchTimer = null }
+  }
+}
 </script>
 
-<style>
-body {
-  overflow: hidden;
-}
-
-#game-area {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  background: linear-gradient(to bottom, #87CEEB, #1E90FF);
-}
-
-.fishing-rod {
-  position: absolute;
-  width: 10px;
-  height: 150px;
-  background-color: brown;
-  border-radius: 20px;
-  top: 50px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10; /* 釣り竿を魚より上に表示 */
-}
-
-.hook {
-  width: 20px;
-  height: 20px;
-  background-color: brown;
-  position: absolute;
-  bottom: 0;
-  left: -5px;
-  border-radius: 50%;
-}
-
-.fish {
-  position: absolute;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  animation: swim 5s linear infinite;
-  z-index: 5; /* 魚を釣り竿の下に設定 */
-}
-
-@keyframes swim {
-  0% {
-    right: -100px;
-  }
-  100% {
-    right: 100vw;
-  }
-}
-
-#score {
-  font-size: 1.5rem;
-  color: white;
-  font-weight: bold;
-  position: absolute;
-  top: 50px;
-  left: 10px;
-}
-
-.bubble {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  background-color: rgba(255, 255, 255, 0.7);
-  border-radius: 50%;
-  animation: float-up 10s linear infinite;
-}
-
-@keyframes float-up {
-  0% {
-    bottom: 0;
-    opacity: 0;
-  }
-  80% {
-    opacity: 1;
-  }
-  100% {
-    bottom: 180%;
-    opacity: 0;
-  }
-}
+<style scoped>
+.fishing-game { align-items: center; background: linear-gradient(#92dbff 0 34%, #1b91c9 34% 100%); box-sizing: border-box; display: flex; min-height: 100vh; padding: 76px 16px 24px; touch-action: manipulation; user-select: none; width: 100%; }.fishing-game__panel { margin: 0 auto; max-width: 650px; width: 100%; }.fishing-game__header { align-items: flex-end; color: #17445b; display: flex; gap: 16px; justify-content: space-between; margin-bottom: 16px; }h1 { font-size: clamp(2.2rem, 9vw, 3.4rem); line-height: 1; margin: 0 0 8px; }p { font-size: 1.05rem; font-weight: bold; margin: 0; }.fishing-game__score { display: flex; gap: 8px; text-align: center; }.fishing-game__score div { background: #fff9df; border: 3px solid #24729a; border-radius: 14px; min-width: 72px; padding: 5px 7px; }.fishing-game__score span, .fishing-game__score small { display: block; font-size: .72rem; font-weight: bold; }.fishing-game__score strong { color: #e06931; font-size: 1.75rem; line-height: 1; }
+.pond { background: linear-gradient(150deg, rgba(153, 234, 255, .95), #1590c8 56%, #086ba9); border: 7px solid #176e98; border-radius: 30px; box-shadow: inset 0 0 0 5px rgba(220, 250, 255, .5), 0 10px 0 rgba(13, 73, 103, .22); min-height: min(60vh, 530px); overflow: hidden; position: relative; }.pond::before, .pond::after { border: 3px solid rgba(255, 255, 255, .22); border-radius: 50%; content: ''; height: 90px; position: absolute; width: 150px; }.pond::before { left: -24px; top: 33%; }.pond::after { bottom: 8%; right: -34px; }.pond__sunshine { font-size: 2.5rem; left: 20px; position: absolute; top: 16px; }.pond__shore { bottom: -10px; font-size: 2.2rem; left: 10px; letter-spacing: 8px; position: absolute; }.pond__message { background: #fff9df; border: 3px solid #24729a; border-radius: 999px; color: #21566f; font-size: clamp(.9rem, 3vw, 1.1rem); font-weight: bold; left: 50%; padding: 7px 14px; position: absolute; top: 16px; transform: translateX(-50%); white-space: nowrap; z-index: 5; }.caught-fish-row { align-content: center; align-items: center; color: #fff9df; display: flex; flex-wrap: wrap; font-size: 2rem; gap: 4px 8px; justify-content: flex-end; min-height: 92px; overflow: hidden; padding: 10px 12px 0; }.caught-fish-row strong { font-size: .85rem; text-shadow: 0 2px 2px #195b81; white-space: nowrap; }.caught-fish-row i { font-size: .9rem; font-style: normal; opacity: .8; }
+.fish-button { background: transparent; border: 0; cursor: pointer; min-height: 70px; min-width: 70px; padding: 4px; position: absolute; transform: translateX(-50%); transition: transform .16s ease; z-index: 3; }.fish-button:not(:disabled):active, .fish-button.is-caught { transform: translateX(-50%) scale(1.24) translateY(-22px); }.fish-button:disabled { cursor: default; }.fish-button__fish { filter: drop-shadow(0 4px 1px rgba(0, 74, 115, .4)); font-size: clamp(3rem, 11vw, 5rem); line-height: 1; }.fish-button.gold .fish-button__fish { filter: sepia(.7) saturate(1.8) drop-shadow(0 4px 1px rgba(110, 78, 0, .4)); }.fish-button__star { color: #ffe04c; font-size: 1.55rem; position: absolute; right: 0; text-shadow: 0 1px 2px #795a00; top: 0; }.fish-button__catch { font-size: 2rem; left: 50%; position: absolute; top: -18px; transform: translateX(-50%); }.fishing-rod { bottom: -4px; height: 190px; pointer-events: none; position: absolute; right: 4%; transform: rotate(-19deg); transform-origin: bottom right; transition: transform .18s ease-out; width: 62px; z-index: 4; }.fishing-rod.is-casting { transform: rotate(-34deg) translate(-38px, -105px); }.fishing-rod::before { background: linear-gradient(90deg, #8e502d, #df9a5c, #71391f); border-radius: 12px; bottom: 0; content: ''; height: 210px; position: absolute; right: 11px; width: 16px; }.fishing-rod__line { background: #f7f1da; height: 130px; left: 17px; position: absolute; top: 22px; width: 2px; }.fishing-rod__hook { bottom: 30px; font-size: 1.8rem; left: 5px; position: absolute; }.game-result { align-items: center; background: rgba(8, 63, 94, .48); display: flex; inset: 0; justify-content: center; padding: 16px; position: absolute; z-index: 10; }.game-result__card { background: #fff9df; border: 5px solid #f29d3e; border-radius: 26px; box-shadow: 0 7px 0 #b86424; color: #315166; padding: 22px; text-align: center; width: min(100%, 330px); }.game-result__title { color: #dd6532; font-size: 1.55rem; margin-bottom: 8px; }.game-result strong { color: #e06931; font-size: 4.5rem; line-height: 1; }.game-result small { font-size: 1.2rem; }.game-result__hint { font-size: .95rem; margin: 10px 0 16px; }.start-button { background: #f29d3e; border: 0; border-bottom: 5px solid #b86424; border-radius: 999px; color: #fff; cursor: pointer; font-family: inherit; font-size: 1.15rem; font-weight: bold; min-height: 54px; padding: 10px 24px; touch-action: manipulation; }.start-button:active { border-bottom-width: 2px; transform: translateY(3px); }.fishing-game__start { display: block; margin: 20px auto 0; min-width: 190px; }
+.casting-line { background: #fff9df; height: 3px; pointer-events: none; position: absolute; transform-origin: 0 50%; z-index: 5; }.casting-line span { font-size: 1.65rem; position: absolute; right: -13px; top: -16px; }.fishing-rod.is-casting { transform: rotate(-25deg); }
+@media (max-width: 480px) { .fishing-game { padding: 68px 10px 18px; }.fishing-game__header { align-items: flex-start; gap: 8px; }.fishing-game__header p { font-size: .88rem; max-width: 170px; }.fishing-game__score div { min-width: 60px; }.fishing-game__score strong { font-size: 1.45rem; }.pond { min-height: 510px; }.fishing-rod { right: -5%; }.pond__message { top: 70px; }.fish-button { min-height: 76px; min-width: 76px; } }
 </style>
