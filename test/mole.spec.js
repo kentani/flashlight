@@ -51,4 +51,16 @@ describe('mole game', () => {
     expect(wrapper.find('.game-result').exists()).toBe(true)
     expect(wrapper.find('.result-button').text()).toBe('もういちど あそぶ')
   })
+
+  test('keeps a bonus mole available for repeated taps', async () => {
+    await wrapper.find('.start-button').trigger('click')
+    await wrapper.setData({ isBonusMole: true })
+    const hole = wrapper.findAll('.hole').at(0)
+
+    await hole.trigger('click')
+    await hole.trigger('click')
+
+    expect(wrapper.vm.score).toBe(2)
+    expect(wrapper.vm.activeHole).toBe(0)
+  })
 })
