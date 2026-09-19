@@ -27,7 +27,8 @@ describe('mole game', () => {
   })
 
   test('starts the game and awards a point for a mole tap', async () => {
-    await wrapper.find('.start-button').trigger('click')
+    wrapper.vm.startGame()
+    await wrapper.vm.$nextTick()
 
     expect(wrapper.vm.isPlaying).toBe(true)
     expect(wrapper.vm.activeHole).toBe(0)
@@ -41,15 +42,15 @@ describe('mole game', () => {
   })
 
   test('reuses prepared audio when restarting the game', async () => {
-    await wrapper.find('.start-button').trigger('click')
-    await wrapper.find('.start-button').trigger('click')
+    wrapper.vm.startGame()
+    wrapper.vm.startGame()
 
     expect(global.Audio).toHaveBeenCalledTimes(2)
     expect(wrapper.vm.isPlaying).toBe(true)
   })
 
   test('ends the game after fifteen seconds', async () => {
-    await wrapper.find('.start-button').trigger('click')
+    wrapper.vm.startGame()
     jest.advanceTimersByTime(15000)
     await wrapper.vm.$nextTick()
 
@@ -61,7 +62,7 @@ describe('mole game', () => {
   })
 
   test('keeps a bonus mole available for repeated taps', async () => {
-    await wrapper.find('.start-button').trigger('click')
+    wrapper.vm.startGame()
     await wrapper.setData({ isBonusMole: true })
     const hole = wrapper.findAll('.hole').at(0)
 
@@ -73,7 +74,8 @@ describe('mole game', () => {
   })
 
   test('shows fever feedback away from the hole and ignores the synthetic click after a touch', async () => {
-    await wrapper.find('.start-button').trigger('click')
+    wrapper.vm.startGame()
+    await wrapper.vm.$nextTick()
     await wrapper.setData({ isBonusMole: true })
     const hole = wrapper.findAll('.hole').at(0)
 

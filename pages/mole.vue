@@ -54,7 +54,9 @@
         </div>
       </div>
 
-      <button type="button" class="start-button" @click="startGame">
+      <GameStartOverlay v-if="!isPlaying && !hasPlayed" title="もぐらたたき" message="もぐらを みつけて タップ！" @start="startGame" />
+
+      <button v-if="isPlaying || hasPlayed" type="button" class="start-button" @click="startGame">
         {{ isPlaying ? 'さいしょから やりなおす' : hasPlayed ? 'もういちど あそぶ' : 'はじめる' }}
       </button>
     </div>
@@ -345,7 +347,7 @@ p { font-size: 1.1rem; font-weight: bold; margin: 0; }
 .game-result__card strong { color: #e05b3f; display: block; font-size: clamp(3.5rem, 18vw, 5.5rem); line-height: 1; margin: 8px 0; }
 .game-result__card strong small { color: #55402a; font-size: 1.2rem; margin-left: 5px; }
 .game-result__hint { margin-bottom: 14px; }
-.result-button { animation: button-bounce 1s ease-in-out infinite; background: #f3a344; border: 4px solid #765334; border-radius: 999px; box-shadow: 0 5px 0 #765334; color: #fff; cursor: pointer; font: bold 1.35rem "Yomogi", cursive; padding: 12px 26px; touch-action: manipulation; }
+.result-button { animation: button-bounce 1s ease-in-out infinite; background: #f3a344; border: 4px solid #765334; border-radius: 999px; box-shadow: 0 5px 0 #765334; color: #fff; cursor: pointer; display: block; font: bold 1.35rem "Yomogi", cursive; margin: 12px auto 0; padding: 12px 26px; touch-action: manipulation; }
 .result-button:active { box-shadow: 0 1px 0 #765334; transform: translateY(4px); }
 
 @keyframes mole-pop { from { transform: translate(-50%, 40%) scale(.7); } to { transform: translate(-50%, 0) scale(1); } }

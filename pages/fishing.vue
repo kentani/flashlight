@@ -4,7 +4,7 @@
       <header class="fishing-game__header"><div><h1 id="fishing-title">つり</h1><p>{{ guide }}</p></div><div class="score" aria-live="polite"><div>のこり<strong>{{ timeLeft }}</strong>びょう</div><div>つれた<strong>{{ catches }}</strong>ひき</div></div></header>
       <div ref="pond" class="pond">
         <span class="sun" aria-hidden="true">☀️</span><span class="shore" aria-hidden="true">🌿</span>
-        <button v-if="phase === 'ready'" type="button" class="button start" @click="startGame">はじめる</button>
+        <GameStartOverlay v-if="phase === 'ready'" title="つり" message="おさかなを つりあげよう！" @start="startGame" />
         <template v-if="isPlaying">
           <p class="message" aria-live="polite">{{ message }}</p>
           <div v-for="fish in fishInPond" :key="fish.id" class="fish" :class="{ target: fish.id === targetFish.id, caught: caughtFishId === fish.id }" :style="fishStyle(fish)" aria-hidden="true"><span>{{ fish.emoji }}</span><i v-if="fish.id === targetFish.id && phase === 'aiming'">ねらい</i></div>
@@ -22,7 +22,7 @@
 </template>
 
 <script>
-const GAME_SECONDS = 30
+const GAME_SECONDS = 15
 const REEL_TAPS = 7
 const FISH_EMOJIS = ['🐟', '🐡', '🐬', '🦀', '🐙']
 export default {

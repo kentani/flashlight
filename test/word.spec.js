@@ -18,8 +18,8 @@ describe('word game challenge', () => {
     jest.restoreAllMocks()
   })
 
-  test('starts with a 30 second, five-success, three-mistake challenge', () => {
-    expect(wrapper.vm.timer).toBe(30)
+  test('starts with a 15 second, five-success, three-mistake challenge', () => {
+    expect(wrapper.vm.timer).toBe(15)
     expect(wrapper.vm.targetSuccesses).toBe(5)
     expect(wrapper.vm.maxMistakes).toBe(3)
     expect(wrapper.findAll('.selectable-card')).toHaveLength(4)
