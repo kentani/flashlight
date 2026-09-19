@@ -57,6 +57,7 @@ const TOYS = [
   { title: 'ぽけ', to: '/poke', icon: 'mdi-card-account-details-outline', emoji: '👆', color: '#a66ac8' },
   { title: 'もぐらたたき', to: '/mole', icon: 'mdi-hammer', emoji: '🐹', color: '#a97a51' },
   { title: 'ピエロからにげる', to: '/clown', icon: 'mdi-run-fast', emoji: '🤡', color: '#e85b67' },
+  { title: 'くるまレース', to: '/race', icon: 'mdi-car-sports', emoji: '🏎️', color: '#e84a45' },
   { title: 'しんごうき', to: '/traffic-light', icon: 'mdi-traffic-light', emoji: '🚦', color: '#49656f' }
 ]
 

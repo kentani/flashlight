@@ -2,7 +2,7 @@ const { test, expect } = require('@playwright/test')
 
 test.describe('UI/UX の基本操作', () => {
   test('主要画面は横スクロールせず、最初の遊びを選べる', async ({ page }) => {
-    for (const route of ['.', 'flashlight', 'traffic-light']) {
+    for (const route of ['.', 'flashlight', 'traffic-light', 'race']) {
       await page.goto(route)
       await expect(page.locator('body')).toBeVisible()
       const hasHorizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1)
@@ -17,6 +17,21 @@ test.describe('UI/UX の基本操作', () => {
     expect(bounds.height).toBeGreaterThanOrEqual(44)
     await flashlightLink.click()
     await expect(page).toHaveURL(/\/flashlight\/flashlight$/)
+  })
+
+  test('くるまレースは大きなボタンで車線を動かせる', async ({ page }) => {
+    await page.goto('race')
+
+    const drive = page.getByRole('button', { name: 'はじめる' })
+    await expect(drive).toBeVisible()
+    const bounds = await drive.boundingBox()
+    expect(bounds.width).toBeGreaterThanOrEqual(44)
+    expect(bounds.height).toBeGreaterThanOrEqual(44)
+
+    await drive.click()
+    const up = page.getByRole('button', { name: /うえ/ })
+    await expect(up).toBeEnabled()
+    await up.click()
   })
 
   test('しんごうきは大きなボタンで色と合図を切り替えられる', async ({ page }) => {
