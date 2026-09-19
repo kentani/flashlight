@@ -25,6 +25,8 @@ describe('mole game', () => {
     await wrapper.findAll('.hole').at(0).trigger('click')
     expect(wrapper.vm.score).toBe(1)
     expect(wrapper.vm.activeHole).toBeNull()
+    expect(wrapper.vm.whackedHole).toBe(0)
+    expect(wrapper.find('.hit-effect').exists()).toBe(true)
   })
 
   test('ends the game after thirty seconds', async () => {
