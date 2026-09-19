@@ -8,6 +8,16 @@
       class="option-bar mt-12"
     >
 
+      <v-btn
+        outlined
+        color="#00838f"
+        class="reset-button ml-2 mr-3"
+        @click="resetDrawing"
+      >
+        <v-icon left>mdi-delete-outline</v-icon>
+        リセット
+      </v-btn>
+
       <v-icon class="ml-3 mr-2 mt-1" size="30">mdi-format-color-fill</v-icon>
       <v-btn
         v-for="(backColorName, i) in backColorList" :key="`back-${i}`"
@@ -128,6 +138,12 @@ export default {
     this.canvas.height = wrapper.clientHeight;
   },
   methods: {
+    resetDrawing() {
+      this.endDraw();
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.ctx.beginPath();
+    },
+
     startDraw(e) {
       if (e.type === "touchstart") {
         e.preventDefault();
@@ -211,6 +227,11 @@ export default {
 </script>
 
 <style scoped>
+.reset-button {
+  min-height: 44px;
+  flex-shrink: 0;
+}
+
 .canvas-wrapper {
   width: 100vw;
   height: 100vh;
