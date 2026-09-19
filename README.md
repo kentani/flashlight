@@ -17,11 +17,13 @@ nvm use
 corepack enable
 corepack prepare yarn@1.22.19 --activate
 yarn install --frozen-lockfile
+yarn setup:git-hooks
 yarn dev:isolated
 ```
 
 Volta を使う場合は `volta install node@22.23.2 yarn@1.22.19` で上記のバージョンを用意できます（既定バージョンが変わります）。
 `yarn dev:isolated` は空いているポートを自動で選び、開く URL を表示します。表示された URL をブラウザで開き、確認後は Ctrl-C で停止してください。
+`yarn setup:git-hooks` は、共有チェックアウトからのコミットを拒否する Git hook を有効にします。開発・テスト・ビルド・静的生成も共有チェックアウトでは停止します。また、各実行時に `origin/main` を取得し、その最新コミットを土台にしていない Worktree も停止します。必ず Codex managed Worktree を `origin/main` から開始してください。CI は明示的な例外設定で通常の clone 上から実行します。
 通常の開発に API キーや `.env` は不要です。依存パッケージの取得と Google Fonts のダウンロードにはネットワークが必要です。
 Nuxt 2.16 の依存パッケージは古い Node バージョン範囲を宣言しているため、`.yarnrc` で engine 検査をスキップします。実行環境は `.nvmrc` と CI で固定し、テスト・ビルドで互換性を確認します。
 依存関係は Yarn と `yarn.lock` で管理します。npm install は使用しません。

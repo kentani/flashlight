@@ -13,6 +13,8 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    env:
+      WORKTREE_CHECK_ALLOW_PRIMARY: '1'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
