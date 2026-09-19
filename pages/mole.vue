@@ -44,6 +44,9 @@
 </template>
 
 <script>
+import moleSound from '@/assets/sounds/switch1.mp3'
+import whackSound from '@/assets/sounds/ok.mp3'
+
 export default {
   name: 'MolePage',
   data () {
@@ -58,12 +61,12 @@ export default {
       moleTimer: null,
       countdownTimer: null,
       whackTimer: null,
-      audioContext: null
+      moleAudio: null,
+      whackAudio: null
     }
   },
   beforeDestroy () {
     this.clearTimers()
-    if (this.audioContext) this.audioContext.close()
   },
   methods: {
     startGame () {
@@ -120,33 +123,45 @@ export default {
       this.countdownTimer = null
     },
     prepareAudio () {
-      const AudioContext = window.AudioContext || window.webkitAudioContext
-      if (!AudioContext) return
-      if (!this.audioContext) this.audioContext = new AudioContext()
-      if (this.audioContext.state === 'suspended') this.audioContext.resume()
+      if (!this.moleAudio) this.moleAudio = this.createAudio(moleSound)
+      if (!this.whackAudio) this.whackAudio = this.createAudio(whackSound)
+      this.unlockAudio(this.moleAudio)
+      this.unlockAudio(this.whackAudio)
     },
-    playTone (startFrequency, endFrequency, duration, volume) {
-      if (!this.audioContext) return
-      const now = this.audioContext.currentTime
-      const oscillator = this.audioContext.createOscillator()
-      const gain = this.audioContext.createGain()
-      oscillator.type = 'sine'
-      oscillator.frequency.setValueAtTime(startFrequency, now)
-      oscillator.frequency.exponentialRampToValueAtTime(endFrequency, now + duration)
-      gain.gain.setValueAtTime(0.001, now)
-      gain.gain.exponentialRampToValueAtTime(volume, now + 0.015)
-      gain.gain.exponentialRampToValueAtTime(0.001, now + duration)
-      oscillator.connect(gain)
-      gain.connect(this.audioContext.destination)
-      oscillator.start(now)
-      oscillator.stop(now + duration)
+    createAudio (sound) {
+      const audio = new Audio(sound)
+      audio.preload = 'auto'
+      audio.playsInline = true
+      return audio
+    },
+    unlockAudio (audio) {
+      audio.muted = true
+      audio.currentTime = 0
+      const playback = audio.play()
+      if (playback && playback.then) {
+        playback.then(() => {
+          audio.pause()
+          audio.currentTime = 0
+          audio.muted = false
+        }).catch(() => {
+          audio.muted = false
+        })
+      } else {
+        audio.muted = false
+      }
+    },
+    playSound (audio) {
+      if (!audio) return
+      audio.muted = false
+      audio.currentTime = 0
+      const playback = audio.play()
+      if (playback && playback.catch) playback.catch(() => {})
     },
     playMoleSound () {
-      this.playTone(440, 660, 0.12, 0.09)
+      this.playSound(this.moleAudio)
     },
     playWhackSound () {
-      this.playTone(190, 95, 0.11, 0.16)
-      this.playTone(520, 780, 0.16, 0.07)
+      this.playSound(this.whackAudio)
     }
   }
 }

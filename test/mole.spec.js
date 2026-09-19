@@ -3,15 +3,25 @@ import Mole from '@/pages/mole.vue'
 
 describe('mole game', () => {
   let wrapper
+  let play
+  const originalAudio = global.Audio
 
   beforeEach(() => {
     jest.useFakeTimers()
     jest.spyOn(Math, 'random').mockReturnValue(0)
+    play = jest.fn().mockResolvedValue(undefined)
+    global.Audio = jest.fn().mockImplementation(() => ({
+      currentTime: 0,
+      muted: false,
+      pause: jest.fn(),
+      play
+    }))
     wrapper = mount(Mole)
   })
 
   afterEach(() => {
     wrapper.destroy()
+    global.Audio = originalAudio
     jest.useRealTimers()
     jest.restoreAllMocks()
   })
@@ -27,6 +37,7 @@ describe('mole game', () => {
     expect(wrapper.vm.activeHole).toBeNull()
     expect(wrapper.vm.whackedHole).toBe(0)
     expect(wrapper.find('.hit-effect').exists()).toBe(true)
+    expect(play).toHaveBeenCalled()
   })
 
   test('ends the game after thirty seconds', async () => {
