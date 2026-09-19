@@ -33,7 +33,12 @@ describe('fishing game', () => {
     expect(wrapper.vm.phase).toBe('reeling')
     expect(wrapper.find('.reel').exists()).toBe(true)
 
-    for (let taps = 0; taps < wrapper.vm.reelTaps; taps += 1) wrapper.vm.reel()
+    wrapper.vm.reel()
+    await wrapper.vm.$nextTick()
+    expect(wrapper.vm.reelPower).toBe(Math.round(100 / wrapper.vm.reelTaps))
+    expect(wrapper.find('.reel-meter span').element.style.width).toBe(`${wrapper.vm.reelPower}%`)
+
+    for (let taps = 1; taps < wrapper.vm.reelTaps; taps += 1) wrapper.vm.reel()
     await wrapper.vm.$nextTick()
 
     expect(wrapper.vm.catches).toBe(1)
