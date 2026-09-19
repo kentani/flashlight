@@ -40,6 +40,14 @@ describe('mole game', () => {
     expect(play).toHaveBeenCalled()
   })
 
+  test('reuses prepared audio when restarting the game', async () => {
+    await wrapper.find('.start-button').trigger('click')
+    await wrapper.find('.start-button').trigger('click')
+
+    expect(global.Audio).toHaveBeenCalledTimes(2)
+    expect(wrapper.vm.isPlaying).toBe(true)
+  })
+
   test('ends the game after thirty seconds', async () => {
     await wrapper.find('.start-button').trigger('click')
     jest.advanceTimersByTime(30000)
