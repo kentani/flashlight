@@ -54,10 +54,12 @@
         </button>
       </div>
       <div v-else-if="isHiding" class="hide-wait" aria-live="polite">🤫 しーっ… ピエロが いったよ！</div>
-      <button v-else-if="result === 'safe'" type="button" class="run-button is-ready" @click="startGame">
-        <span aria-hidden="true">🔁</span>もういちど
-      </button>
-      <nuxt-link v-else-if="result === 'safe'" to="/" class="run-button is-ready">やめる</nuxt-link>
+      <div v-else-if="result === 'safe'" class="result-actions">
+        <button type="button" class="run-button is-ready" @click="startGame">
+          <span aria-hidden="true">🔁</span>もういちど
+        </button>
+        <nuxt-link to="/" class="run-button is-ready">やめる</nuxt-link>
+      </div>
     </div>
     <div v-if="result === 'caught'" class="crash-shards" aria-hidden="true">
       <i class="impact-point"></i><i class="crack crack--one"></i><i class="crack crack--two"></i><i class="crack crack--three"></i><i class="crack crack--four"></i><i class="crack crack--five"></i><i class="crack crack--six"></i>
