@@ -35,5 +35,6 @@
 ## Feedback memory
 - Before planning or editing, read `codex-feedback.md`. Treat its active rules as project requirements unless the current request explicitly conflicts.
 - When the user gives corrective feedback during a task, use the `feedback-memory` skill. Distill reusable feedback into a concise, testable rule and add it to `codex-feedback.md` without asking again when this is a local documentation-only change.
+- Treat UI feedback as reusable when it establishes a visual or interaction convention. For UI changes, compare the closest existing screens or controls before implementation and verify the result in the browser; store the resulting convention in `codex-feedback.md` when it applies beyond the current change.
 - Do not record one-off choices, personal data, secrets, or an uncertain interpretation as a permanent rule. If the feedback changes scope only for the current task, apply it now but do not store it.
 - Never let this process authorize irreversible or external actions. Pushing, publishing, deploying, deleting material data, or changing account/permission settings still requires the user's explicit direction.

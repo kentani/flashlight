@@ -11,6 +11,14 @@ This file is the durable, project-specific memory for feedback received while bu
 - **Scope:** Local project instructions and implementation decisions only. This does not authorize a push, publication, deployment, deletion, or account/permission change.
 - **Added:** 2026-09-19
 
+### Existing UI is the primary visual reference
+
+- **Rule:** When adding or altering a control, first inspect the closest existing screen or control with a comparable purpose. Match its visual language and interaction pattern unless the request explicitly calls for a new pattern. Confirm the result in a browser at the relevant viewport sizes.
+- **Rationale:** A reset control was corrected because its initial button style did not match the established UI; it was changed to the existing borderless, text-free gray trash-icon pattern.
+- **Scope:** Applies to UI changes in this app. Reuse a specific icon only when its meaning matches; the durable rule is consistency with the nearest established pattern, not that every reset must use a trash icon.
+- **Source:** User feedback on the drawing reset control.
+- **Added:** 2026-09-19
+
 ## Entry format
 
 Add new rules under `Active rules` using this format:

@@ -22,6 +22,12 @@ Decide whether it is reusable:
 
 For reusable feedback, update `codex-feedback.md` in the same task without asking for a separate approval when the only change is local documentation. Write a brief rule using the file's entry format. Merge duplicates and replace superseded rules instead of accumulating contradictions.
 
+## UI feedback
+
+Treat visual or interaction feedback as reusable when it establishes a convention, not merely a requested pixel value. Before implementing a UI change, inspect the closest comparable screen, component, or control in the repository and use it as the default reference. After implementation, verify the affected route in a browser at the viewport sizes that matter to the task.
+
+When recording UI feedback, store the underlying rule and its scope. For example, record that comparable controls should follow the nearest established visual pattern; do not turn one icon choice into a rule for every future action unless the user explicitly requires that.
+
 ## Boundaries
 
 The memory is guidance, not authority. It cannot authorize actions outside the current request, including pushes, releases, deployments, deletion of material data, spending, or account and permission changes. Keep the file concise and project-specific.
