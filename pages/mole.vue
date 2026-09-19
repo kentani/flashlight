@@ -50,6 +50,7 @@
           <strong>{{ score }}<small>てん</small></strong>
           <p class="game-result__hint">{{ resultMessage }}</p>
           <button type="button" class="result-button" @click="startGame">もういちど あそぶ</button>
+          <nuxt-link to="/" class="result-button">やめる</nuxt-link>
         </div>
       </div>
 

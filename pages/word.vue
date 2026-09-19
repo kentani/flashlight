@@ -1,6 +1,11 @@
 <template>
   <div class="word-game" :class="gameClass">
-    <div class="main">
+    <div v-if="!isReady" class="result-screen">
+      <p class="result-screen__title">もじあそび</p>
+      <p>おなじ もじを みつけよう！</p>
+      <button class="retry-button" @click="startGame">はじめる</button>
+    </div>
+    <div v-else class="main">
       <div class="game-rule" aria-live="polite">
         <span>せいこう {{ successCount }} / {{ targetSuccesses }}</span>
         <span>まちがい {{ mistakeCount }} / {{ maxMistakes }}</span>
@@ -43,6 +48,7 @@
       <p class="result-screen__title">{{ cleared ? '🎉 くりあ！' : '💥 しっかく！' }}</p>
       <p>{{ cleared ? 'すごい！ もういちどあそぶ？' : 'がめんが こわれちゃった…' }}</p>
       <button class="retry-button" @click="startGame">もういちど</button>
+      <nuxt-link to="/" class="retry-button">やめる</nuxt-link>
     </div>
   </div>
 </template>
@@ -71,6 +77,7 @@ export default {
     answeredCorrectly: false,
     gameOver: false,
     cleared: false,
+    isReady: false,
     hiraganaList: ['あ', 'い', 'う', 'え', 'お', 'か', 'き', 'く', 'け', 'こ', 'さ', 'し', 'す', 'せ', 'そ', 'た', 'ち', 'つ', 'て', 'と', 'な', 'に', 'ぬ', 'ね', 'の', 'は', 'ひ', 'ふ', 'へ', 'ほ', 'ま', 'み', 'む', 'め', 'も', 'や', 'ゆ', 'よ', 'ら', 'り', 'る', 'れ', 'ろ', 'わ', 'を', 'ん'],
     cardClassList: ['a', 'b', 'c', 'd'],
     cardTitleClassList: ['sm', 'md', 'lg', 'xl']
@@ -88,14 +95,12 @@ export default {
       return this.gameOver && !this.cleared ? `is-crashing crash-level-${this.mistakeCount}` : ''
     }
   },
-  mounted () {
-    this.startGame()
-  },
   beforeDestroy () {
     this.stopTimer()
   },
   methods: {
     startGame () {
+      this.isReady = true
       this.stopTimer()
       this.timer = GAME_SECONDS
       this.successCount = 0

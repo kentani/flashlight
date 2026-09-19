@@ -57,6 +57,7 @@
       <button v-else-if="result === 'safe'" type="button" class="run-button is-ready" @click="startGame">
         <span aria-hidden="true">🔁</span>もういちど
       </button>
+      <nuxt-link v-else-if="result === 'safe'" to="/" class="run-button is-ready">やめる</nuxt-link>
     </div>
     <div v-if="result === 'caught'" class="crash-shards" aria-hidden="true">
       <i class="impact-point"></i><i class="crack crack--one"></i><i class="crack crack--two"></i><i class="crack crack--three"></i><i class="crack crack--four"></i><i class="crack crack--five"></i><i class="crack crack--six"></i>
@@ -66,6 +67,7 @@
       <div class="scary-clown" aria-hidden="true">🤡</div>
       <p>みーつけた！</p>
       <button type="button" class="run-button is-ready" @click="startGame"><span aria-hidden="true">🔁</span>もういちど</button>
+      <nuxt-link to="/" class="run-button is-ready">やめる</nuxt-link>
     </div>
   </section>
 </template>
