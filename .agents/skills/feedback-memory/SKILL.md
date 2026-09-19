@@ -1,33 +1,33 @@
 ---
 name: feedback-memory
-description: Capture reusable user feedback for the flashlight project and apply its active rules in later implementation tasks. Use when a user corrects, refines, or establishes a recurring preference for this project.
+description: おもちゃばこで再利用可能なユーザーFBを記録し、後の実装に有効なルールとして適用する。ユーザーが修正・改善・継続的な好みを伝えたときに使う。
 ---
 
-# Feedback memory
+# FB台帳
 
-Use `codex-feedback.md` as the project's durable feedback memory.
+`codex-feedback.md` を、このプロジェクトの永続的なFB台帳として使う。
 
-## At the start of relevant work
+## 作業開始時
 
-1. Read the active rules in `codex-feedback.md` before proposing or making an implementation change.
-2. Apply only rules whose stated scope covers the task. The current user request wins when it conflicts with a stored rule.
+1. 実装の提案・変更をする前に、`codex-feedback.md` の有効なルールを読む。
+2. 対象の作業に適用範囲が合うルールだけを使う。保存済みルールと今回の依頼が矛盾するときは、今回の依頼を優先する。
 
-## When the user gives feedback
+## ユーザーからFBを受けたとき
 
-Decide whether it is reusable:
+再利用できるかを判断する。
 
-- Record it when it expresses a project convention, a product expectation, a repeated quality bar, or a correction that would prevent a likely future mistake.
-- Do not record a one-time task decision, a preference that is ambiguous, or sensitive information.
-- If it is unclear whether the feedback is meant to persist, apply it to the current task and mention that it was not stored; do not guess.
+- プロジェクトの規約、プロダクトへの期待、繰り返し求められる品質基準、将来の同じ失敗を防ぐ修正なら記録する。
+- 一度きりの判断、意味が曖昧な好み、秘密情報は記録しない。
+- 恒久化する意図が不明なら今回の作業だけに適用し、保存しないことを報告する。推測で記録しない。
 
-For reusable feedback, update `codex-feedback.md` in the same task without asking for a separate approval when the only change is local documentation. Write a brief rule using the file's entry format. Merge duplicates and replace superseded rules instead of accumulating contradictions.
+再利用可能なFBなら、ローカルドキュメントの更新だけで済む場合は別途承認を求めず、同じ作業中に `codex-feedback.md` を更新する。ファイルの追記フォーマットで短いルールにする。重複は統合し、古いルールは矛盾を積み重ねず置き換える。
 
-## UI feedback
+## UIのFB
 
-Treat visual or interaction feedback as reusable when it establishes a convention, not merely a requested pixel value. Before implementing a UI change, inspect the closest comparable screen, component, or control in the repository and use it as the default reference. After implementation, verify the affected route in a browser at the viewport sizes that matter to the task.
+見た目・操作に関するFBは、単なるピクセル値ではなく規約を示しているときに再利用する。UI変更の前にリポジトリ内で近い画面・コンポーネント・コントロールを確認し、基本の参照にする。実装後は、その作業で重要な画面サイズで対象ルートをブラウザ確認する。
 
-When recording UI feedback, store the underlying rule and its scope. For example, record that comparable controls should follow the nearest established visual pattern; do not turn one icon choice into a rule for every future action unless the user explicitly requires that.
+UIのFBを記録するときは、背景にあるルールと適用範囲を残す。たとえば「目的が近いコントロールは、最も近い既存の見た目に合わせる」と記録する。ユーザーが明示しない限り、一つのアイコン選択をすべての将来の操作に適用するルールにはしない。
 
-## Boundaries
+## 境界
 
-The memory is guidance, not authority. It cannot authorize actions outside the current request, including pushes, releases, deployments, deletion of material data, spending, or account and permission changes. Keep the file concise and project-specific.
+台帳は作業の指針であり、権限ではない。今回の依頼の範囲外の操作、たとえばpush、リリース、デプロイ、重要データの削除、支出、アカウント・権限変更を許可するものではない。内容は簡潔かつプロジェクト固有に保つ。

@@ -33,8 +33,8 @@
 - Explain results and remaining limitations to the user in Japanese.
 
 ## Feedback memory
-- Before planning or editing, read `codex-feedback.md`. Treat its active rules as project requirements unless the current request explicitly conflicts.
-- When the user gives corrective feedback during a task, use the `feedback-memory` skill. Distill reusable feedback into a concise, testable rule and add it to `codex-feedback.md` without asking again when this is a local documentation-only change.
-- Treat UI feedback as reusable when it establishes a visual or interaction convention. For UI changes, compare the closest existing screens or controls before implementation and verify the result in the browser; store the resulting convention in `codex-feedback.md` when it applies beyond the current change.
-- Do not record one-off choices, personal data, secrets, or an uncertain interpretation as a permanent rule. If the feedback changes scope only for the current task, apply it now but do not store it.
-- Never let this process authorize irreversible or external actions. Pushing, publishing, deploying, deleting material data, or changing account/permission settings still requires the user's explicit direction.
+- 計画・編集の前に `codex-feedback.md` を読み、現在の依頼と矛盾しない限り有効なルールをプロジェクト要件として扱う。
+- 作業中にユーザーから修正FBを受けたら `feedback-memory` Skill を使う。再利用可能なFBは、簡潔で検証可能なルールにして `codex-feedback.md` へ追記するだけなら、あらためて承認を求めない。
+- UIのFBが見た目・操作の規約を示す場合は、再利用可能と扱う。UIを変更する際は実装前に近い既存画面・既存コントロールを比較し、実装後はブラウザで確認する。今回以外にも適用できる規約は `codex-feedback.md` に残す。
+- 一度限りの選択、個人情報・秘密情報、不確かな解釈は恒久ルールとして記録しない。FBが今回だけのスコープ変更なら、今回にだけ適用して保存しない。
+- この仕組みは、不可逆・外部操作の権限にはならない。push、公開、デプロイ、重要データの削除、アカウント・権限設定の変更には、引き続きユーザーの明示的な指示が必要。

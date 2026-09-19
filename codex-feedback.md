@@ -1,32 +1,40 @@
-# Codex feedback memory
+# Codex フィードバック台帳
 
-This file is the durable, project-specific memory for feedback received while building おもちゃばこ. Keep only rules that are likely to improve future work in this repository.
+おもちゃばこを開発する中で受けたFBを、プロジェクト固有の知見として残すファイルです。このリポジトリの今後の作業品質を高めるルールだけを記録します。
 
-## Active rules
+## 有効なルール
 
-### Autonomous feedback capture
+### FBの自動記録
 
-- **Rule:** When the user gives implementation feedback that is reusable for this project, record the distilled rule in this file and apply it in the current task without requesting a separate approval for the local documentation update.
-- **Rationale:** Feedback should improve the next Codex task as well as the current one.
-- **Scope:** Local project instructions and implementation decisions only. This does not authorize a push, publication, deployment, deletion, or account/permission change.
-- **Added:** 2026-09-19
+- **ルール:** ユーザーから、このプロジェクトで再利用できる実装FBを受けたら、このファイルに要約したルールを記録し、ローカルドキュメントの更新には別途承認を求めず今回の作業にも適用する。
+- **理由:** FBを今回だけでなく、次のCodex作業にも活かすため。
+- **適用範囲:** ローカルのプロジェクト指示と実装判断のみ。push、公開、デプロイ、削除、アカウント・権限設定の変更を許可するものではない。
+- **追加日:** 2026-09-19
 
-### Existing UI is the primary visual reference
+### 既存UIを第一の参照にする
 
-- **Rule:** When adding or altering a control, first inspect the closest existing screen or control with a comparable purpose. Match its visual language and interaction pattern unless the request explicitly calls for a new pattern. Confirm the result in a browser at the relevant viewport sizes.
-- **Rationale:** A reset control was corrected because its initial button style did not match the established UI; it was changed to the existing borderless, text-free gray trash-icon pattern.
-- **Scope:** Applies to UI changes in this app. Reuse a specific icon only when its meaning matches; the durable rule is consistency with the nearest established pattern, not that every reset must use a trash icon.
-- **Source:** User feedback on the drawing reset control.
-- **Added:** 2026-09-19
+- **ルール:** コントロールを追加・変更する際は、まず目的が近い既存画面・既存コントロールを確認する。新しいパターンを明示的に求められていない限り、見た目の言語と操作パターンを合わせる。関連する画面サイズでブラウザ確認も行う。
+- **理由:** リセット操作は、最初のボタン表現が既存UIと合っていなかったため、枠・文字なしのグレーのゴミ箱アイコンという既存パターンへ修正された。
+- **適用範囲:** このアプリのUI変更。特定のアイコンは意味が合う場合だけ再利用し、「すべてのリセットにゴミ箱を使う」という規則にはしない。恒久ルールは、近い既存パターンとの一貫性である。
+- **出典:** おえかきのリセット操作に対するユーザーFB。
+- **追加日:** 2026-09-19
 
-## Entry format
+### 日本語で知見と報告を扱う
 
-Add new rules under `Active rules` using this format:
+- **ルール:** ユーザーへの報告、FB台帳、プロジェクト固有の作業指示は日本語で記述する。コード上の識別子や外部ツールの固定用語は、既存の慣例に従う。
+- **理由:** ユーザーの主要言語が日本語であり、FBの意味を正確に残すため。
+- **適用範囲:** このプロジェクトでCodexが作成・更新するユーザー向け・運用向けの文章。
+- **出典:** ユーザーの言語に関するFB。
+- **追加日:** 2026-09-19
 
-### Short rule name
+## 追記フォーマット
 
-- **Rule:** A concrete instruction that can be followed or checked.
-- **Rationale:** Why it matters, if known.
-- **Scope:** Files, features, or situations where it applies; note any exceptions.
-- **Source:** Brief paraphrase of the user feedback; never include sensitive information.
-- **Added:** YYYY-MM-DD
+新しいルールは `有効なルール` に次の形式で追加します。
+
+### 短いルール名
+
+- **ルール:** 守れる・確認できる具体的な指示。
+- **理由:** 分かる場合だけ、必要な背景。
+- **適用範囲:** 対象のファイル・機能・場面と例外。
+- **出典:** ユーザーFBの短い要約。秘密情報は含めない。
+- **追加日:** YYYY-MM-DD
