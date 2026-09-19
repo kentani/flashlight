@@ -37,6 +37,7 @@ describe('fishing game', () => {
     await wrapper.vm.$nextTick()
 
     expect(wrapper.vm.catches).toBe(1)
+    expect(wrapper.vm.caughtFish).toEqual([wrapper.vm.targetFish.emoji])
     expect(wrapper.vm.phase).toBe('catching')
     expect(wrapper.find('.celebration').exists()).toBe(true)
   })
@@ -51,6 +52,7 @@ describe('fishing game', () => {
 
     expect(wrapper.vm.phase).toBe('aiming')
     expect(wrapper.vm.catches).toBe(0)
+    expect(wrapper.vm.castPower).toBe(0)
   })
 
   test('finishes after thirty seconds and shows the result', async () => {
