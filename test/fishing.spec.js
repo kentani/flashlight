@@ -16,48 +16,51 @@ describe('fishing game', () => {
     jest.restoreAllMocks()
   })
 
-  test('starts with fish ready to catch and adds a gold fish to the catch row', async () => {
-    await wrapper.find('.start-button').trigger('click')
+  test('starts from the central button and catches a fish after casting and reeling', async () => {
+    await wrapper.find('.start').trigger('click')
 
     expect(wrapper.vm.isPlaying).toBe(true)
-    expect(wrapper.vm.timeLeft).toBe(15)
-    expect(wrapper.findAll('.fish-button')).toHaveLength(3)
+    expect(wrapper.vm.timeLeft).toBe(30)
+    expect(wrapper.findAll('.fish')).toHaveLength(3)
+    expect(wrapper.vm.phase).toBe('aiming')
 
-    await wrapper.findAll('.fish-button').at(0).trigger('click')
-
-    expect(wrapper.vm.catches).toBe(2)
-    expect(wrapper.vm.combo).toBe(1)
-    expect(wrapper.vm.isCasting).toBe(true)
-    expect(wrapper.vm.basketFish).toEqual(['🐠'])
-    expect(wrapper.find('.casting-line').exists()).toBe(true)
-
-    jest.advanceTimersByTime(500)
+    wrapper.vm.power = wrapper.vm.targetFish.power
+    wrapper.vm.charging = true
+    wrapper.vm.releaseCast()
+    jest.advanceTimersByTime(550)
     await wrapper.vm.$nextTick()
 
-    expect(wrapper.vm.isCasting).toBe(false)
-    expect(wrapper.vm.caughtFishId).toBeNull()
+    expect(wrapper.vm.phase).toBe('reeling')
+    expect(wrapper.find('.reel').exists()).toBe(true)
+
+    for (let taps = 0; taps < wrapper.vm.reelTaps; taps += 1) wrapper.vm.reel()
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.vm.catches).toBe(1)
+    expect(wrapper.vm.phase).toBe('catching')
+    expect(wrapper.find('.celebration').exists()).toBe(true)
   })
 
-  test('does not count the click that follows a touch as a second catch', async () => {
-    await wrapper.find('.start-button').trigger('click')
-    const fish = wrapper.findAll('.fish-button').at(0)
+  test('returns to aiming when the cast does not reach the fish', async () => {
+    wrapper.vm.startGame()
+    wrapper.vm.power = 0
+    wrapper.vm.charging = true
+    wrapper.vm.releaseCast()
+    jest.advanceTimersByTime(550)
+    await wrapper.vm.$nextTick()
 
-    await fish.trigger('touchend')
-    await fish.trigger('click')
-
-    expect(wrapper.vm.catches).toBe(2)
-    expect(wrapper.vm.basketFish).toHaveLength(1)
+    expect(wrapper.vm.phase).toBe('aiming')
+    expect(wrapper.vm.catches).toBe(0)
   })
 
-  test('finishes after fifteen seconds and shows the result', async () => {
-    await wrapper.find('.start-button').trigger('click')
+  test('finishes after thirty seconds and shows the result', async () => {
+    wrapper.vm.startGame()
 
-    jest.advanceTimersByTime(15000)
+    jest.advanceTimersByTime(30000)
     await wrapper.vm.$nextTick()
 
     expect(wrapper.vm.isPlaying).toBe(false)
     expect(wrapper.vm.timeLeft).toBe(0)
-    expect(wrapper.vm.castingLineStyle).toBeNull()
-    expect(wrapper.find('.game-result').exists()).toBe(true)
+    expect(wrapper.find('.result').exists()).toBe(true)
   })
 })
