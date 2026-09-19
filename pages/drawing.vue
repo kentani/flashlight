@@ -8,6 +8,19 @@
       class="option-bar mt-12"
     >
 
+      <v-btn
+        icon
+        :ripple="false"
+        width="44"
+        height="44"
+        aria-label="リセット"
+        title="リセット"
+        class="reset-button mx-2"
+        @click="resetDrawing"
+      >
+        <v-icon size="28">mdi-delete-outline</v-icon>
+      </v-btn>
+
       <v-icon class="ml-3 mr-2 mt-1" size="30">mdi-format-color-fill</v-icon>
       <v-btn
         v-for="(backColorName, i) in backColorList" :key="`back-${i}`"
@@ -128,6 +141,12 @@ export default {
     this.canvas.height = wrapper.clientHeight;
   },
   methods: {
+    resetDrawing() {
+      this.endDraw();
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.ctx.beginPath();
+    },
+
     startDraw(e) {
       if (e.type === "touchstart") {
         e.preventDefault();
@@ -211,6 +230,10 @@ export default {
 </script>
 
 <style scoped>
+.reset-button {
+  flex-shrink: 0;
+}
+
 .canvas-wrapper {
   width: 100vw;
   height: 100vh;
