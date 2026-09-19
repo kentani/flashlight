@@ -32,6 +32,12 @@
 - Work on a task branch, review the diff and summarize changes and verification in the PR. Keep generated files out of ordinary implementation PRs.
 - Explain results and remaining limitations to the user in Japanese.
 
+## Parallel development and local servers
+- Start every independent Codex implementation task in a Codex-managed Worktree. Do not implement in the shared Local checkout or switch its branch while another task may be using it.
+- Run `yarn dev:isolated` for browser verification. It chooses an available local port and prints the exact `/flashlight/` URL; do not assume port 3000 or start a second server on a fixed port.
+- Keep that command in the foreground. After browser verification, stop it with Ctrl-C before completing the task. The launcher forwards termination signals to Nuxt so the port is released. Do not use `nohup`, `&`, or leave background development servers running.
+- Before reporting completion, confirm the development-server command has stopped. Once a PR is created or handed off, archive the Codex task so its managed Worktree becomes eligible for automatic cleanup. Do not manually delete the current or a persistent Worktree.
+
 ## Pull requests
 - Before creating or updating a pull request, read `.github/pull_request_template.md`.
 - Keep every heading and checklist from that template in the pull request body. Replace placeholders with task-specific content and mark only checks that were actually completed.

@@ -17,11 +17,11 @@ nvm use
 corepack enable
 corepack prepare yarn@1.22.19 --activate
 yarn install --frozen-lockfile
-yarn dev
+yarn dev:isolated
 ```
 
 Volta を使う場合は `volta install node@22.23.2 yarn@1.22.19` で上記のバージョンを用意できます（既定バージョンが変わります）。
-ブラウザで **http://localhost:3000/flashlight/** を開きます。
+`yarn dev:isolated` は空いているポートを自動で選び、開く URL を表示します。表示された URL をブラウザで開き、確認後は Ctrl-C で停止してください。
 通常の開発に API キーや `.env` は不要です。依存パッケージの取得と Google Fonts のダウンロードにはネットワークが必要です。
 Nuxt 2.16 の依存パッケージは古い Node バージョン範囲を宣言しているため、`.yarnrc` で engine 検査をスキップします。実行環境は `.nvmrc` と CI で固定し、テスト・ビルドで互換性を確認します。
 依存関係は Yarn と `yarn.lock` で管理します。npm install は使用しません。
@@ -46,9 +46,12 @@ GitHub Actions は PR と main/master への push で、固定した Node/Yarn �
 ## Codex で作業する
 
 1. このリポジトリのローカルフォルダを Codex のプロジェクトとして開きます。
-2. 新しいタスクで、対象の画面・期待する動作・完了条件を伝えます。
-3. Codex はルートの [AGENTS.md](AGENTS.md) を読み、構成・編集方針・検証コマンドを参照します。
-4. 差分と検証結果を確認し、作業ブランチから PR を作成します。
+2. 新しい実装タスクは、コンポーザー下の **Worktree** を選んで開始します。並行タスクごとに別の Worktree を使います。
+3. 対象の画面・期待する動作・完了条件を伝えます。
+4. ブラウザ確認は `yarn dev:isolated` で起動し、表示された URL を使います。確認後は Ctrl-C で停止します。
+5. PR 作成または引き継ぎ後にタスクをアーカイブすると、Codex 管理の Worktree は自動クリーンアップの対象になります。
+6. Codex はルートの [AGENTS.md](AGENTS.md) を読み、構成・編集方針・検証コマンドを参照します。
+7. 差分と検証結果を確認し、作業ブランチから PR を作成します。
 
 依頼例:
 
