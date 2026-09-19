@@ -55,8 +55,8 @@
         step="1"
         ticks="always"
         tick-size="0"
-        color="#26c6da"
-        thumb-color="#26c6da"
+        color="#54acdb"
+        thumb-color="#54acdb"
         track-color="grey"
         always-dirty
         dense
@@ -84,7 +84,7 @@
         :ripple="false"
         dense
         hide-details
-        color="#26c6da"
+        color="#54acdb"
         class="mx-2 mt-1"
       ></v-switch>
     </v-app-bar>
@@ -121,11 +121,11 @@ export default {
         "#00331b",
       ],
       currentPenSize: 5,
-      currentPenColor: "#26c6da",
+      currentPenColor: "#54acdb",
       penColorList: [
         "#121212",
         "#fff",
-        "#26c6da",
+        "#54acdb",
         "#a52a2a",
         "#ffd700",
         "#32cd32"

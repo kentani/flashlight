@@ -17,7 +17,7 @@
         :disabled="currentMusic === '-'"
         @click="onclickPlay(currentMusic)"
       >
-        <v-icon color="#26c6da">{{ isPlaying ? 'mdi-pause' : 'mdi-play' }}</v-icon>
+        <v-icon color="#54acdb">{{ isPlaying ? 'mdi-pause' : 'mdi-play' }}</v-icon>
       </v-btn>
 
       <v-card
@@ -33,7 +33,7 @@
         <v-card-actions class="pb-0 pl-2 pr-0">
           <v-progress-linear
             v-model="currentTimeBar"
-            color="#26c6da"
+            color="#54acdb"
             class="ma-0 pa-0"
           ></v-progress-linear>
         </v-card-actions>
@@ -71,7 +71,7 @@
         <v-hover>
           <template v-slot:default="{ hover }">
             <v-card
-              color="#26c6da"
+              color="#54acdb"
               dark
               rounded="xl"
               :elevation="hover? 24 : 8"

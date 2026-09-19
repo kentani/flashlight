@@ -3,7 +3,7 @@
     <v-app-bar
       fixed
       dark
-      color="#36a9d6"
+      color="#54acdb"
       elevation="6"
       class="toybox-header"
     >
@@ -67,17 +67,17 @@ html, body, #__nuxt, .v-application {
 
 body {
   touch-action: pan-y;
-  background: #e8f9ff;
+  background: #edf7fb;
 }
 
 .container {
   min-height: 100vh;
   max-width: 100%;
   overflow-x: hidden;
-  background-color: #e8f9ff;
-  background-image: radial-gradient(rgba(79, 190, 225, .35) 1.5px, transparent 1.5px);
+  background-color: #edf7fb;
+  background-image: radial-gradient(rgba(84, 172, 219, .32) 1.5px, transparent 1.5px);
   background-size: 22px 22px;
-  color: #174d68;
+  color: #315f76;
   font-family: "Yomogi", cursive !important;
   display: flex;
   justify-content: center;
@@ -91,14 +91,14 @@ body {
 }
 
 .toybox-header {
-  border-bottom: 5px solid #187fae !important;
+  border-bottom: 5px solid #3989b2 !important;
 }
 
 .toybox-title {
   color: #f4fdff;
   font-size: 1.35rem !important;
   letter-spacing: .08em;
-  text-shadow: 0 2px 0 #187fae;
+  text-shadow: 0 2px 0 #3989b2;
 }
 
 .toybox-title-button { min-height: 48px !important; min-width: 190px !important; justify-content: flex-start !important; }
