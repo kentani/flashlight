@@ -32,6 +32,12 @@
 - Work on a task branch, review the diff and summarize changes and verification in the PR. Keep generated files out of ordinary implementation PRs.
 - Explain results and remaining limitations to the user in Japanese.
 
+## Pull requests
+- Before creating or updating a pull request, read `.github/pull_request_template.md`.
+- Keep every heading and checklist from that template in the pull request body. Replace placeholders with task-specific content and mark only checks that were actually completed.
+- When using `gh pr create` or `gh pr edit`, construct the body from the template; never supply a custom body that omits the template's sections.
+- Verify the pull request body against the template after creation or editing, and correct it before reporting that the pull request is ready.
+
 ## Feedback memory
 - 計画・編集の前に `codex-feedback.md` を読み、現在の依頼と矛盾しない限り有効なルールをプロジェクト要件として扱う。
 - 作業中にユーザーから修正FBを受けたら `feedback-memory` Skill を使う。再利用可能なFBは、簡潔で検証可能なルールにして `codex-feedback.md` へ追記するだけなら、あらためて承認を求めない。
