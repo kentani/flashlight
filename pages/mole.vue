@@ -66,6 +66,7 @@ import whackSound from '@/assets/sounds/ok.mp3'
 const MIN_MOLE_DURATION = 1250
 const MAX_MOLE_DURATION = 2200
 const BONUS_MOLE_DURATION = 3800
+const GAME_DURATION = 15
 
 export default {
   name: 'MolePage',
@@ -73,7 +74,7 @@ export default {
     return {
       holes: [0, 1, 2, 3, 4, 5, 6, 7, 8],
       score: 0,
-      timeLeft: 30,
+      timeLeft: GAME_DURATION,
       activeHole: null,
       whackedHole: null,
       isBonusMole: false,
@@ -118,7 +119,7 @@ export default {
     startGame () {
       this.clearTimers()
       this.score = 0
-      this.timeLeft = 30
+      this.timeLeft = GAME_DURATION
       this.activeHole = null
       this.whackedHole = null
       this.isBonusMole = false
