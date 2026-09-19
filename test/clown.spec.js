@@ -31,6 +31,14 @@ describe('clown escape game', () => {
     expect(wrapper.vm.wrongMove).toBe(true)
   })
 
+  test('shows the selected direction in the runner movement', async () => {
+    await wrapper.find('.run-button').trigger('click')
+    await wrapper.vm.chooseMove('left')
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('.runner').classes()).toContain('is-moving-left')
+  })
+
   test('reaches home after eight matching moves', async () => {
     await wrapper.find('.run-button').trigger('click')
     for (let count = 0; count < 8; count += 1) await wrapper.find('.move-button.is-next').trigger('click')
