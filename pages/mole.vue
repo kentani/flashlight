@@ -27,6 +27,12 @@
         >
           <span class="dirt"></span>
           <span class="mole" aria-hidden="true">🐹</span>
+          <span v-if="whackedHole === hole" class="hit-effect" aria-hidden="true">
+            <span class="impact">💥</span>
+            <span class="hammer">🔨</span>
+            <span class="star star-one">★</span>
+            <span class="star star-two">★</span>
+          </span>
         </button>
       </div>
 
@@ -51,11 +57,13 @@ export default {
       hasPlayed: false,
       moleTimer: null,
       countdownTimer: null,
-      whackTimer: null
+      whackTimer: null,
+      audioContext: null
     }
   },
   beforeDestroy () {
     this.clearTimers()
+    if (this.audioContext) this.audioContext.close()
   },
   methods: {
     startGame () {
@@ -66,6 +74,7 @@ export default {
       this.whackedHole = null
       this.isPlaying = true
       this.hasPlayed = true
+      this.prepareAudio()
       this.showMole()
       this.countdownTimer = setInterval(() => {
         this.timeLeft -= 1
@@ -79,6 +88,7 @@ export default {
         nextHole = (nextHole + 1) % this.holes.length
       }
       this.activeHole = nextHole
+      this.playMoleSound()
       this.moleTimer = setTimeout(() => {
         this.activeHole = null
         this.showMole()
@@ -90,6 +100,7 @@ export default {
       this.activeHole = null
       this.whackedHole = hole
       this.score += 1
+      this.playWhackSound()
       this.whackTimer = setTimeout(() => {
         this.whackedHole = null
         this.showMole()
@@ -107,6 +118,35 @@ export default {
       this.moleTimer = null
       this.whackTimer = null
       this.countdownTimer = null
+    },
+    prepareAudio () {
+      const AudioContext = window.AudioContext || window.webkitAudioContext
+      if (!AudioContext) return
+      if (!this.audioContext) this.audioContext = new AudioContext()
+      if (this.audioContext.state === 'suspended') this.audioContext.resume()
+    },
+    playTone (startFrequency, endFrequency, duration, volume) {
+      if (!this.audioContext) return
+      const now = this.audioContext.currentTime
+      const oscillator = this.audioContext.createOscillator()
+      const gain = this.audioContext.createGain()
+      oscillator.type = 'sine'
+      oscillator.frequency.setValueAtTime(startFrequency, now)
+      oscillator.frequency.exponentialRampToValueAtTime(endFrequency, now + duration)
+      gain.gain.setValueAtTime(0.001, now)
+      gain.gain.exponentialRampToValueAtTime(volume, now + 0.015)
+      gain.gain.exponentialRampToValueAtTime(0.001, now + duration)
+      oscillator.connect(gain)
+      gain.connect(this.audioContext.destination)
+      oscillator.start(now)
+      oscillator.stop(now + duration)
+    },
+    playMoleSound () {
+      this.playTone(440, 660, 0.12, 0.09)
+    },
+    playWhackSound () {
+      this.playTone(190, 95, 0.11, 0.16)
+      this.playTone(520, 780, 0.16, 0.07)
     }
   }
 }
@@ -172,9 +212,21 @@ p { font-size: 1.1rem; font-weight: bold; margin: 0; }
 .hole.has-mole { cursor: pointer; }
 .hole:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 .dirt { background: radial-gradient(ellipse, #3e2619 0 48%, #754425 50% 68%, transparent 70%); bottom: 1%; height: 57%; left: 0; position: absolute; width: 100%; z-index: 2; }
-.mole { bottom: 5%; font-size: clamp(3rem, 13vw, 6.2rem); left: 50%; line-height: 1; position: absolute; transform: translate(-50%, 110%); transition: transform .16s ease-out; z-index: 3; }
-.has-mole .mole { transform: translate(-50%, 0); }
+.mole { bottom: 5%; filter: drop-shadow(0 4px 1px rgba(67, 37, 20, .35)); font-size: clamp(3rem, 13vw, 6.2rem); left: 50%; line-height: 1; position: absolute; transform: translate(-50%, 110%); transition: transform .16s ease-out; z-index: 3; }
+.has-mole .mole { animation: mole-pop .18s ease-out; transform: translate(-50%, 0); }
 .whacked .mole { transform: translate(-50%, 12%) rotate(12deg) scale(.85); }
+
+.hit-effect { inset: 0; pointer-events: none; position: absolute; z-index: 5; }
+.impact { animation: impact .28s ease-out forwards; font-size: clamp(2.7rem, 10vw, 4.8rem); left: 50%; position: absolute; top: -10%; transform: translateX(-50%); }
+.hammer { animation: hammer .22s ease-in forwards; font-size: clamp(2.5rem, 9vw, 4.3rem); position: absolute; right: -4%; top: -20%; transform-origin: 80% 80%; }
+.star { animation: star .3s ease-out forwards; color: #fff4a7; font-size: clamp(1.3rem, 5vw, 2.2rem); position: absolute; text-shadow: 0 2px #d9792e; }
+.star-one { left: 2%; top: 8%; }
+.star-two { right: 4%; top: 28%; }
+
+@keyframes mole-pop { from { transform: translate(-50%, 40%) scale(.7); } to { transform: translate(-50%, 0) scale(1); } }
+@keyframes impact { from { opacity: 0; transform: translateX(-50%) scale(.3); } 55% { opacity: 1; } to { opacity: 0; transform: translateX(-50%) scale(1.25); } }
+@keyframes hammer { from { transform: rotate(-45deg) scale(1.15); } to { transform: rotate(25deg) scale(.85); } }
+@keyframes star { from { opacity: 1; transform: scale(.4) rotate(0); } to { opacity: 0; transform: translateY(-28px) scale(1.15) rotate(100deg); } }
 
 .start-button {
   background: #f3a344;
