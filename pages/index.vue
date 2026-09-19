@@ -86,7 +86,7 @@ export default {
   margin: 0 auto 24px;
   padding: 18px 20px 16px;
   text-align: center;
-  color: #643e2b;
+  color: #174d68;
 }
 
 .menu-hero h1 {
@@ -106,12 +106,12 @@ export default {
   font-weight: bold;
 }
 
-.menu-hero__eyebrow { color: #ef6a4d; }
-.menu-hero__hint { margin-top: 6px; color: #79614c; }
+.menu-hero__eyebrow { color: #168fc0; }
+.menu-hero__hint { margin-top: 6px; color: #39728c; }
 
 .menu-hero__sparkle {
   position: absolute;
-  color: #f2ad29;
+  color: #35b9df;
   font-size: 2rem;
   animation: twinkle 1.7s ease-in-out infinite alternate;
 }
@@ -132,14 +132,14 @@ export default {
   width: 100%;
   aspect-ratio: 1;
   overflow: hidden;
-  border: 4px solid #fff6dc !important;
-  box-shadow: 0 7px 0 rgba(91, 60, 43, .22) !important;
+  border: 4px solid #f4fdff !important;
+  box-shadow: 0 7px 0 rgba(27, 102, 135, .22) !important;
   transition: transform .16s ease, box-shadow .16s ease;
 }
 
 .menu-card:hover, .menu-card:focus-within {
   transform: translateY(-5px) rotate(-1deg);
-  box-shadow: 0 12px 0 rgba(91, 60, 43, .16) !important;
+  box-shadow: 0 12px 0 rgba(27, 102, 135, .16) !important;
 }
 
 .menu-card__content {
@@ -167,7 +167,7 @@ export default {
   margin-bottom: 8px;
   font-family: sans-serif;
   font-size: clamp(3.2rem, 7vw, 6.3rem);
-  filter: drop-shadow(0 4px 0 rgba(69, 45, 30, .18));
+  filter: drop-shadow(0 4px 0 rgba(20, 84, 110, .18));
   transform: rotate(-7deg);
 }
 
@@ -181,11 +181,11 @@ export default {
   margin: 0;
   padding: 4px 13px;
   overflow: hidden;
-  color: #513d31;
+  color: #174d68;
   text-overflow: ellipsis;
   text-shadow: none;
   white-space: nowrap;
-  background: rgba(255, 253, 244, .9);
+  background: rgba(244, 253, 255, .92);
   border-radius: 999px;
   transform: translateX(-50%);
 }
