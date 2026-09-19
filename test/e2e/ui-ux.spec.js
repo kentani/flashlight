@@ -2,7 +2,7 @@ const { test, expect } = require('@playwright/test')
 
 test.describe('UI/UX の基本操作', () => {
   test('主要画面は横スクロールせず、最初の遊びを選べる', async ({ page }) => {
-    for (const route of ['.', 'flashlight']) {
+    for (const route of ['.', 'flashlight', 'traffic-light']) {
       await page.goto(route)
       await expect(page.locator('body')).toBeVisible()
       const hasHorizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1)
@@ -17,6 +17,18 @@ test.describe('UI/UX の基本操作', () => {
     expect(bounds.height).toBeGreaterThanOrEqual(44)
     await flashlightLink.click()
     await expect(page).toHaveURL(/\/flashlight\/flashlight$/)
+  })
+
+  test('しんごうきは大きなボタンで色と合図を切り替えられる', async ({ page }) => {
+    await page.goto('traffic-light')
+    const goSignal = page.getByRole('button', { name: /すすめ/ })
+    await expect(goSignal).toBeVisible()
+    const bounds = await goSignal.boundingBox()
+    expect(bounds.width).toBeGreaterThanOrEqual(44)
+    expect(bounds.height).toBeGreaterThanOrEqual(44)
+    await goSignal.click()
+    await expect(page.locator('.traffic-light')).toHaveClass(/green/)
+    await expect(page.getByText('あお！ すすめ すすめ！')).toBeVisible()
   })
 
   test('ライトは十分な大きさで、タップ後に視覚的に反応する', async ({ page }) => {
