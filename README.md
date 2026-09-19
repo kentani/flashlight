@@ -66,7 +66,7 @@ Codex Cloud を使用する場合は、別途 GitHub リポジトリの接続と
 | `static/` | そのまま配信するファイル |
 | `nuxt.config.js` | ルーティング・PWA・ビルド設定 |
 | `test/` | 自動テスト |
-| `docs/` | コミット済みの公開用生成物 |
+| `dist/` | ローカルの静的生成物（Git 管理外） |
 
-**`yarn generate` は `docs/` を上書きします。** 公開を目的とした変更のときだけ実行し、生成差分を確認してください。
-通常の開発・CI では `yarn generate:check` を使います。こちらは無視対象の `.preview/` に出力するため、公開用ファイルを変更しません。
+GitHub Pages は GitHub Actions が `.pages/` に生成した成果物をデプロイします。`yarn generate` はローカルの無視対象 `dist/` に出力します。
+通常の開発・CI では `yarn generate:check` を使います。こちらは無視対象の `.preview/` に出力します。
