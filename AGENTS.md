@@ -38,7 +38,7 @@
 - Explain results and remaining limitations to the user in Japanese.
 
 ## Parallel development and local servers
-- Start every independent Codex implementation task in a Codex-managed Worktree. Do not implement in the shared Local checkout or switch its branch while another task may be using it.
+- Start every independent Codex implementation task in a Codex-managed Worktree from the latest `origin/main`. Do not implement in the shared Local checkout or switch its branch while another task may be using it. Run `yarn setup:git-hooks` once after checkout; `yarn verify:worktree` fetches `origin/main` and rejects a shared checkout or a stale base.
 - Run `yarn dev:isolated` for browser verification. It chooses an available local port and prints the exact `/flashlight/` URL; do not assume port 3000 or start a second server on a fixed port.
 - Keep that command in the foreground. After browser verification, stop it with Ctrl-C before completing the task. The launcher forwards termination signals to Nuxt so the port is released. Do not use `nohup`, `&`, or leave background development servers running.
 - Before reporting completion, confirm the development-server command has stopped. Once a PR is created or handed off, archive the Codex task so its managed Worktree becomes eligible for automatic cleanup. Do not manually delete the current or a persistent Worktree.
@@ -52,7 +52,7 @@
 
 ## Feedback memory
 - 計画・編集の前に `codex-feedback.md` を読み、現在の依頼と矛盾しない限り有効なルールをプロジェクト要件として扱う。
-- 作業中にユーザーから修正FBを受けたら `feedback-memory` Skill を使う。再利用可能なFBは、簡潔で検証可能なルールにして `codex-feedback.md` へ追記するだけなら、あらためて承認を求めない。
+- 作業中にユーザーから修正FBを受けたら `feedback-memory` Skill を使う。再利用可能なFBは、同 Skill の「ルールPR」手順に従い、元の実装とは別の managed Worktree・別PRとして永続化する。ルール文書と運用保護だけの PR はユーザーから事前承認されている。
 - UIのFBが見た目・操作の規約を示す場合は、再利用可能と扱う。UIを変更する際は実装前に近い既存画面・既存コントロールを比較し、実装後はブラウザで確認する。今回以外にも適用できる規約は `codex-feedback.md` に残す。
 - 一度限りの選択、個人情報・秘密情報、不確かな解釈は恒久ルールとして記録しない。FBが今回だけのスコープ変更なら、今回にだけ適用して保存しない。
-- この仕組みは、不可逆・外部操作の権限にはならない。push、公開、デプロイ、重要データの削除、アカウント・権限設定の変更には、引き続きユーザーの明示的な指示が必要。
+- この仕組みは、不可逆・外部操作の一般的な権限にはならない。`feedback-memory` Skill の「ルールPR」に該当するルール文書・運用保護だけの push と PR 作成を除き、公開、デプロイ、重要データの削除、アカウント・権限設定の変更には、引き続きユーザーの明示的な指示が必要。
