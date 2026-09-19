@@ -30,6 +30,9 @@
 - There is currently no lint command. Do not claim lint passed.
 - Keep secrets and local environment files out of commits. No application secrets are required for the standard local setup.
 - Work on a task branch, review the diff and summarize changes and verification in the PR. Keep generated files out of ordinary implementation PRs.
+- PR を作成・更新する前に、変更対象に応じた確認（コード変更では `yarn test:ci` と `yarn build`、UI変更ではモバイル・PCのブラウザ確認）を完了し、`git diff` と `git status` を確認する。失敗または未確認の項目は、PR本文の「確認したこと」に正確に記載する。
+- PR本文は `.github/pull_request_template.md` の見出しを保ち、実施した内容だけを具体的に記入する。`gh pr create` / `gh pr edit` では、改行を含む `--body` 文字列やリテラルな `\\n` を渡してはならない。一時Markdownファイルを作り、必ず `--body-file <file>` で本文を渡す。
+- 同じ目的の未マージPRが存在する場合は新規PRを作らず、そのPRのブランチへ追加コミットをpushする。PRを作成・更新したら、URL、対象ブランチ、確認結果、残る制約を最終報告に含める。
 - Explain results and remaining limitations to the user in Japanese.
 
 ## Parallel development and local servers
