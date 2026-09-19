@@ -31,25 +31,25 @@ describe('clown escape game', () => {
     expect(wrapper.vm.wrongMove).toBe(true)
   })
 
-  test('shows the selected direction in the runner movement', async () => {
+  test('shows the selected action in the runner movement', async () => {
     await wrapper.find('.run-button').trigger('click')
-    await wrapper.vm.chooseMove('left')
+    await wrapper.vm.chooseMove('run')
     await wrapper.vm.$nextTick()
 
-    expect(wrapper.find('.runner').classes()).toContain('is-moving-left')
-    expect(wrapper.vm.runnerPosition).toBe(17)
+    expect(wrapper.find('.runner').classes()).toContain('is-moving-run')
+    expect(wrapper.vm.runnerDistance).toBe(1)
 
-    wrapper.setData({ nextMove: 'right' })
-    await wrapper.vm.chooseMove('right')
+    wrapper.setData({ nextMove: 'hide' })
+    await wrapper.vm.chooseMove('hide')
     await wrapper.vm.$nextTick()
-    expect(wrapper.find('.runner').classes()).toContain('is-moving-right')
-    expect(wrapper.vm.runnerPosition).toBe(24)
+    expect(wrapper.find('.runner').classes()).toContain('is-moving-hide')
+    expect(wrapper.vm.runnerDistance).toBe(2)
 
     wrapper.setData({ nextMove: 'jump' })
     await wrapper.vm.chooseMove('jump')
     await wrapper.vm.$nextTick()
     expect(wrapper.find('.runner').classes()).toContain('is-moving-jump')
-    expect(wrapper.vm.runnerPosition).toBe(24)
+    expect(wrapper.vm.runnerDistance).toBe(3)
   })
 
   test('reaches home through the run, hide, and jump route', async () => {
