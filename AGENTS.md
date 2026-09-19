@@ -31,3 +31,10 @@
 - Keep secrets and local environment files out of commits. No application secrets are required for the standard local setup.
 - Work on a task branch, review the diff and summarize changes and verification in the PR. Keep generated files out of ordinary implementation PRs.
 - Explain results and remaining limitations to the user in Japanese.
+
+## Feedback memory
+- 計画・編集の前に `codex-feedback.md` を読み、現在の依頼と矛盾しない限り有効なルールをプロジェクト要件として扱う。
+- 作業中にユーザーから修正FBを受けたら `feedback-memory` Skill を使う。再利用可能なFBは、簡潔で検証可能なルールにして `codex-feedback.md` へ追記するだけなら、あらためて承認を求めない。
+- UIのFBが見た目・操作の規約を示す場合は、再利用可能と扱う。UIを変更する際は実装前に近い既存画面・既存コントロールを比較し、実装後はブラウザで確認する。今回以外にも適用できる規約は `codex-feedback.md` に残す。
+- 一度限りの選択、個人情報・秘密情報、不確かな解釈は恒久ルールとして記録しない。FBが今回だけのスコープ変更なら、今回にだけ適用して保存しない。
+- この仕組みは、不可逆・外部操作の権限にはならない。push、公開、デプロイ、重要データの削除、アカウント・権限設定の変更には、引き続きユーザーの明示的な指示が必要。
