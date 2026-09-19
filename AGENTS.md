@@ -31,3 +31,9 @@
 - Keep secrets and local environment files out of commits. No application secrets are required for the standard local setup.
 - Work on a task branch, review the diff and summarize changes and verification in the PR. Keep generated files out of ordinary implementation PRs.
 - Explain results and remaining limitations to the user in Japanese.
+
+## Feedback memory
+- Before planning or editing, read `codex-feedback.md`. Treat its active rules as project requirements unless the current request explicitly conflicts.
+- When the user gives corrective feedback during a task, use the `feedback-memory` skill. Distill reusable feedback into a concise, testable rule and add it to `codex-feedback.md` without asking again when this is a local documentation-only change.
+- Do not record one-off choices, personal data, secrets, or an uncertain interpretation as a permanent rule. If the feedback changes scope only for the current task, apply it now but do not store it.
+- Never let this process authorize irreversible or external actions. Pushing, publishing, deploying, deleting material data, or changing account/permission settings still requires the user's explicit direction.
