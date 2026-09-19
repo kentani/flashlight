@@ -66,8 +66,20 @@ body::-webkit-scrollbar {
   display: none;
 }
 
+html, body, #__nuxt, .v-application {
+  max-width: 100%;
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+}
+
+body {
+  touch-action: pan-y;
+}
+
 .container {
   min-height: 100vh;
+  max-width: 100%;
+  overflow-x: hidden;
   background: #f5f8fa;
   color: #4c4c4c;
   font-family: "Yomogi", cursive !important;
