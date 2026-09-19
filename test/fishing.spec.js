@@ -55,6 +55,19 @@ describe('fishing game', () => {
     expect(wrapper.vm.castPower).toBe(0)
   })
 
+  test('shows an overshot hook past the fish when the cast is too strong', () => {
+    wrapper.vm.startGame()
+    const exactCastPower = wrapper.vm.targetFish.power
+    wrapper.vm.castPower = exactCastPower
+    const exactCastLength = Number.parseFloat(wrapper.vm.lineStyle.width)
+
+    wrapper.vm.castPower = exactCastPower + 13
+    wrapper.vm.phase = 'casting'
+
+    expect(wrapper.vm.message).toBe('とおすぎ！')
+    expect(Number.parseFloat(wrapper.vm.lineStyle.width)).toBeGreaterThan(exactCastLength)
+  })
+
   test('finishes after thirty seconds and shows the result', async () => {
     wrapper.vm.startGame()
 
