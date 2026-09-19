@@ -12,7 +12,7 @@ module.exports = defineConfig({
     screenshot: 'only-on-failure'
   },
   webServer: {
-    command: 'yarn dev --port 3001',
+    command: 'NUXT_GENERATE_DIR=dist yarn generate --fail-on-error && yarn start --port 3001',
     url: 'http://127.0.0.1:3001/flashlight/',
     timeout: 120000,
     reuseExistingServer: !process.env.CI
