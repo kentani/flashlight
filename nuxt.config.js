@@ -10,7 +10,7 @@ export default {
     base: '/flashlight/'
   },
   generate: {
-    dir: 'docs'
+    dir: process.env.NUXT_GENERATE_DIR || 'docs'
   },
 
   // Global page headers: https://go.nuxtjs.dev/config-head

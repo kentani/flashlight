@@ -1,69 +1,72 @@
-# flashlight
+# flashlight / おもちゃばこ
 
-## Build Setup
+ライト・おえかき・音楽などを楽しむ、日本語のブラウザ向けおもちゃアプリです。
+Nuxt 2 / Vue 2 / Vuetify 2 を使ったクライアント側アプリで、公開時のベース URL は `/flashlight/` です。
 
-```bash
-# install dependencies
-$ yarn install
+## 開発環境
 
-# serve with hot reload at localhost:3000
-$ yarn dev
+- Node.js **22.23.2**（`.nvmrc`）
+- Yarn Classic **1.22.19**（`package.json` の `packageManager`）
+- Git。PR の操作には認証済み GitHub CLI (`gh`) を使用します。
 
-# build for production and launch server
-$ yarn build
-$ yarn start
+Node の管理に nvm を使う場合:
 
-# generate static project
-$ yarn generate
+```sh
+nvm install
+nvm use
+corepack enable
+corepack prepare yarn@1.22.19 --activate
+yarn install --frozen-lockfile
+yarn dev
 ```
 
-For detailed explanation on how things work, check out the [documentation](https://nuxtjs.org).
+Volta を使う場合は `volta install node@22.23.2 yarn@1.22.19` で上記のバージョンを用意できます（既定バージョンが変わります）。
+ブラウザで **http://localhost:3000/flashlight/** を開きます。
+通常の開発に API キーや `.env` は不要です。依存パッケージの取得と Google Fonts のダウンロードにはネットワークが必要です。
+Nuxt 2.16 の依存パッケージは古い Node バージョン範囲を宣言しているため、`.yarnrc` で engine 検査をスキップします。実行環境は `.nvmrc` と CI で固定し、テスト・ビルドで互換性を確認します。
+依存関係は Yarn と `yarn.lock` で管理します。npm install は使用しません。
 
-## Special Directories
+## 検証
 
-You can create the following extra directories, some of which have special behaviors. Only `pages` is required; you can delete them if you don't want to use their functionality.
+```sh
+yarn test:ci        # Jest を非対話・単一プロセスで実行
+yarn build          # 本番ビルド（.nuxt/）
+yarn generate:check # 静的サイトの生成確認（.preview/）
+```
 
-### `assets`
+`yarn test` は通常の Jest 実行です。テストは `test/` に追加します。
+Vue 2 用の Jest 29 transformer と、音声・画像のモックを設定済みです。
+最初の回帰テストはライトのタップによる移動・拡大縮小・音声再生呼び出しを確認します。
+音が実際に出ること、タッチ操作、PWA のオフライン動作はブラウザでも確認してください。
+現在 lint コマンドはありません。
 
-The assets directory contains your uncompiled assets such as Stylus or Sass files, images, or fonts.
+GitHub Actions は PR と main/master への push で、固定した Node/Yarn による依存インストール・テスト・静的生成を実行します。
+既存の CSS の空の `url()`、古い Browserslist データ、大きなアセットについてビルド警告が出ます。今回の環境整備ではアプリの見た目や依存フレームワークを刷新していません。
 
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/assets).
+## Codex で作業する
 
-### `components`
+1. このリポジトリのローカルフォルダを Codex のプロジェクトとして開きます。
+2. 新しいタスクで、対象の画面・期待する動作・完了条件を伝えます。
+3. Codex はルートの [AGENTS.md](AGENTS.md) を読み、構成・編集方針・検証コマンドを参照します。
+4. 差分と検証結果を確認し、作業ブランチから PR を作成します。
 
-The components directory contains your Vue.js components. Components make up the different parts of your page and can be reused and imported into your pages, layouts and even other components.
+依頼例:
 
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/components).
+> ライト画面で音をオン・オフできるようにしてください。初期状態はオンとし、スマホで押しやすいボタンを追加してください。変更箇所のテストとビルドを確認し、PR にまとめてください。
 
-### `layouts`
+Codex Cloud を使用する場合は、別途 GitHub リポジトリの接続とクラウド環境の設定が必要です。このリポジトリのファイルだけでアカウント連携が有効になるわけではありません。
 
-Layouts are a great help when you want to change the look and feel of your Nuxt app, whether you want to include a sidebar or have distinct layouts for mobile and desktop.
+## 構成と公開
 
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/layouts).
+| 場所 | 用途 |
+| --- | --- |
+| `pages/` | 各おもちゃの画面と動作。`index.vue` はメニュー |
+| `layouts/default.vue` | 共通ナビゲーション・スタイル |
+| `assets/` | バンドルする画像・音声・SCSS |
+| `static/` | そのまま配信するファイル |
+| `nuxt.config.js` | ルーティング・PWA・ビルド設定 |
+| `test/` | 自動テスト |
+| `docs/` | コミット済みの公開用生成物 |
 
-
-### `pages`
-
-This directory contains your application views and routes. Nuxt will read all the `*.vue` files inside this directory and setup Vue Router automatically.
-
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/get-started/routing).
-
-### `plugins`
-
-The plugins directory contains JavaScript plugins that you want to run before instantiating the root Vue.js Application. This is the place to add Vue plugins and to inject functions or constants. Every time you need to use `Vue.use()`, you should create a file in `plugins/` and add its path to plugins in `nuxt.config.js`.
-
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/plugins).
-
-### `static`
-
-This directory contains your static files. Each file inside this directory is mapped to `/`.
-
-Example: `/static/robots.txt` is mapped as `/robots.txt`.
-
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/static).
-
-### `store`
-
-This directory contains your Vuex store files. Creating a file in this directory automatically activates Vuex.
-
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/store).
+**`yarn generate` は `docs/` を上書きします。** 公開を目的とした変更のときだけ実行し、生成差分を確認してください。
+通常の開発・CI では `yarn generate:check` を使います。こちらは無視対象の `.preview/` に出力するため、公開用ファイルを変更しません。

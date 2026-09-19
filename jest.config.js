@@ -1,5 +1,7 @@
 module.exports = {
+  testMatch: ['<rootDir>/test/**/*.spec.js'],
   moduleNameMapper: {
+    '\\.(ogg|mp3|wav|mpe?g|png|jpe?g|gif|svg)$': '<rootDir>/test/mocks/file.js',
     '^@/(.*)$': '<rootDir>/$1',
     '^~/(.*)$': '<rootDir>/$1',
     '^vue$': 'vue/dist/vue.common.js'
@@ -11,7 +13,7 @@ module.exports = {
   ],
   transform: {
     '^.+\\.js$': 'babel-jest',
-    '.*\\.(vue)$': 'vue-jest'
+    '.*\\.(vue)$': '@vue/vue2-jest'
   },
   collectCoverage: true,
   collectCoverageFrom: [
