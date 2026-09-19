@@ -92,3 +92,7 @@ sw.*
 
 # Local static generation checks
 .preview/
+
+# Playwright artifacts
+playwright-report/
+test-results/

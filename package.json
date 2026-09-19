@@ -10,7 +10,8 @@
     "generate": "nuxt generate",
     "test": "jest",
     "test:ci": "jest --ci --runInBand",
-    "lint": "eslint pages layouts scripts nuxt.config.js jest.config.js --ext .js,.vue",
+    "test:e2e": "playwright test",
+    "lint": "eslint pages layouts scripts test/e2e nuxt.config.js jest.config.js playwright.config.js --ext .js,.vue",
     "lint:pwa": "eslint static/sw.js",
     "generate:check": "NUXT_GENERATE_DIR=.preview nuxt generate --fail-on-error"
   },
@@ -24,6 +25,7 @@
     "vuetify": "^2.6.10"
   },
   "devDependencies": {
+    "@playwright/test": "1.58.2",
     "@babel/core": "^7.24.7",
     "@babel/preset-env": "^7.24.7",
     "@nuxtjs/google-fonts": "^3.2.0",
