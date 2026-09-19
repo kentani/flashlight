@@ -4,7 +4,7 @@
       <header class="fishing-game__header"><div><h1 id="fishing-title">つり</h1><p>{{ guide }}</p></div><div class="score" aria-live="polite"><div>のこり<strong>{{ timeLeft }}</strong>びょう</div><div>つれた<strong>{{ catches }}</strong>ひき</div></div></header>
       <div ref="pond" class="pond">
         <span class="sun" aria-hidden="true">☀️</span><span class="shore" aria-hidden="true">🌿</span>
-        <button v-if="phase === 'ready'" type="button" class="button start" @click="startGame">はじめる</button>
+        <GameStartOverlay v-if="phase === 'ready'" title="つり" message="おさかなを つりあげよう！" @start="startGame" />
         <template v-if="isPlaying">
           <p class="message" aria-live="polite">{{ message }}</p>
           <div v-for="fish in fishInPond" :key="fish.id" class="fish" :class="{ target: fish.id === targetFish.id, caught: caughtFishId === fish.id }" :style="fishStyle(fish)" aria-hidden="true"><span>{{ fish.emoji }}</span><i v-if="fish.id === targetFish.id && phase === 'aiming'">ねらい</i></div>
@@ -14,7 +14,7 @@
           <button v-else-if="phase === 'reeling'" type="button" class="button reel" :class="{ 'is-nearly-caught': reelProgress >= reelTaps - 2 }" @click="reel"><span class="reel__label" aria-hidden="true">💪 れんだ！</span><span class="reel-meter" aria-hidden="true"><span :style="{ width: `${reelPower}%` }"></span></span><i>{{ reelProgress }} / {{ reelTaps }}</i><b :key="reelProgress" aria-hidden="true">✨</b></button>
           <div v-else-if="phase === 'catching'" class="celebration" aria-live="assertive"><span>{{ targetFish.emoji }}</span><strong>つれた！</strong><i>✨</i></div>
         </template>
-        <div v-if="hasPlayed && !isPlaying" class="result" role="alert"><div><p>{{ resultTitle }}</p><strong>{{ catches }}<small>ひき</small></strong><button type="button" class="button" @click="startGame">もういちど あそぶ</button></div></div>
+        <div v-if="hasPlayed && !isPlaying" class="result" role="alert"><div><p>{{ resultTitle }}</p><strong>{{ catches }}<small>ひき</small></strong><button type="button" class="button" @click="startGame">もういちど あそぶ</button><nuxt-link to="/" class="button">やめる</nuxt-link></div></div>
       </div>
       <div class="caught-fish" aria-label="つれたおさかな" aria-live="polite"><span v-for="(fish, index) in caughtFish" :key="`${fish}-${index}`" aria-hidden="true">{{ fish }}</span></div>
     </div>
@@ -22,7 +22,7 @@
 </template>
 
 <script>
-const GAME_SECONDS = 30
+const GAME_SECONDS = 15
 const REEL_TAPS = 7
 const FISH_EMOJIS = ['🐟', '🐡', '🐬', '🦀', '🐙']
 export default {

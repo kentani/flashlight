@@ -11,12 +11,8 @@
         <span class="header-bear" aria-hidden="true">🧸</span>
       </v-btn>
 
-      <v-app-bar-title class="toybox-title">おもちゃばこ</v-app-bar-title>
-
-      <v-spacer />
-
-      <v-btn icon nuxt to="/" aria-label="おもちゃをえらぶ">
-        <v-icon large>mdi-view-grid</v-icon>
+      <v-btn text nuxt to="/" aria-label="おもちゃばこのメニューへ戻る" class="toybox-title-button">
+        <v-app-bar-title class="toybox-title">おもちゃばこ</v-app-bar-title>
       </v-btn>
     </v-app-bar>
     <v-main>
@@ -104,6 +100,8 @@ body {
   letter-spacing: .08em;
   text-shadow: 0 2px 0 #d9593d;
 }
+
+.toybox-title-button { min-height: 48px !important; min-width: 190px !important; justify-content: flex-start !important; }
 
 .header-bear {
   display: inline-block;
