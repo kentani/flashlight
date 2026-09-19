@@ -37,6 +37,19 @@ describe('clown escape game', () => {
     await wrapper.vm.$nextTick()
 
     expect(wrapper.find('.runner').classes()).toContain('is-moving-left')
+    expect(wrapper.vm.runnerPosition).toBe(17)
+
+    wrapper.setData({ nextMove: 'right' })
+    await wrapper.vm.chooseMove('right')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.runner').classes()).toContain('is-moving-right')
+    expect(wrapper.vm.runnerPosition).toBe(24)
+
+    wrapper.setData({ nextMove: 'jump' })
+    await wrapper.vm.chooseMove('jump')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.runner').classes()).toContain('is-moving-jump')
+    expect(wrapper.vm.runnerPosition).toBe(24)
   })
 
   test('reaches home after eight matching moves', async () => {
