@@ -33,7 +33,7 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile --non-interactive
       - name: Generate static site
-        run: NUXT_GENERATE_DIR=.pages nuxt generate --fail-on-error
+        run: NUXT_GENERATE_DIR=.pages yarn generate --fail-on-error
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
