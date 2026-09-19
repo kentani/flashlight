@@ -40,6 +40,14 @@ describe('mole game', () => {
     expect(play).toHaveBeenCalled()
   })
 
+  test('reuses prepared audio when restarting the game', async () => {
+    await wrapper.find('.start-button').trigger('click')
+    await wrapper.find('.start-button').trigger('click')
+
+    expect(global.Audio).toHaveBeenCalledTimes(2)
+    expect(wrapper.vm.isPlaying).toBe(true)
+  })
+
   test('ends the game after thirty seconds', async () => {
     await wrapper.find('.start-button').trigger('click')
     jest.advanceTimersByTime(30000)
@@ -62,5 +70,19 @@ describe('mole game', () => {
 
     expect(wrapper.vm.score).toBe(2)
     expect(wrapper.vm.activeHole).toBe(0)
+  })
+
+  test('shows fever feedback away from the hole and ignores the synthetic click after a touch', async () => {
+    await wrapper.find('.start-button').trigger('click')
+    await wrapper.setData({ isBonusMole: true })
+    const hole = wrapper.findAll('.hole').at(0)
+
+    await hole.trigger('touchend')
+    await hole.trigger('click')
+
+    expect(wrapper.vm.score).toBe(1)
+    expect(wrapper.vm.bonusHits).toBe(1)
+    expect(wrapper.find('.fever-status').text()).toContain('フィーバー！')
+    expect(wrapper.find('.hole .fever-status').exists()).toBe(false)
   })
 })
