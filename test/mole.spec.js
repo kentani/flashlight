@@ -48,5 +48,7 @@ describe('mole game', () => {
     expect(wrapper.vm.isPlaying).toBe(false)
     expect(wrapper.vm.timeLeft).toBe(0)
     expect(wrapper.vm.activeHole).toBeNull()
+    expect(wrapper.find('.game-result').exists()).toBe(true)
+    expect(wrapper.find('.result-button').text()).toBe('もういちど あそぶ')
   })
 })

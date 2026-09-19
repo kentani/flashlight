@@ -36,8 +36,18 @@
         </button>
       </div>
 
+      <div v-if="hasPlayed && !isPlaying" class="game-result" role="alert">
+        <div class="game-result__card">
+          <p class="game-result__title">じかんだよ！</p>
+          <p>こんかいのスコア</p>
+          <strong>{{ score }}<small>てん</small></strong>
+          <p class="game-result__hint">もういちど あそぶ？</p>
+          <button type="button" class="result-button" @click="startGame">もういちど あそぶ</button>
+        </div>
+      </div>
+
       <button type="button" class="start-button" @click="startGame">
-        {{ isPlaying ? 'もういちど はじめる' : hasPlayed ? 'もういちど あそぶ' : 'はじめる' }}
+        {{ isPlaying ? 'さいしょから やりなおす' : hasPlayed ? 'もういちど あそぶ' : 'はじめる' }}
       </button>
     </div>
   </section>
@@ -46,6 +56,9 @@
 <script>
 import moleSound from '@/assets/sounds/switch1.mp3'
 import whackSound from '@/assets/sounds/ok.mp3'
+
+const MIN_MOLE_DURATION = 1250
+const MAX_MOLE_DURATION = 2200
 
 export default {
   name: 'MolePage',
@@ -95,7 +108,7 @@ export default {
       this.moleTimer = setTimeout(() => {
         this.activeHole = null
         this.showMole()
-      }, 750)
+      }, this.moleDuration())
     },
     whack (hole) {
       if (!this.isPlaying || hole !== this.activeHole) return
@@ -121,6 +134,9 @@ export default {
       this.moleTimer = null
       this.whackTimer = null
       this.countdownTimer = null
+    },
+    moleDuration () {
+      return MIN_MOLE_DURATION + Math.floor(Math.random() * (MAX_MOLE_DURATION - MIN_MOLE_DURATION + 1))
     },
     prepareAudio () {
       if (!this.moleAudio) this.moleAudio = this.createAudio(moleSound)
@@ -238,10 +254,22 @@ p { font-size: 1.1rem; font-weight: bold; margin: 0; }
 .star-one { left: 2%; top: 8%; }
 .star-two { right: 4%; top: 28%; }
 
+.game-result { align-items: center; background: rgba(52, 34, 20, .55); display: flex; inset: 0; justify-content: center; padding: 20px; position: fixed; z-index: 10; }
+.game-result__card { animation: result-pop .3s ease-out; background: #fff8dc; border: 6px solid #765334; border-radius: 28px; box-shadow: 0 9px 0 #4f301d; color: #55402a; max-width: 360px; padding: 28px 20px 24px; text-align: center; width: 100%; }
+.game-result__card p { font-size: 1.25rem; }
+.game-result__card .game-result__title { color: #e05b3f; font-size: clamp(2rem, 10vw, 3.2rem); margin-bottom: 12px; }
+.game-result__card strong { color: #e05b3f; display: block; font-size: clamp(3.5rem, 18vw, 5.5rem); line-height: 1; margin: 8px 0; }
+.game-result__card strong small { color: #55402a; font-size: 1.2rem; margin-left: 5px; }
+.game-result__hint { margin-bottom: 14px; }
+.result-button { animation: button-bounce 1s ease-in-out infinite; background: #f3a344; border: 4px solid #765334; border-radius: 999px; box-shadow: 0 5px 0 #765334; color: #fff; cursor: pointer; font: bold 1.35rem "Yomogi", cursive; padding: 12px 26px; }
+.result-button:active { box-shadow: 0 1px 0 #765334; transform: translateY(4px); }
+
 @keyframes mole-pop { from { transform: translate(-50%, 40%) scale(.7); } to { transform: translate(-50%, 0) scale(1); } }
 @keyframes impact { from { opacity: 0; transform: translateX(-50%) scale(.3); } 55% { opacity: 1; } to { opacity: 0; transform: translateX(-50%) scale(1.25); } }
 @keyframes hammer { from { transform: rotate(-45deg) scale(1.15); } to { transform: rotate(25deg) scale(.85); } }
 @keyframes star { from { opacity: 1; transform: scale(.4) rotate(0); } to { opacity: 0; transform: translateY(-28px) scale(1.15) rotate(100deg); } }
+@keyframes result-pop { from { opacity: 0; transform: scale(.7); } to { opacity: 1; transform: scale(1); } }
+@keyframes button-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
 
 .start-button {
   background: #f3a344;
