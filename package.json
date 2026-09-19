@@ -10,7 +10,8 @@
     "generate": "nuxt generate",
     "test": "jest",
     "test:ci": "jest --ci --runInBand",
-    "lint": "eslint pages layouts scripts static/sw.js nuxt.config.js jest.config.js --ext .js,.vue",
+    "lint": "eslint pages layouts scripts nuxt.config.js jest.config.js --ext .js,.vue",
+    "lint:pwa": "eslint static/sw.js",
     "generate:check": "NUXT_GENERATE_DIR=.preview nuxt generate --fail-on-error"
   },
   "dependencies": {

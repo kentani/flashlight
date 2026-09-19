@@ -31,6 +31,7 @@ Nuxt 2.16 の依存パッケージは古い Node バージョン範囲を宣言�
 ```sh
 yarn test:ci        # Jest を非対話・単一プロセスで実行
 yarn lint           # ESLint による JavaScript / Vue の静的検査
+yarn lint:pwa       # ビルド後に生成されるPWA Service Workerの静的検査
 yarn build          # 本番ビルド（.nuxt/）
 yarn generate:check # 静的サイトの生成確認（.preview/）
 ```

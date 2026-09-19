@@ -12,6 +12,7 @@
 
 - [ ] `yarn test:ci`
 - [ ] `yarn lint`
+- [ ] `yarn lint:pwa`（PWA Service Worker）
 - [ ] `yarn build`
 - [ ] ブラウザ確認（UI変更時：モバイル・PC）
 - [ ] 実装担当と独立したCodexレビュー
