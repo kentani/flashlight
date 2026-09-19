@@ -12,7 +12,7 @@ permissions:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -34,3 +34,14 @@ jobs:
         run: yarn lint:pwa
       - name: Check static build
         run: yarn generate:check
+      - name: Install Playwright Chromium
+        run: yarn playwright install chromium chromium-headless-shell --with-deps
+      - name: Check UI/UX in desktop and mobile Chromium
+        run: yarn test:e2e
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14

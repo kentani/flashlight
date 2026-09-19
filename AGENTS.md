@@ -29,6 +29,7 @@
 - Run `yarn test:ci` and `yarn build` after code or dependency changes; report any failures and whether they predate the change.
 - For UI changes, also inspect the affected route in a browser at mobile and desktop sizes. Automated tests alone do not verify audio playback, touch behavior or offline PWA behavior.
 - Run `yarn lint` after code or dependency changes; report any failures and whether they predate the change.
+- Run `yarn test:e2e` after UI changes. It uses Playwright to check the mobile and desktop Chromium layouts, horizontal overflow, touch-target size and selected core interactions. It supplements, but does not replace, the independent browser UI/UX review.
 - Keep secrets and local environment files out of commits. No application secrets are required for the standard local setup.
 - Work on a task branch, review the diff and summarize changes and verification in the PR. Keep generated files out of ordinary implementation PRs.
 - PR を作成・更新する前に、変更対象に応じた確認（コード変更では `yarn test:ci` と `yarn build`、UI変更ではモバイル・PCのブラウザ確認）を完了し、`git diff` と `git status` を確認する。失敗または未確認の項目は、PR本文の「確認したこと」に正確に記載する。

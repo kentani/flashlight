@@ -1,5 +1,8 @@
 module.exports = {
   testMatch: ['<rootDir>/test/**/*.spec.js'],
+  testPathIgnorePatterns: [
+    '<rootDir>/test/e2e/'
+  ],
   moduleNameMapper: {
     '\\.(ogg|mp3|wav|mpe?g|png|jpe?g|gif|svg)$': '<rootDir>/test/mocks/file.js',
     '^@/(.*)$': '<rootDir>/$1',
