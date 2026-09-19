@@ -60,9 +60,9 @@ export default {
       this.$refs.hook.style.transition = "transform 0.5s ease";
       this.$refs.hook.style.transform = `translateY(${touchY}px)`;
 
-      setTimeout(() => this.checkCatch(touchY), 500);
+      setTimeout(() => this.checkCatch(), 500);
     },
-    checkCatch(touchY) {
+    checkCatch() {
       const fishElements = document.querySelectorAll(".fish");
 
       fishElements.forEach((fish) => {
