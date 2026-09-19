@@ -52,13 +52,47 @@ describe('clown escape game', () => {
     expect(wrapper.vm.runnerPosition).toBe(24)
   })
 
-  test('reaches home after eight matching moves', async () => {
+  test('reaches home through the run, hide, and jump route', async () => {
     await wrapper.find('.run-button').trigger('click')
-    for (let count = 0; count < 8; count += 1) await wrapper.find('.move-button.is-next').trigger('click')
+    while (wrapper.vm.runnerDistance < 6) {
+      if (wrapper.vm.isHiding) {
+        jest.advanceTimersByTime(1400)
+        await wrapper.vm.$nextTick()
+      } else {
+        await wrapper.find('.move-button.is-next').trigger('click')
+      }
+    }
 
     expect(wrapper.vm.result).toBe('safe')
     expect(wrapper.vm.isPlaying).toBe(false)
     expect(wrapper.text()).toContain('にげきれた！')
+  })
+
+  test('keeps the runner hidden at the tree until the next action', async () => {
+    await wrapper.find('.run-button').trigger('click')
+    wrapper.setData({ route: ['run', 'hide', 'jump', 'run', 'jump', 'run'], nextMove: 'run' })
+    await wrapper.find('.move-button.is-next').trigger('click')
+    await wrapper.find('.move-button.is-next').trigger('click')
+
+    expect(wrapper.vm.isHidden).toBe(true)
+    expect(wrapper.vm.isHiding).toBe(true)
+
+    jest.advanceTimersByTime(1400)
+    await wrapper.vm.$nextTick()
+    expect(wrapper.vm.isHidden).toBe(false)
+    expect(wrapper.vm.clownPassed).toBe(true)
+  })
+
+  test('changes the action order for a new course', () => {
+    const randomSpy = jest.spyOn(Math, 'random').mockReturnValueOnce(.1).mockReturnValueOnce(.8).mockReturnValueOnce(.2)
+    const firstCourse = wrapper.vm.createRoute()
+    randomSpy.mockReturnValueOnce(.9).mockReturnValueOnce(.3).mockReturnValueOnce(.7)
+    const secondCourse = wrapper.vm.createRoute()
+
+    expect(firstCourse).not.toEqual(secondCourse)
+    expect(firstCourse).toHaveLength(6)
+    expect(firstCourse[0]).toBe('run')
+    randomSpy.mockRestore()
   })
 
   test('ends kindly when the clown catches up', async () => {
