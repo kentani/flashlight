@@ -28,7 +28,7 @@
 - Browser APIs such as Audio, canvas and timers need mocks/cleanup in tests. Static file imports use `test/mocks/file.js`.
 - Run `yarn test:ci` and `yarn build` after code or dependency changes; report any failures and whether they predate the change.
 - For UI changes, also inspect the affected route in a browser at mobile and desktop sizes. Automated tests alone do not verify audio playback, touch behavior or offline PWA behavior.
-- There is currently no lint command. Do not claim lint passed.
+- Run `yarn lint` after code or dependency changes; report any failures and whether they predate the change.
 - Keep secrets and local environment files out of commits. No application secrets are required for the standard local setup.
 - Work on a task branch, review the diff and summarize changes and verification in the PR. Keep generated files out of ordinary implementation PRs.
 - PR を作成・更新する前に、変更対象に応じた確認（コード変更では `yarn test:ci` と `yarn build`、UI変更ではモバイル・PCのブラウザ確認）を完了し、`git diff` と `git status` を確認する。失敗または未確認の項目は、PR本文の「確認したこと」に正確に記載する。
@@ -43,6 +43,7 @@
 - Before reporting completion, confirm the development-server command has stopped. Once a PR is created or handed off, archive the Codex task so its managed Worktree becomes eligible for automatic cleanup. Do not manually delete the current or a persistent Worktree.
 
 ## Pull requests
+- Before creating or updating a pull request, have a Codex task that did not implement the change perform an independent, read-only diff review. Use `.github/review-agent.md` as the review prompt. For UI changes, the reviewer must also perform a UI/UX review in a browser at mobile and desktop sizes. Resolve actionable findings, then repeat relevant validation before creating the PR.
 - Before creating or updating a pull request, read `.github/pull_request_template.md`.
 - Keep every heading and checklist from that template in the pull request body. Replace placeholders with task-specific content and mark only checks that were actually completed.
 - When using `gh pr create` or `gh pr edit`, construct the body from the template; never supply a custom body that omits the template's sections.

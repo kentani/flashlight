@@ -183,15 +183,6 @@ export default {
         y = e.clientY;
       }
 
-      let pensile = 0;
-      if (this.currentPenSize === 0) {
-        pensile = 1
-      } else if (this.currentPenSize === 1) {
-        pensile = 5
-      } else if (this.currentPenSize === 2) {
-        pensile = 10
-      }
-
       this.rect = this.canvas.getBoundingClientRect();
       this.mouseX = x - this.rect.left;
       this.mouseY = y - this.rect.top;

@@ -23,7 +23,7 @@
 import switchSound from '@/assets/sounds/switch1.mp3'
 
 export default {
-  name: 'switch',
+  name: 'SwitchPage',
   data: () => ({
     switch1: false,
     audio: {},
