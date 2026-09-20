@@ -6,12 +6,12 @@
       <div class="passcode-dots" aria-label="入力したばんごう"><i v-for="index in passcode.length" :key="index" :class="{ 'is-filled': enteredCode.length >= index }"></i></div>
       <p v-if="isUnlocked" class="message message--success">あいた！ 🎉</p>
       <div class="keypad" aria-label="ばんごうボタン">
-        <button v-for="key in keys" :key="key.number" class="keypad__key" type="button" :disabled="isCracked || isUnlocked" @click.stop="pressNumber(key.number)"><span>{{ key.number }}</span><small>{{ key.letters }}</small></button>
-        <button class="keypad__key keypad__key--zero" type="button" :disabled="isCracked || isUnlocked" @click.stop="pressNumber('0')"><span>0</span></button>
+        <button v-for="key in keys" :key="key.number" class="keypad__key" type="button" :disabled="isCracked || isUnlocked" @click.stop="pressNumber(key.number, $event)"><span>{{ key.number }}</span><small>{{ key.letters }}</small></button>
+        <button class="keypad__key keypad__key--zero" type="button" :disabled="isCracked || isUnlocked" @click.stop="pressNumber('0', $event)"><span>0</span></button>
       </div>
       <button class="restart-button" type="button" @click.stop="restart">{{ isCracked || isUnlocked ? 'もういちど' : 'やりなおす' }}</button>
     </div>
-    <div v-if="isCracked" class="crack-overlay" aria-hidden="true" @click="addCrack"><i class="impact"></i><i v-for="line in visibleCrackLines" :key="line.className" class="crack-line" :class="line.className" :style="line.style"></i></div>
+    <div v-if="isCracked" class="crack-overlay" aria-hidden="true" @click="addCrack($event)"><i class="impact"></i><i v-for="line in visibleCrackLines" :key="line.className" class="crack-line" :class="line.className" :style="line.style"></i></div>
   </section>
 </template>
 
@@ -31,22 +31,26 @@ export default {
     visibleCrackLines () { return this.crackLines }
   },
   methods: {
-    pressNumber (number) {
+    pressNumber (number, event) {
       this.enteredCode.push(number)
       if (this.enteredCode.length < this.passcode.length) return
       if (this.enteredCode.join('') === this.passcode.join('')) {
         this.isUnlocked = true
       } else {
         this.isCracked = true
-        this.addCrack()
+        this.addCrack(event)
       }
     },
-    addCrack () {
+    addCrack (event) {
       if (!this.isCracked) return
       const index = this.crackCount
-      const origins = [[49, 47], [35, 38], [66, 59], [27, 66], [73, 29], [48, 72]]
       const angles = [-154, -84, -29, 24, 78, 143]
-      const origin = origins[index % origins.length]
+      const viewportWidth = window.innerWidth || 1
+      const viewportHeight = window.innerHeight || 1
+      const hasPosition = event && typeof event.clientX === 'number' && typeof event.clientY === 'number'
+      const origin = hasPosition
+        ? [Math.max(0, Math.min(100, (event.clientX / viewportWidth) * 100)), Math.max(0, Math.min(100, (event.clientY / viewportHeight) * 100))]
+        : [49, 47]
       const rotation = (index % 5) * 11
       angles.slice(index % 3, (index % 3) + 3).forEach((angle, lineIndex) => {
         this.crackLines.push({
