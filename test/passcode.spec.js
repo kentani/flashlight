@@ -15,6 +15,7 @@ describe('passcode game', () => {
     wrapper.vm.addCrack({ clientX: 320, clientY: 240 })
     expect(wrapper.vm.crackCount).toBe(2)
     expect(wrapper.vm.crackLines[3].style).toContain('--left: 31.25%')
+    expect(wrapper.vm.impacts[1].style).toContain('--left: 31.25%')
     for (let count = 0; count < 20; count++) wrapper.vm.addCrack()
     expect(wrapper.vm.crackCount).toBe(22)
     expect(wrapper.find('.crack-overlay').exists()).toBe(true)
