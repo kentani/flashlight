@@ -9,7 +9,7 @@
       class="toybox-header"
     >
       <v-btn text nuxt to="/" :ripple="false" aria-label="おもちゃばこのメニューへ戻る" class="toybox-home-button" :class="{ 'is-home-pressed': homePressed }" @click.native="playHomePress">
-        <img class="header-toybox-icon" src="/flashlight/toybox-icon-192.png" alt="">
+        <img class="header-toybox-icon" src="/flashlight/toybox-header-icon.png" alt="">
         <span class="toybox-title">おもちゃばこ</span>
       </v-btn>
     </v-app-bar>
