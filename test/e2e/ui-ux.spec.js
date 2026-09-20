@@ -19,6 +19,20 @@ test.describe('UI/UX の基本操作', () => {
     await expect(page).toHaveURL(/\/flashlight\/flashlight$/)
   })
 
+  test('メニューはできたをめざそうとさわってあそぼうに分かれている', async ({ page }) => {
+    await page.goto('.')
+
+    const gameCategory = page.getByRole('region', { name: 'できたをめざそう' })
+    await expect(gameCategory.getByRole('link', { name: /もぐらたたき/ })).toBeVisible()
+    await expect(gameCategory.getByRole('link', { name: /ライト/ })).toHaveCount(0)
+    await expect(gameCategory.getByRole('link', { name: /パスコード/ })).toHaveCount(0)
+
+    const toolCategory = page.getByRole('region', { name: 'さわってあそぼう' })
+    await expect(toolCategory.getByRole('link', { name: /ライト/ })).toBeVisible()
+    await expect(toolCategory.getByRole('link', { name: /もぐらたたき/ })).toHaveCount(0)
+    await expect(toolCategory.getByRole('link', { name: /パスコード/ })).toBeVisible()
+  })
+
   test('くるまレースは大きなボタンで車線を動かせる', async ({ page }) => {
     await page.goto('race')
 
