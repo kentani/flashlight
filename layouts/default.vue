@@ -7,12 +7,9 @@
       elevation="6"
       class="toybox-header"
     >
-      <v-btn icon nuxt to="/" aria-label="おもちゃばこのメニューへ">
-        <span class="header-bear" aria-hidden="true">🧸</span>
-      </v-btn>
-
-      <v-btn text nuxt to="/" aria-label="おもちゃばこのメニューへ戻る" class="toybox-title-button">
-        <v-app-bar-title class="toybox-title">おもちゃばこ</v-app-bar-title>
+      <v-btn text nuxt to="/" :ripple="false" aria-label="おもちゃばこのメニューへ戻る" class="toybox-home-button" :class="{ 'is-home-pressed': homePressed }" @click.native="playHomePress">
+        <img class="header-toybox-icon" src="/flashlight/toybox-icon-192.png" alt="">
+        <span class="toybox-title">おもちゃばこ</span>
       </v-btn>
     </v-app-bar>
     <v-main>
@@ -28,6 +25,8 @@ export default {
   name: 'DefaultLayout',
   data () {
     return {
+      homePressed: false,
+      homePressTimer: null,
       clipped: false,
       drawer: false,
       fixed: false,
@@ -49,6 +48,18 @@ export default {
       right: true,
       rightDrawer: false,
       title: 'Vuetify.js'
+    }
+  },
+  beforeDestroy () {
+    clearTimeout(this.homePressTimer)
+  },
+  methods: {
+    playHomePress () {
+      this.homePressed = true
+      clearTimeout(this.homePressTimer)
+      this.homePressTimer = setTimeout(() => {
+        this.homePressed = false
+      }, 180)
     }
   }
 }
@@ -90,6 +101,20 @@ body {
   font-weight: bold;
 }
 
+.toybox-header,
+.toybox-header .v-toolbar__content,
+.toybox-home-button {
+  overflow: visible !important;
+}
+
+.toybox-home-button {
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+  min-height: 48px !important;
+  min-width: 236px !important;
+  justify-content: flex-start !important;
+}
+
 .toybox-header {
   border-bottom: 5px solid #3989b2 !important;
 }
@@ -101,13 +126,32 @@ body {
   text-shadow: 0 2px 0 #3989b2;
 }
 
-.toybox-title-button { min-height: 48px !important; min-width: 190px !important; justify-content: flex-start !important; }
+.header-toybox-icon,
+.toybox-title {
+  transition: transform .14s ease, filter .14s ease;
+}
 
-.header-bear {
+.toybox-home-button:active .header-toybox-icon,
+.toybox-home-button.is-home-pressed .header-toybox-icon {
+  transform: translate(7px, 11px) rotate(-2deg) scale(.86);
+  filter: brightness(.9);
+}
+
+.header-toybox-icon {
   display: inline-block;
-  font-size: 1.7rem;
-  line-height: 1;
-  transform: rotate(-8deg);
+  width: 68px;
+  height: 68px;
+  margin-right: 10px;
+  max-width: none;
+  object-fit: contain;
+  transform: translate(7px, 7px) rotate(-7deg);
+}
+
+@media (max-width: 420px) {
+  .header-toybox-icon {
+    width: 62px;
+    height: 62px;
+  }
 }
 
 .theme--dark.v-btn--active:hover::before, .theme--dark.v-btn--active::before {
