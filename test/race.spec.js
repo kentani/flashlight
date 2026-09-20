@@ -16,7 +16,7 @@ describe('car race game', () => {
   })
 
   test('starts and moves between lanes', async () => {
-    await wrapper.findAll('button').at(1).trigger('click')
+    await wrapper.find('button').trigger('click')
     await wrapper.findAll('button').at(0).trigger('click')
     expect(wrapper.vm.lane).toBe(0)
     await wrapper.findAll('button').at(1).trigger('click')

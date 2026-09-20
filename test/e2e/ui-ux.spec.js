@@ -34,6 +34,33 @@ test.describe('UI/UX の基本操作', () => {
     await up.click()
   })
 
+  test('ゲームは中央の舞台の下のはじめるボタンから遊びを始められる', async ({ page }) => {
+    const games = [
+      { route: 'clown', stage: '.race-field' },
+      { route: 'race', stage: '.track' },
+      { route: 'mole', stage: '.mole-field' },
+      { route: 'fishing', stage: '.pond' },
+      { route: 'word', stage: '.main' }
+    ]
+    for (const game of games) {
+      await page.goto(game.route)
+      const start = page.getByRole('button', { name: 'はじめる' })
+      await expect(start).toBeVisible()
+      const stage = page.locator(game.stage)
+      const startBox = await start.boundingBox()
+      const stageBox = await stage.boundingBox()
+      expect(startBox.y).toBeGreaterThanOrEqual(stageBox.y + stageBox.height)
+      const viewport = page.viewportSize()
+      const stageCenter = stageBox.y + stageBox.height / 2
+      expect(Math.abs(stageCenter - viewport.height / 2)).toBeLessThanOrEqual(36)
+      await start.click()
+      if (game.route === 'race') {
+        await expect(page.getByRole('button', { name: /うえ/ })).toBeVisible()
+        await expect(page.getByRole('button', { name: /した/ })).toBeVisible()
+      }
+    }
+  })
+
   test('しんごうきは大きなボタンで色と合図を切り替えられる', async ({ page }) => {
     await page.goto('traffic-light')
     const goSignal = page.getByRole('button', { name: /すすめ/ })

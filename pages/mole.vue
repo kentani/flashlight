@@ -10,15 +10,23 @@
         </div>
         <div class="scoreboard" aria-live="polite">
           <div><span>のこり</span><strong>{{ timeLeft }}</strong><small>びょう</small></div>
-          <div><span>スコア</span><strong>{{ score }}</strong></div>
+          <div class="score-card" :class="{ 'is-scoring': whackedHole !== null }">
+            <span>スコア</span>
+            <strong :key="'score-' + hitPulse">{{ score }}</strong>
+            <span v-if="whackedHole !== null" :key="'score-pop-' + hitPulse" class="score-pop" aria-hidden="true">+1</span>
+          </div>
         </div>
       </header>
 
-      <div class="mole-field" :class="{ 'is-playing': isPlaying, 'is-fever': isFever }">
-        <div v-if="isFever" class="fever-status" aria-live="polite">
+      <div class="mole-field" :class="{ 'is-playing': isPlaying, 'is-fever': isFever, 'is-hit': whackedHole !== null }">
+        <div v-if="isFever" class="fever-status" :class="feverPulse % 2 ? 'is-pulse-odd' : 'is-pulse-even'" aria-live="polite">
           <span class="fever-status__sparkle" aria-hidden="true">★</span>
           <strong>フィーバー！</strong>
           <span class="fever-status__hits">れんだ {{ bonusHits }} かい！</span>
+          <span class="fever-status__meter" :class="{ 'is-max': feverMeter === 100, 'is-pulse-odd': feverPulse % 2 }" aria-hidden="true">
+            <i :style="{ width: feverMeter + '%' }"></i>
+            <b v-for="step in 5" :key="step" :class="{ 'is-filled': bonusHits >= step }">★</b>
+          </span>
           <span :key="feverPulse" class="fever-status__burst" aria-hidden="true">✨</span>
         </div>
         <button
@@ -34,11 +42,15 @@
         >
           <span class="dirt"></span>
           <span class="mole" aria-hidden="true">🐹</span>
-          <span v-if="whackedHole === hole" class="hit-effect" aria-hidden="true">
+          <span v-if="whackedHole === hole" :key="hitPulse" class="hit-effect" aria-hidden="true">
             <span class="impact">💥</span>
             <span class="hammer">🔨</span>
             <span class="star star-one">★</span>
             <span class="star star-two">★</span>
+            <span class="tap-cheer">ポン！</span>
+            <span class="spark spark-one">✦</span>
+            <span class="spark spark-two">✦</span>
+            <span class="spark spark-three">✦</span>
           </span>
         </button>
       </div>
@@ -54,7 +66,7 @@
         </div>
       </div>
 
-      <GameStartOverlay v-if="!isPlaying && !hasPlayed" title="もぐらたたき" message="もぐらを みつけて タップ！" @start="startGame" />
+      <GameStartButton v-if="!isPlaying && !hasPlayed" @click="startGame">はじめる</GameStartButton>
 
       <button v-if="isPlaying || hasPlayed" type="button" class="start-button" @click="startGame">
         {{ isPlaying ? 'さいしょから やりなおす' : hasPlayed ? 'もういちど あそぶ' : 'はじめる' }}
@@ -65,6 +77,7 @@
 
 <script>
 import whackSound from '@/assets/sounds/ok.mp3'
+import GameStartButton from '@/components/GameStartButton.vue'
 
 const MIN_MOLE_DURATION = 1250
 const MAX_MOLE_DURATION = 2200
@@ -73,6 +86,7 @@ const GAME_DURATION = 15
 
 export default {
   name: 'MolePage',
+  components: { GameStartButton },
   data () {
     return {
       holes: [0, 1, 2, 3, 4, 5, 6, 7, 8],
@@ -83,6 +97,7 @@ export default {
       isBonusMole: false,
       bonusHits: 0,
       feverPulse: 0,
+      hitPulse: 0,
       lastHoleTouchAt: 0,
       isPlaying: false,
       hasPlayed: false,
@@ -98,6 +113,9 @@ export default {
   computed: {
     isFever () {
       return this.isPlaying && this.activeHole !== null && this.isBonusMole
+    },
+    feverMeter () {
+      return Math.min(100, this.bonusHits * 20)
     },
     resultTitle () {
       if (this.isNewRecord) return 'しんきろく！'
@@ -128,6 +146,7 @@ export default {
       this.isBonusMole = false
       this.bonusHits = 0
       this.feverPulse = 0
+      this.hitPulse = 0
       this.lastHoleTouchAt = 0
       this.isNewRecord = false
       this.isPlaying = true
@@ -161,6 +180,7 @@ export default {
       }
       this.whackedHole = hole
       this.score += 1
+      this.hitPulse += 1
       if (this.isBonusMole) {
         this.bonusHits += 1
         this.feverPulse += 1
@@ -275,6 +295,7 @@ export default {
 
 .game-panel {
   max-width: 620px;
+  transform: translateY(clamp(-48px, -5.5vh, -32px));
   width: 100%;
 }
 
@@ -293,7 +314,10 @@ p { font-size: 1.1rem; font-weight: bold; margin: 0; }
 .scoreboard { display: flex; gap: 10px; text-align: center; }
 .scoreboard div { background: #fff9e7; border: 3px solid #765334; border-radius: 14px; min-width: 82px; padding: 6px 8px; }
 .scoreboard span, .scoreboard small { display: block; font-size: .75rem; font-weight: bold; }
-.scoreboard strong { color: #e05b3f; font-size: 1.8rem; line-height: 1; }
+.scoreboard strong { color: #e05b3f; display: block; font-size: 1.8rem; line-height: 1; }
+.score-card { position: relative; }
+.score-card strong { animation: score-bump .28s ease-out; }
+.score-pop { animation: score-pop .46s ease-out forwards; color: #e85d42; font: bold 1.15rem "Yomogi", cursive; left: 50%; position: absolute; text-shadow: 0 2px #fff9e7; top: 30%; transform: translateX(-50%); }
 
 .mole-field {
   background: repeating-linear-gradient(135deg, #a96e39 0 9px, #b97940 9px 18px);
@@ -302,14 +326,17 @@ p { font-size: 1.1rem; font-weight: bold; margin: 0; }
   box-shadow: inset 0 0 0 5px #d79a55, 0 10px 0 rgba(85, 64, 42, .2);
   display: grid;
   gap: clamp(10px, 3vw, 22px);
+  grid-template-rows: repeat(3, minmax(0, 1fr));
   grid-template-columns: repeat(3, 1fr);
+  height: min(48vw, 330px);
+  min-height: 260px;
   padding: clamp(18px, 6vw, 42px);
   position: relative;
 }
-.mole-field.is-fever { box-shadow: inset 0 0 0 5px #ffe46b, inset 0 0 30px rgba(255, 218, 72, .8), 0 10px 0 rgba(85, 64, 42, .2); padding-top: clamp(68px, 14vw, 86px); }
+.mole-field.is-fever { box-shadow: inset 0 0 0 5px #ffe46b, inset 0 0 30px rgba(255, 218, 72, .8), 0 10px 0 rgba(85, 64, 42, .2); }
 
 .hole {
-  aspect-ratio: 1;
+  aspect-ratio: auto;
   background: transparent;
   border: 0;
   cursor: default;
@@ -333,10 +360,25 @@ p { font-size: 1.1rem; font-weight: bold; margin: 0; }
 .star { animation: star .3s ease-out forwards; color: #fff4a7; font-size: clamp(1.3rem, 5vw, 2.2rem); position: absolute; text-shadow: 0 2px #d9792e; }
 .star-one { left: 2%; top: 8%; }
 .star-two { right: 4%; top: 28%; }
+.tap-cheer { animation: tap-cheer .34s ease-out forwards; color: #fff9e7; font: bold clamp(1rem, 5vw, 1.65rem) "Yomogi", cursive; left: 50%; position: absolute; text-shadow: 0 3px #d54d38; top: 5%; transform: translateX(-50%); white-space: nowrap; }
+.spark { animation: spark-pop .4s ease-out forwards; color: #ffe45c; font-size: clamp(1rem, 4vw, 1.8rem); position: absolute; text-shadow: 0 2px #e85d42; }
+.spark-one { left: 9%; top: 34%; }
+.spark-two { right: 7%; top: 6%; }
+.spark-three { bottom: 24%; right: 19%; }
+.mole-field.is-hit { animation: field-flash .22s ease-out; }
 .bonus-mole .mole { animation: bonus-wiggle .45s ease-in-out infinite alternate; filter: drop-shadow(0 0 7px #fff6a6); }
-.fever-status { align-items: center; animation: fever-status .45s ease-out; background: #e85d42; border: 3px solid #fff8dc; border-radius: 999px; box-shadow: 0 4px 0 #a93b2a, 0 0 0 4px #ffcf4d; color: #fff; display: flex; gap: 7px; left: 50%; min-height: 42px; padding: 5px 13px; position: absolute; top: clamp(7px, 2vw, 14px); transform: translateX(-50%); white-space: nowrap; z-index: 7; }
+.fever-status { align-items: center; background: #e85d42; border: 3px solid #fff8dc; border-radius: 999px; box-shadow: 0 4px 0 #a93b2a, 0 0 0 4px #ffcf4d; color: #fff; display: flex; flex-wrap: wrap; gap: 4px 7px; justify-content: center; left: 50%; min-height: 42px; padding: 5px 13px; position: absolute; top: 0; transform: translate(-50%, -65%); white-space: nowrap; z-index: 7; }
+.fever-status.is-pulse-even { animation: fever-wobble-left .62s cubic-bezier(.2, .75, .25, 1); }
+.fever-status.is-pulse-odd { animation: fever-wobble-right .62s cubic-bezier(.2, .75, .25, 1); }
 .fever-status strong { font-size: clamp(1rem, 4vw, 1.35rem); line-height: 1; }
 .fever-status__hits { background: #fff8dc; border-radius: 999px; color: #d94f36; font-size: clamp(.75rem, 3vw, 1rem); font-weight: bold; padding: 4px 7px; }
+.fever-status__meter { align-items: center; background: rgba(98, 42, 34, .42); border: 2px solid #fff8dc; border-radius: 999px; display: flex; flex-basis: 100%; height: 15px; overflow: hidden; position: relative; }
+.fever-status__meter i { background: linear-gradient(90deg, #ffe45c, #fff8c5); border-radius: inherit; display: block; height: 100%; left: 0; position: absolute; top: 0; transition: width .22s cubic-bezier(.2, .9, .35, 1.35); }
+.fever-status__meter b { color: rgba(255, 248, 197, .42); flex: 1; font-size: .68rem; line-height: 1; position: relative; text-align: center; text-shadow: 0 1px #8a3c2d; z-index: 1; }
+.fever-status__meter b.is-filled { animation: meter-star .32s ease-out; color: #fff; text-shadow: 0 1px #dd672d, 0 0 5px #fff8b6; }
+.fever-status__meter.is-max { border-color: #fff6a8; box-shadow: 0 0 8px 2px #ffe45c; }
+.fever-status__meter.is-max.is-pulse-odd { animation: meter-glow .55s ease-in-out infinite alternate, meter-flash-left .42s ease-out; }
+.fever-status__meter.is-max:not(.is-pulse-odd) { animation: meter-glow .55s ease-in-out infinite alternate, meter-flash-right .42s ease-out; }
 .fever-status__sparkle { animation: sparkle .4s ease-in-out infinite alternate; color: #fff3a3; font-size: 1.2rem; }
 .fever-status__burst { animation: fever-burst .38s ease-out forwards; font-size: 1.5rem; position: absolute; right: -12px; top: -13px; }
 
@@ -354,34 +396,44 @@ p { font-size: 1.1rem; font-weight: bold; margin: 0; }
 @keyframes impact { from { opacity: 0; transform: translateX(-50%) scale(.3); } 55% { opacity: 1; } to { opacity: 0; transform: translateX(-50%) scale(1.25); } }
 @keyframes hammer { from { transform: rotate(-45deg) scale(1.15); } to { transform: rotate(25deg) scale(.85); } }
 @keyframes star { from { opacity: 1; transform: scale(.4) rotate(0); } to { opacity: 0; transform: translateY(-28px) scale(1.15) rotate(100deg); } }
+@keyframes tap-cheer { from { opacity: 0; transform: translate(-50%, 14px) scale(.5); } 45% { opacity: 1; transform: translate(-50%, -8px) scale(1.14); } to { opacity: 0; transform: translate(-50%, -25px) scale(.9); } }
+@keyframes spark-pop { from { opacity: 0; transform: scale(.3) rotate(0); } 35% { opacity: 1; } to { opacity: 0; transform: translateY(-36px) scale(1.25) rotate(110deg); } }
+@keyframes field-flash { 45% { box-shadow: inset 0 0 0 5px #fff0a4, inset 0 0 28px rgba(255, 236, 111, .92), 0 10px 0 rgba(85, 64, 42, .2); } }
+@keyframes score-bump { 45% { color: #ff7a45; transform: scale(1.42); } }
+@keyframes score-pop { from { opacity: 0; transform: translate(-50%, 10px) scale(.5); } 35% { opacity: 1; } to { opacity: 0; transform: translate(-50%, -24px) scale(1.1); } }
 @keyframes result-pop { from { opacity: 0; transform: scale(.7); } to { opacity: 1; transform: scale(1); } }
 @keyframes button-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
 @keyframes bonus-wiggle { from { transform: translate(-50%, 0) rotate(-5deg) scale(1.04); } to { transform: translate(-50%, 0) rotate(5deg) scale(1.1); } }
-@keyframes fever-status { from { opacity: 0; transform: translateX(-50%) translateY(-10px) scale(.8); } to { opacity: 1; transform: translateX(-50%) scale(1); } }
+@keyframes fever-wobble-left { from { transform: translate(-50%, -65%) rotate(-9deg) scale(.94); } 22% { transform: translate(-50%, -72%) rotate(9deg) scale(1.12); } 44% { transform: translate(-50%, -58%) rotate(-7deg) scale(1.04); } 66% { transform: translate(-50%, -69%) rotate(5deg) scale(1.07); } 84% { transform: translate(-50%, -62%) rotate(-3deg) scale(1.02); } to { transform: translate(-50%, -65%) rotate(0) scale(1); } }
+@keyframes fever-wobble-right { from { transform: translate(-50%, -65%) rotate(9deg) scale(.94); } 22% { transform: translate(-50%, -72%) rotate(-9deg) scale(1.12); } 44% { transform: translate(-50%, -58%) rotate(7deg) scale(1.04); } 66% { transform: translate(-50%, -69%) rotate(-5deg) scale(1.07); } 84% { transform: translate(-50%, -62%) rotate(3deg) scale(1.02); } to { transform: translate(-50%, -65%) rotate(0) scale(1); } }
+@keyframes meter-star { 45% { transform: scale(1.45) rotate(16deg); } }
+@keyframes meter-glow { to { box-shadow: 0 0 13px 5px #fff8a5; filter: brightness(1.16); } }
+@keyframes meter-flash-left { 45% { transform: translateX(-5px) scaleY(1.3); } }
+@keyframes meter-flash-right { 45% { transform: translateX(5px) scaleY(1.3); } }
 @keyframes sparkle { from { transform: rotate(-12deg) scale(.85); } to { transform: rotate(12deg) scale(1.2); } }
 @keyframes fever-burst { from { opacity: 1; transform: scale(.5) rotate(0); } to { opacity: 0; transform: translate(12px, -17px) scale(1.3) rotate(35deg); } }
 
 .start-button {
-  background: #f3a344;
-  border: 4px solid #765334;
+  background: #ee8b3d;
+  border: 4px solid #58435a;
   border-radius: 999px;
-  box-shadow: 0 5px 0 #765334;
+  box-shadow: 0 6px 0 #58435a;
   color: #fff;
   cursor: pointer;
   display: block;
-  font-family: inherit;
-  font-size: 1.45rem;
-  font-weight: bold;
-  margin: 24px auto 5px;
-  padding: 12px 42px;
+  font: bold clamp(1.45rem, 6vw, 2rem) "Yomogi", cursive;
+  margin: 22px auto 0;
+  min-height: 68px;
+  padding: 10px 42px;
   touch-action: manipulation;
+  width: min(100%, 400px);
 }
 
-.start-button:active { box-shadow: 0 1px 0 #765334; transform: translateY(4px); }
+.start-button:active { box-shadow: 0 2px 0 #58435a; transform: translateY(4px); }
 .start-button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
 
 @media (max-width: 520px) {
-  .mole-game { align-items: flex-start; padding-top: 72px; }
+  .mole-game { align-items: center; padding-top: 72px; }
   .game-header { align-items: flex-start; flex-direction: column; }
   .scoreboard { width: 100%; }
   .scoreboard div { flex: 1; }
