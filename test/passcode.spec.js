@@ -2,10 +2,18 @@ import { mount } from '@vue/test-utils'
 import PasscodePage from '@/pages/passcode.vue'
 
 describe('passcode game', () => {
-  test('cracks the screen immediately after a wrong number', async () => {
+  test('cracks the screen after four wrong digits and adds cracks on screen taps', async () => {
     const wrapper = mount(PasscodePage)
-    wrapper.vm.pressNumber('9')
+    const wrongCode = ['9', '9', '9', '9']
+    wrongCode.slice(0, 3).forEach(number => wrapper.vm.pressNumber(number))
+    expect(wrapper.vm.isCracked).toBe(false)
+    wrapper.vm.pressNumber(wrongCode[3])
     expect(wrapper.vm.isCracked).toBe(true)
+    expect(wrapper.vm.crackCount).toBe(1)
+    wrapper.vm.addCrack()
+    expect(wrapper.vm.crackCount).toBe(2)
+    for (let count = 0; count < 20; count++) wrapper.vm.addCrack()
+    expect(wrapper.vm.crackCount).toBe(22)
     await wrapper.vm.$nextTick()
     expect(wrapper.find('.crack-overlay').exists()).toBe(true)
   })
