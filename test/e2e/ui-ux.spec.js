@@ -61,6 +61,18 @@ test.describe('UI/UX の基本操作', () => {
     }
   })
 
+  test('もじえらびは開始後もゲーム盤の位置が変わらない', async ({ page }) => {
+    await page.goto('word')
+
+    const stage = page.locator('.word-board')
+    const start = page.getByRole('button', { name: 'はじめる' })
+    const before = await stage.boundingBox()
+    await start.click()
+    const after = await stage.boundingBox()
+
+    expect(Math.abs(after.y - before.y)).toBeLessThanOrEqual(1)
+  })
+
   test('しんごうきは大きなボタンで色と合図を切り替えられる', async ({ page }) => {
     await page.goto('traffic-light')
     const goSignal = page.getByRole('button', { name: /すすめ/ })
