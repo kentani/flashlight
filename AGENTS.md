@@ -39,6 +39,7 @@
 
 ## Parallel development and local servers
 - Start every independent Codex implementation task in a Codex-managed Worktree from the latest `origin/main`. Do not implement in the shared Local checkout or switch its branch while another task may be using it. Run `yarn setup:git-hooks` once after checkout; `yarn verify:worktree` fetches `origin/main` and rejects a shared checkout or a stale base.
+- Before creating that Worktree, run `git fetch origin main` and confirm the fetched `origin/main` commit. Create the Worktree from that confirmed ref; do not treat a locally cached `origin/main` as current. If validation discovers that `origin/main` changed, stop edits in that Worktree and recreate it from the freshly fetched ref before continuing.
 - Run `yarn dev:isolated` for browser verification. It chooses an available local port and prints the exact `/flashlight/` URL; do not assume port 3000 or start a second server on a fixed port.
 - Keep that command in the foreground. After browser verification, stop it with Ctrl-C before completing the task. The launcher forwards termination signals to Nuxt so the port is released. Do not use `nohup`, `&`, or leave background development servers running.
 - Before reporting completion, confirm the development-server command has stopped. Once a PR is created or handed off, archive the Codex task so its managed Worktree becomes eligible for automatic cleanup. Do not manually delete the current or a persistent Worktree.
