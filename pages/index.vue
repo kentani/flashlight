@@ -51,7 +51,8 @@ const TOYS = [
   { title: 'もぐらたたき', to: '/mole', icon: 'mdi-hammer', emoji: '🐹', color: '#a97a51' },
   { title: 'ピエロからにげる', to: '/clown', icon: 'mdi-run-fast', emoji: '🤡', color: '#e85b67' },
   { title: 'くるまレース', to: '/race', icon: 'mdi-car-sports', emoji: '🏎️', color: '#e84a45' },
-  { title: 'しんごうき', to: '/traffic-light', icon: 'mdi-traffic-light', emoji: '🚦', color: '#49656f' }
+  { title: 'しんごうき', to: '/traffic-light', icon: 'mdi-traffic-light', emoji: '🚦', color: '#49656f' },
+  { title: 'パスコード', to: '/passcode', icon: 'mdi-cellphone-lock', emoji: '📱', color: '#405a70' }
 ]
 
 export default {
