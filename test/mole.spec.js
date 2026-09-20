@@ -37,7 +37,10 @@ describe('mole game', () => {
     expect(wrapper.vm.score).toBe(1)
     expect(wrapper.vm.activeHole).toBeNull()
     expect(wrapper.vm.whackedHole).toBe(0)
+    expect(wrapper.vm.hitPulse).toBe(1)
     expect(wrapper.find('.hit-effect').exists()).toBe(true)
+    expect(wrapper.find('.tap-cheer').exists()).toBe(true)
+    expect(wrapper.find('.score-pop').text()).toBe('+1')
     expect(play).toHaveBeenCalled()
   })
 
@@ -70,6 +73,7 @@ describe('mole game', () => {
     await hole.trigger('click')
 
     expect(wrapper.vm.score).toBe(2)
+    expect(wrapper.vm.hitPulse).toBe(2)
     expect(wrapper.vm.activeHole).toBe(0)
   })
 
@@ -84,7 +88,13 @@ describe('mole game', () => {
 
     expect(wrapper.vm.score).toBe(1)
     expect(wrapper.vm.bonusHits).toBe(1)
+    expect(wrapper.vm.feverMeter).toBe(20)
     expect(wrapper.find('.fever-status').text()).toContain('フィーバー！')
+    expect(wrapper.find('.fever-status__meter i').attributes('style')).toContain('20%')
+    expect(wrapper.findAll('.fever-status__meter b.is-filled')).toHaveLength(1)
+    await wrapper.setData({ bonusHits: 5 })
+    expect(wrapper.vm.feverMeter).toBe(100)
+    expect(wrapper.find('.fever-status__meter').classes()).toContain('is-max')
     expect(wrapper.find('.hole .fever-status').exists()).toBe(false)
   })
 })

@@ -17,10 +17,14 @@ describe('fishing game', () => {
   })
 
   test('starts from the central button and catches a fish after casting and reeling', async () => {
+    expect(wrapper.find('.pond-preview').exists()).toBe(true)
+    expect(wrapper.find('.game-start-button').text()).toBe('はじめる')
+
     wrapper.vm.startGame()
     await wrapper.vm.$nextTick()
 
     expect(wrapper.vm.isPlaying).toBe(true)
+    expect(wrapper.find('.game-start-button').exists()).toBe(false)
     expect(wrapper.vm.timeLeft).toBe(15)
     expect(wrapper.findAll('.fish')).toHaveLength(3)
     expect(wrapper.vm.phase).toBe('aiming')

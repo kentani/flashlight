@@ -1,31 +1,39 @@
 <template>
   <div class="word-game" :class="gameClass">
-    <GameStartOverlay v-if="!isReady" title="もじえらび" message="おなじ もじを みつけよう！" @start="startGame" />
-    <div class="main" :aria-hidden="!isReady">
+    <div class="main">
       <div class="bubble bubble--one" aria-hidden="true"></div>
       <div class="bubble bubble--two" aria-hidden="true"></div>
       <div class="bubble bubble--three" aria-hidden="true"></div>
-      <div class="game-rule" aria-live="polite">
-        <span>⭐ できた {{ successCount }} / {{ targetSuccesses }}</span>
-        <span>🐚 ちがう {{ mistakeCount }} / {{ maxMistakes }}</span>
-      </div>
-
-      <div class="section1">
-        <div class="theme">
-          <div class="card" :class="{ result: answeredCorrectly }" id="theme-word-card">
-            <span class="theme-hint">この もじを さがそう！</span>
-            <div class="card-title"><span id="theme-word">{{ themeWord }}</span></div>
+      <header class="word-header">
+        <div>
+          <h1>もじえらび</h1>
+          <p>おなじ もじを えらぼう！</p>
+        </div>
+        <div class="word-status" aria-live="polite">
+          <span>できた <strong>{{ successCount }}</strong> / {{ targetSuccesses }}</span>
+          <span>ちがう <strong>{{ mistakeCount }}</strong> / {{ maxMistakes }}</span>
+          <span>のこり <strong>{{ timer }}</strong>びょう</span>
+        </div>
+      </header>
+      <section class="word-board" aria-label="もじえらびのゲームばん">
+        <div class="word-board__play">
+          <div class="section1">
+            <div class="theme">
+              <div class="card" :class="{ result: answeredCorrectly }" id="theme-word-card">
+                <div :style="wordMotionStyle" class="word-runner" aria-label="うごいているもじ"><span>{{ themeWord }}</span></div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="c-stepper"><div class="c-stepper__item doing"><h3 class="c-stepper__title"><span class="timer-item" :style="timerStyle">{{ timer }}</span></h3></div></div>
+      </section>
+      <div class="word-controls">
+        <div v-if="isReady" class="section2"><div class="card-list">
+          <button v-for="word in words" :key="word.id" :class="[word.class, { selected: word.selected, result: word.result }]" class="selectable-card card" :disabled="gameOver || roundTransitioning" @click="selectWord(word.id)">
+            {{ word.text }}
+          </button>
+        </div></div>
+        <GameStartButton v-else @click="startGame">はじめる</GameStartButton>
       </div>
-
-      <div class="section3"><p><span aria-hidden="true">🐠</span> {{ statusText }}</p></div>
-      <div class="section2"><div class="card-list">
-        <button v-for="word in words" :key="word.id" :class="[word.class, { selected: word.selected, result: word.result }]" class="selectable-card card" :disabled="!isReady || gameOver || roundTransitioning" @click="selectWord(word.id)">
-          {{ word.text }}
-        </button>
-      </div></div>
     </div>
 
     <div v-if="gameOver && !cleared" class="crash-shards" aria-hidden="true">
@@ -56,14 +64,16 @@
 <script>
 import okSound from '@/assets/sounds/ok.mp3'
 import ngSound from '@/assets/sounds/ng.mp3'
+import GameStartButton from '@/components/GameStartButton.vue'
 
-const GAME_SECONDS = 15
+const GAME_SECONDS = 30
 const TARGET_SUCCESSES = 5
 const MAX_MISTAKES = 3
 const WORD_COUNT = 4
 
 export default {
   name: 'WordPage',
+  components: { GameStartButton },
   data: () => ({
     themeWord: '',
     words: [],
@@ -78,6 +88,10 @@ export default {
     gameOver: false,
     cleared: false,
     isReady: false,
+    motionTimer: null,
+    wordMotion: { x: -24, y: -12, scale: 3.7 },
+    wordScale: 3.7,
+    lastMotionPoint: -1,
     hiraganaList: ['あ', 'い', 'う', 'え', 'お', 'か', 'き', 'く', 'け', 'こ', 'さ', 'し', 'す', 'せ', 'そ', 'た', 'ち', 'つ', 'て', 'と', 'な', 'に', 'ぬ', 'ね', 'の', 'は', 'ひ', 'ふ', 'へ', 'ほ', 'ま', 'み', 'む', 'め', 'も', 'や', 'ゆ', 'よ', 'ら', 'り', 'る', 'れ', 'ろ', 'わ', 'を', 'ん'],
     cardClassList: ['a', 'b', 'c', 'd'],
     cardTitleClassList: ['sm', 'md', 'lg', 'xl']
@@ -87,16 +101,24 @@ export default {
       const grayArea = (360 / GAME_SECONDS) * (GAME_SECONDS - this.timer)
       return `background-image: conic-gradient(#e0e0e0 0deg ${grayArea}deg, #54acdb ${grayArea}deg 360deg)`
     },
-    statusText () {
-      if (this.gameOver) return this.cleared ? 'くりあ できたね！' : 'しっかく…！'
-      return 'おなじもじをえらんでね！'
-    },
     gameClass () {
-      return this.gameOver && !this.cleared ? `is-crashing crash-level-${this.mistakeCount}` : ''
+      return {
+        'is-ready': this.isReady,
+        'is-crashing': this.gameOver && !this.cleared,
+        [`crash-level-${this.mistakeCount}`]: this.gameOver && !this.cleared
+      }
+    },
+    wordMotionStyle () {
+      return {
+        '--word-x': `${this.wordMotion.x}%`,
+        '--word-y': `${this.wordMotion.y}%`,
+        '--word-scale': this.wordMotion.scale
+      }
     }
   },
   beforeDestroy () {
     this.stopTimer()
+    this.stopWordMotion()
   },
   mounted () {
     this.prepareGame()
@@ -143,6 +165,46 @@ export default {
         selected: false,
         result: false
       }))
+      this.wordScale = this.getWordScale(this.themeWord)
+      this.startWordMotion()
+    },
+    startWordMotion () {
+      this.stopWordMotion()
+      this.lastMotionPoint = -1
+      this.moveWord()
+      this.motionTimer = setInterval(this.moveWord, 7000)
+    },
+    stopWordMotion () {
+      clearInterval(this.motionTimer)
+      this.motionTimer = null
+    },
+    moveWord () {
+      const points = [
+        { x: -29, y: -14 },
+        { x: 29, y: 14 },
+        { x: 29, y: -14 },
+        { x: -29, y: 14 },
+        { x: -10, y: -24 },
+        { x: 10, y: 24 },
+        { x: 10, y: -24 },
+        { x: -10, y: 24 }
+      ]
+      const oppositePoints = [1, 0, 3, 2, 5, 4, 7, 6]
+      const nextPoint = this.lastMotionPoint === -1
+        ? Math.floor(Math.random() * points.length)
+        : oppositePoints[this.lastMotionPoint]
+      this.lastMotionPoint = nextPoint
+      this.wordMotion = {
+        ...points[nextPoint],
+        scale: this.wordScale
+      }
+    },
+    getWordScale (word) {
+      const airyWords = ['い', 'つ', 'し', 'り', 'て', 'と', 'の', 'へ', 'ん']
+      if (airyWords.includes(word)) {
+        return 3.25
+      }
+      return 3.7
     },
     randomItem (items) {
       return items[Math.floor(Math.random() * items.length)]
@@ -180,6 +242,7 @@ export default {
     },
     finishGame (cleared) {
       this.stopTimer()
+      this.stopWordMotion()
       this.gameOver = true
       this.cleared = cleared
       this.roundTransitioning = true
@@ -210,4 +273,22 @@ export default {
 .is-crashing .main { animation: crash .45s steps(2) 2; filter: contrast(1.15) saturate(.35) brightness(.9); }.crash-shards { position: fixed; z-index: 4; inset: 0; pointer-events: none; overflow: hidden; background: rgba(0, 0, 0, .45); }.shard { position: absolute; display: block; inset: 0; background: linear-gradient(135deg, rgba(255, 255, 255, .12), transparent 22%, rgba(0, 0, 0, .22) 75%), rgba(37, 53, 66, .38); box-shadow: inset 18px 20px 30px rgba(255, 255, 255, .05), inset -20px -24px 35px rgba(0, 0, 0, .35); backdrop-filter: blur(1px); animation: break-away .75s cubic-bezier(.15, .7, .2, 1) both; }.shard--one { --x: -30px; --y: -18px; --rotate: -1.5deg; clip-path: polygon(0 0, 49% 0, 43% 35%, 0 51%); transform-origin: top left; }.shard--two { --x: 36px; --y: -20px; --rotate: 2.5deg; clip-path: polygon(49% 0, 100% 0, 100% 30%, 60% 40%, 43% 35%); transform-origin: top right; animation-delay: .05s; }.shard--three { --x: -34px; --y: 36px; --rotate: 2.5deg; clip-path: polygon(0 51%, 43% 35%, 55% 65%, 26% 100%, 0 100%); transform-origin: bottom left; animation-delay: .1s; }.shard--four { --x: 31px; --y: 8px; --rotate: -2deg; clip-path: polygon(43% 35%, 60% 40%, 100% 30%, 100% 65%, 55% 65%); transform-origin: center right; animation-delay: .14s; }.shard--five { --x: -8px; --y: 42px; --rotate: -1deg; clip-path: polygon(26% 100%, 55% 65%, 74% 100%); transform-origin: bottom center; animation-delay: .18s; }.shard--six { --x: 36px; --y: 38px; --rotate: 2deg; clip-path: polygon(55% 65%, 100% 65%, 100% 100%, 74% 100%); transform-origin: bottom right; animation-delay: .22s; }.impact-point { position: absolute; z-index: 2; top: 42%; left: 51%; width: 18px; height: 18px; border: 2px solid rgba(255, 255, 255, .55); border-radius: 50%; background: #0b1117; box-shadow: 0 0 0 5px rgba(0, 0, 0, .5), 0 0 18px rgba(255, 255, 255, .25); animation: impact .35s ease-out both; }.crack { --angle: 0deg; --length: 35vw; position: absolute; z-index: 3; top: 43%; left: 52%; width: var(--length); height: 2px; transform-origin: left center; transform: rotate(var(--angle)); background: linear-gradient(90deg, rgba(236, 247, 250, .9), rgba(0, 0, 0, .95) 7%, rgba(0, 0, 0, .9) 85%, transparent); box-shadow: 0 1px 1px rgba(255, 255, 255, .3); animation: crack-grow .35s ease-out both; }.crack--one { --angle: -142deg; --length: 43vw; }.crack--two { --angle: -84deg; --length: 40vw; animation-delay: .04s; }.crack--three { --angle: -29deg; --length: 52vw; animation-delay: .08s; }.crack--four { --angle: 24deg; --length: 47vw; animation-delay: .11s; }.crack--five { --angle: 79deg; --length: 46vw; animation-delay: .15s; }.crack--six { --angle: 142deg; --length: 38vw; animation-delay: .18s; }
 @keyframes crash { 0% { transform: translate(0); } 33% { transform: translate(-16px, 9px) skew(5deg); } 66% { transform: translate(14px, -7px) skew(-6deg); } } @keyframes break-away { from { opacity: 0; transform: translate(0) rotate(0); } to { opacity: 1; transform: translate(var(--x), var(--y)) rotate(var(--rotate)); } } @keyframes crack-grow { from { opacity: 0; transform: rotate(var(--angle)) scaleX(0); } to { opacity: 1; transform: rotate(var(--angle)) scaleX(1); } } @keyframes impact { from { opacity: 0; transform: scale(3); } to { opacity: 1; transform: scale(1); } } @keyframes appear { from { opacity: 0; transform: scale(1.15); } to { opacity: 1; transform: scale(1); } } @keyframes float { from { transform: translateY(0) scale(.9); } to { transform: translateY(-16px) scale(1.08); } } @keyframes correct-pop { 0% { transform: scale(.92); } 65% { transform: scale(1.04) rotate(1deg); } 100% { transform: scale(1); } }
 @media (min-width: 700px) { .main { padding-top: 80px; }.game-rule { justify-content: space-between; }.card-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }.section2 .card { min-height: 120px; } }
+.word-board { background: linear-gradient(145deg, rgba(246, 253, 255, .92), rgba(207, 235, 247, .96)); border: clamp(5px, 1.4vw, 8px) solid #54acdb; border-radius: clamp(28px, 7vw, 42px); box-shadow: inset 0 0 0 4px rgba(255, 255, 255, .75), 0 10px 0 rgba(57, 137, 178, .2); margin: 0 auto; max-width: 760px; padding: clamp(12px, 2.8vw, 22px); position: relative; }
+.word-board .section1, .word-board .section2, .word-board .section3 { max-width: none; }
+.word-header { align-items: flex-end; color: #315f76; display: flex; gap: 12px; justify-content: space-between; margin: 0 auto 14px; max-width: 1120px; position: relative; z-index: 1; }
+.word-header h1 { font-size: clamp(2rem, 8vw, 3.1rem); line-height: 1; margin: 0 0 7px; }
+.word-header p { font-size: clamp(.9rem, 3.6vw, 1.15rem); font-weight: bold; margin: 0; }
+.word-status { display: flex; gap: 6px; text-align: center; }
+.word-status span { background: #fff9e7; border: 3px solid #54acdb; border-radius: 14px; box-shadow: 0 4px 0 rgba(57, 137, 178, .18); font-size: clamp(.63rem, 2.8vw, .85rem); font-weight: bold; min-width: 64px; padding: 5px 7px; white-space: nowrap; }
+.word-status strong { color: #e05b3f; display: block; font-size: clamp(1.25rem, 5vw, 1.8rem); line-height: 1; }
+.word-board__play { align-items: stretch; display: grid; grid-template-columns: 1fr; min-height: clamp(202px, 42vw, 300px); overflow: hidden; position: relative; }
+.word-board__play::before, .word-board__play::after { content: '○'; position: absolute; color: rgba(255, 255, 255, .75); font-family: sans-serif; font-size: clamp(1rem, 3vw, 2rem); pointer-events: none; animation: word-bubble 3.5s ease-in-out infinite alternate; }.word-board__play::before { left: 13%; top: 22%; }.word-board__play::after { animation-delay: 1.1s; bottom: 18%; right: 12%; }
+.word-board .section1 { display: block; margin: 0; min-width: 0; width: 100%; }
+.word-board .section1 .theme { height: 100%; width: 100%; }
+.word-board .section1 .card { background: transparent; border: 0; border-radius: 0; box-shadow: none; height: 100%; min-height: 0; padding: 0; }
+.word-runner { align-items: center; color: #3989b2; display: flex; font-size: clamp(156px, 37vw, 280px); font-weight: bold; height: 100%; justify-content: center; left: 50%; line-height: 1; position: absolute; text-shadow: 0 5px 0 #c7e6f5; top: 50%; transform: translate(-50%, -50%) translate(var(--word-x), var(--word-y)) scale(var(--word-scale)); transition: transform 4s cubic-bezier(.25, .7, .35, 1); width: 100%; }.word-runner span { display: block; }
+.word-controls { margin: 18px auto 0; max-width: 760px; position: relative; z-index: 1; }.word-controls .section2 { margin: 0; max-width: none; }.word-controls .card-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }.word-controls .section2 .card { font-size: clamp(34px, 8vw, 58px); min-height: clamp(76px, 16vw, 102px); }.word-controls .game-start-button { margin-top: 0; }
+@keyframes word-bubble { from { transform: translateY(8px) scale(.8); } to { transform: translateY(-12px) scale(1.15); } }
+@media (prefers-reduced-motion: reduce) { .word-runner { transition: none; transform: translate(-50%, -50%) scale(1.1); } }
+@media (max-width: 480px) { .word-header { align-items: flex-start; flex-direction: column; gap: 9px; }.word-status { justify-content: space-between; width: 100%; }.word-status span { flex: 1; min-width: 0; padding-left: 4px; padding-right: 4px; }.word-board__play { min-height: 210px; }.word-board .section1 .card { border-width: 3px; }.word-controls .card-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }.word-controls .section2 .card { border-width: 3px; box-shadow: 0 4px 0 rgba(57, 113, 141, .22); } }
 </style>

@@ -31,16 +31,7 @@
         <div v-if="wrongMove" class="wrong-move" aria-hidden="true">ちがうよ！</div>
       </div>
 
-      <button
-        v-if="!isPlaying && !result"
-        type="button"
-        class="run-button"
-        :class="{ 'is-ready': !isPlaying }"
-        @click="startGame"
-      >
-        <span aria-hidden="true">🏃</span>
-        はじめる
-      </button>
+      <GameStartButton v-if="!isPlaying && !result" @click="startGame">はじめる</GameStartButton>
       <div v-else-if="isPlaying && !isHiding" class="move-choices" aria-label="にげかたをえらぶ">
         <button
           v-for="move in moves"
@@ -75,11 +66,14 @@
 </template>
 
 <script>
+import GameStartButton from '@/components/GameStartButton.vue'
+
 const GOAL = 6
 const ROUTE = ['run', 'hide', 'jump', 'run', 'jump', 'run']
 
 export default {
   name: 'ClownPage',
+  components: { GameStartButton },
   data () {
     return {
       goal: GOAL,
@@ -233,7 +227,7 @@ export default {
 
 <style scoped>
 .clown-game { align-items: center; background: radial-gradient(circle at 75% 12%, #29395f, #111a32 48%, #07101e); box-sizing: border-box; display: flex; min-height: 100vh; padding: 76px 16px 28px; touch-action: manipulation; user-select: none; width: 100%; }
-.game-panel { max-width: 680px; width: 100%; }
+.game-panel { max-width: 680px; transform: translateY(clamp(-72px, -8vh, -40px)); width: 100%; }
 .game-header { align-items: flex-end; color: #f5f0dc; display: flex; gap: 16px; justify-content: space-between; margin-bottom: 16px; text-shadow: 0 2px 0 #11192e; }
 h1 { font-size: clamp(2rem, 8vw, 3.15rem); line-height: 1.05; margin: 0 0 7px; }
 p { font-size: clamp(1rem, 4vw, 1.2rem); font-weight: bold; margin: 0; }

@@ -15,7 +15,7 @@ describe('clown escape game', () => {
   })
 
   test('starts when the large button is tapped and moves the runner with the highlighted direction', async () => {
-    await wrapper.find('.run-button').trigger('click')
+    await wrapper.find('.game-start-button').trigger('click')
     expect(wrapper.vm.isPlaying).toBe(true)
 
     await wrapper.find('.move-button.is-next').trigger('click')
@@ -24,7 +24,7 @@ describe('clown escape game', () => {
   })
 
   test('does not advance when a different direction is tapped', async () => {
-    await wrapper.find('.run-button').trigger('click')
+    await wrapper.find('.game-start-button').trigger('click')
     await wrapper.findAll('.move-button').at(1).trigger('click')
 
     expect(wrapper.vm.runnerDistance).toBe(0)
@@ -32,7 +32,7 @@ describe('clown escape game', () => {
   })
 
   test('shows the selected action in the runner movement', async () => {
-    await wrapper.find('.run-button').trigger('click')
+    await wrapper.find('.game-start-button').trigger('click')
     await wrapper.vm.chooseMove('run')
     await wrapper.vm.$nextTick()
 
@@ -53,7 +53,7 @@ describe('clown escape game', () => {
   })
 
   test('reaches home through the run, hide, and jump route', async () => {
-    await wrapper.find('.run-button').trigger('click')
+    await wrapper.find('.game-start-button').trigger('click')
     while (wrapper.vm.runnerDistance < 6) {
       if (wrapper.vm.isHiding) {
         jest.advanceTimersByTime(1400)
@@ -69,7 +69,7 @@ describe('clown escape game', () => {
   })
 
   test('keeps the runner hidden at the tree until the next action', async () => {
-    await wrapper.find('.run-button').trigger('click')
+    await wrapper.find('.game-start-button').trigger('click')
     wrapper.setData({ route: ['run', 'hide', 'jump', 'run', 'jump', 'run'], nextMove: 'run' })
     await wrapper.find('.move-button.is-next').trigger('click')
     await wrapper.find('.move-button.is-next').trigger('click')
@@ -96,7 +96,7 @@ describe('clown escape game', () => {
   })
 
   test('ends kindly when the clown catches up', async () => {
-    await wrapper.find('.run-button').trigger('click')
+    await wrapper.find('.game-start-button').trigger('click')
     jest.advanceTimersByTime(6400)
     await wrapper.vm.$nextTick()
 
