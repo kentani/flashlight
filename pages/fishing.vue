@@ -62,4 +62,13 @@ export default {
 .pond-preview span:nth-child(1) { left: 24%; top: 30%; }
 .pond-preview span:nth-child(2) { animation-delay: -.6s; left: 55%; top: 48%; }
 .pond-preview span:nth-child(3) { animation-delay: -1.1s; left: 79%; top: 70%; }
+
+/* 他のゲームと同じく、遊びの舞台と開始ボタンを画面の中央に置く。 */
+.fishing-game { align-items: center; display: flex; }
+.fishing-game__panel { transform: translateY(clamp(-72px, -8vh, -40px)); }
+.pond { height: min(48vw, 330px); min-height: 260px; }
+
+@media (max-width: 480px) {
+  .pond { height: 90vw; min-height: 300px; }
+}
 </style>
