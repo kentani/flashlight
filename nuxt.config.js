@@ -27,7 +27,7 @@ export default {
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel: 'icon', type: 'image/png', href: '/flashlight/toybox-icon-192.png' },
     ]
   },
 
@@ -93,8 +93,8 @@ export default {
 
   pwa: {
     icon: {
-      source: '/static/teddy2.png',
-      fileName: 'teddy2.png'
+      source: '/static/toybox-icon.png',
+      fileName: 'toybox-icon.png'
     },
     meta: {
       mobileApp: true,
@@ -103,9 +103,9 @@ export default {
     },
     manifest: {
       lang: 'ja',
-      name: 'ToyBox',
-      short_name: 'ToyBox',
-      description: 'ToyBox',
+      name: 'おもちゃばこ',
+      short_name: 'おもちゃばこ',
+      description: 'おもちゃばこ',
       display: 'standalone',
       theme_color: '#54ACDB',
       background_color: '#54ACDB',
@@ -114,7 +114,12 @@ export default {
       start_url: '/flashlight/',
       icons: [
         {
-          src: '/flashlight/teddy2.png',
+          src: '/flashlight/toybox-icon-192.png',
+          sizes: '192x192',
+          type: 'image/png'
+        },
+        {
+          src: '/flashlight/toybox-icon-512.png',
           sizes: '512x512',
           type: 'image/png'
         }
