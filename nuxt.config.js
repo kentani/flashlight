@@ -24,6 +24,7 @@ export default {
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { hid: 'description', name: 'description', content: '' },
+      { hid: 'theme-color', name: 'theme-color', content: '#54ACDB' },
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [
@@ -93,7 +94,7 @@ export default {
 
   pwa: {
     icon: {
-      source: '/static/toybox-icon.png',
+      source: '/static/toybox-icon-512.png',
       fileName: 'toybox-icon.png'
     },
     meta: {

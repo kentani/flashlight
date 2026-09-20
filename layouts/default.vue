@@ -1,6 +1,7 @@
 <template>
   <v-app class="toybox-app">
     <v-app-bar
+      app
       fixed
       dark
       color="#54acdb"
