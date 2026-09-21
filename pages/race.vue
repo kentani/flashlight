@@ -30,4 +30,9 @@ header { align-items: flex-start; flex-direction: column; gap: 8px; }
 .race { padding-top: 28px; }
 .race { align-items: flex-start; }
 .panel { margin: 0 auto; transform: none; }
+.panel { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; height: calc(100dvh - 120px); }
+header p { white-space: nowrap; }
+.track { aspect-ratio: auto; height: 100%; min-height: 0; }
+header > .game-progress-panel { width: 100%; }
+.panel, header, .track { min-width: 0; }
 </style>

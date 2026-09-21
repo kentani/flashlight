@@ -61,7 +61,6 @@ import GameActionButtons from '@/components/GameActionButtons.vue'
 import GameResultOverlay from '@/components/GameResultOverlay.vue'
 import GameProgressPanel from '@/components/GameProgressPanel.vue'
 
-const GAME_SECONDS = 30
 const TARGET_SUCCESSES = 5
 const MAX_MISTAKES = 3
 const WORD_COUNT = 4
@@ -72,12 +71,10 @@ export default {
   data: () => ({
     themeWord: '',
     words: [],
-    timer: GAME_SECONDS,
     successCount: 0,
     mistakeCount: 0,
     targetSuccesses: TARGET_SUCCESSES,
     maxMistakes: MAX_MISTAKES,
-    clearId: null,
     roundTransitioning: false,
     answeredCorrectly: false,
     gameOver: false,
@@ -95,13 +92,8 @@ export default {
     progressItems () {
       return [
         { label: 'できた', value: this.successCount, max: this.targetSuccesses, unit: `/ ${this.targetSuccesses}`, tone: 'green' },
-        { label: 'ちがう', value: this.mistakeCount, max: this.maxMistakes, unit: `/ ${this.maxMistakes}`, tone: 'red' },
-        { label: 'のこり', value: this.timer, max: GAME_SECONDS, unit: 'びょう', tone: 'blue' }
+        { label: 'ちがう', value: this.mistakeCount, max: this.maxMistakes, unit: `/ ${this.maxMistakes}`, tone: 'red' }
       ]
-    },
-    timerStyle () {
-      const grayArea = (360 / GAME_SECONDS) * (GAME_SECONDS - this.timer)
-      return `background-image: conic-gradient(#e0e0e0 0deg ${grayArea}deg, #54acdb ${grayArea}deg 360deg)`
     },
     gameClass () {
       return {
@@ -119,7 +111,6 @@ export default {
     }
   },
   beforeDestroy () {
-    this.stopTimer()
     this.stopWordMotion()
   },
   mounted () {
@@ -127,8 +118,6 @@ export default {
   },
   methods: {
     prepareGame () {
-      this.stopTimer()
-      this.timer = GAME_SECONDS
       this.successCount = 0
       this.mistakeCount = 0
       this.gameOver = false
@@ -140,21 +129,6 @@ export default {
     startGame () {
       this.prepareGame()
       this.isReady = true
-      this.timerExec()
-    },
-    stopTimer () {
-      clearInterval(this.clearId)
-      this.clearId = null
-    },
-    timerExec () {
-      this.clearId = setInterval(() => {
-        if (this.timer <= 1) {
-          this.timer = 0
-          this.finishGame(false)
-        } else {
-          this.timer--
-        }
-      }, 1000)
     },
     setWord () {
       this.themeWord = this.randomItem(this.hiraganaList)
@@ -243,7 +217,6 @@ export default {
       }, word.result ? 400 : 600)
     },
     finishGame (cleared) {
-      this.stopTimer()
       this.stopWordMotion()
       this.gameOver = true
       this.cleared = cleared
@@ -279,7 +252,7 @@ export default {
 .word-board .section1, .word-board .section2, .word-board .section3 { max-width: none; }
 .word-header { align-items: flex-end; color: #315f76; display: flex; gap: 12px; justify-content: space-between; margin: 0 auto 14px; max-width: 1120px; position: relative; z-index: 1; }
 .word-header h1 { font-size: clamp(2rem, 8vw, 3.1rem); line-height: 1; margin: 0 0 7px; }
-.word-header p { font-size: clamp(.9rem, 3.6vw, 1.15rem); font-weight: bold; margin: 0; }
+.word-header p { font-size: clamp(.9rem, 3.6vw, 1.15rem); font-weight: bold; margin: 0; white-space: nowrap; }
 .word-status { display: flex; gap: 6px; text-align: center; }
 .word-status span { background: #fff9e7; border: 3px solid #54acdb; border-radius: 14px; box-shadow: 0 4px 0 rgba(57, 137, 178, .18); font-size: clamp(.63rem, 2.8vw, .85rem); font-weight: bold; min-width: 64px; padding: 5px 7px; white-space: nowrap; }
 .word-status strong { color: #e05b3f; display: block; font-size: clamp(1.25rem, 5vw, 1.8rem); line-height: 1; }
@@ -295,6 +268,7 @@ export default {
 @media (max-width: 480px) { .word-header { align-items: flex-start; flex-direction: column; gap: 9px; }.word-status { justify-content: space-between; width: 100%; }.word-status span { flex: 1; min-width: 0; padding-left: 4px; padding-right: 4px; }.word-board__play { min-height: 210px; }.word-board .section1 .card { border-width: 3px; }.word-controls .card-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }.word-controls .section2 .card { border-width: 3px; box-shadow: 0 4px 0 rgba(57, 113, 141, .22); } }
 
 /* どのゲームも、同じテレビ画面の大きさで遊ぶ。 */
+.main { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; min-height: 100dvh; }
 .word-board { aspect-ratio: 4 / 3; box-sizing: border-box; max-width: 680px; width: 100%; }
 .word-board__play { height: 100%; min-height: 0; }
 .word-controls { max-width: 680px; }

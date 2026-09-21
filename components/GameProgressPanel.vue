@@ -26,7 +26,7 @@ export default {
 </script>
 
 <style scoped>
-.game-progress-panel { background: #fff9e7; border: 4px solid #44506a; border-radius: 22px; box-shadow: 0 5px 0 rgba(33, 42, 60, .2); box-sizing: border-box; display: grid; gap: 9px; max-width: 100%; padding: 11px 13px; width: 320px; }
+.game-progress-panel { background: #fff9e7; border: 4px solid #44506a; border-radius: 22px; box-shadow: 0 5px 0 rgba(33, 42, 60, .2); box-sizing: border-box; display: grid; gap: 9px; max-width: 100%; padding: 11px 13px; width: 100%; }
 .game-progress-panel__item { display: grid; gap: 4px; }
 .game-progress-panel__label { align-items: baseline; color: #39445b; display: flex; font-size: clamp(.88rem, 3.6vw, 1.05rem); font-weight: bold; gap: 4px; line-height: 1; }
 .game-progress-panel__label strong { color: #e75a41; font-size: clamp(1.35rem, 5.6vw, 1.75rem); margin-left: auto; }

@@ -51,11 +51,9 @@
       <i class="impact-point"></i><i class="crack crack--one"></i><i class="crack crack--two"></i><i class="crack crack--three"></i><i class="crack crack--four"></i><i class="crack crack--five"></i><i class="crack crack--six"></i>
       <i class="shard shard--one"></i><i class="shard shard--two"></i><i class="shard shard--three"></i><i class="shard shard--four"></i><i class="shard shard--five"></i><i class="shard shard--six"></i>
     </div>
-    <div v-if="result === 'caught'" class="caught-screen" role="alert">
-      <div class="scary-clown" aria-hidden="true">🤡</div>
-      <p>みーつけた！</p>
-      <GameActionButtons @primary="startGame">もういちど</GameActionButtons>
-    </div>
+    <GameResultOverlay v-if="result === 'caught'" title="みーつけた！" celebration="🤡" tone="retry" @retry="startGame">
+      こんどは よけて すすもう！
+    </GameResultOverlay>
   </section>
 </template>
 
@@ -273,4 +271,9 @@ p { font-size: clamp(1rem, 4vw, 1.2rem); font-weight: bold; margin: 0; }
 .clown-game { padding-top: 28px; }
 .clown-game { align-items: flex-start; }
 .game-panel { margin: 0 auto; transform: none; }
+.game-header p { white-space: nowrap; }
+.game-panel { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; height: calc(100dvh - 104px); }
+.race-field { height: 100%; min-height: 0; }
+.game-header > .game-progress-panel { width: 100%; }
+.game-panel, .game-header, .race-field { min-width: 0; }
 </style>

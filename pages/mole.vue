@@ -105,8 +105,8 @@ export default {
   computed: {
     progressItems () {
       return [
-        { label: 'のこり', value: this.timeLeft, max: GAME_DURATION, unit: 'びょう', tone: 'green' },
-        { label: 'ゴール', value: this.score, max: TARGET_SCORE, unit: `/ ${TARGET_SCORE}`, tone: 'yellow' }
+        { label: 'ゴール', value: this.score, max: TARGET_SCORE, unit: `/ ${TARGET_SCORE}`, tone: 'yellow' },
+        { label: 'のこり', value: this.timeLeft, max: GAME_DURATION, unit: 'びょう', tone: 'green' }
       ]
     },
     isFever () {
@@ -462,4 +462,9 @@ p { font-size: 1.1rem; font-weight: bold; margin: 0; }
 @media (max-width: 520px) { .mole-game { padding-top: 24px; } }
 .mole-game { align-items: flex-start; }
 .game-panel { transform: none; }
+.game-header p { white-space: nowrap; }
+.game-panel { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; height: calc(100dvh - 52px); }
+.mole-field { min-height: 0; }
+.scoreboard { width: 100%; }
+.game-panel, .game-header, .scoreboard, .mole-field { min-width: 0; }
 </style>

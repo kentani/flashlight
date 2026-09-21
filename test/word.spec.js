@@ -10,7 +10,6 @@ describe('word game challenge', () => {
       play: jest.fn().mockResolvedValue(undefined)
     }))
     wrapper = mount(WordPage)
-    wrapper.vm.stopTimer()
   })
 
   afterEach(() => {
@@ -18,8 +17,7 @@ describe('word game challenge', () => {
     jest.restoreAllMocks()
   })
 
-  test('starts with a 30 second, five-success, three-mistake challenge', async () => {
-    expect(wrapper.vm.timer).toBe(30)
+  test('starts with a five-success, three-mistake challenge', async () => {
     expect(wrapper.vm.targetSuccesses).toBe(5)
     expect(wrapper.vm.maxMistakes).toBe(3)
     expect(wrapper.findAll('.selectable-card')).toHaveLength(0)
@@ -32,7 +30,6 @@ describe('word game challenge', () => {
     expect(wrapper.find('.word-runner').text()).toBe(wrapper.vm.themeWord)
 
     wrapper.vm.startGame()
-    wrapper.vm.stopTimer()
     await wrapper.vm.$nextTick()
     expect(wrapper.findAll('.word-controls .selectable-card')).toHaveLength(4)
   })
