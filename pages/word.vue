@@ -285,4 +285,8 @@ export default {
 @media (max-width: 520px) {
   .main { padding-top: 24px; }
 }
+
+/* 開始画面はゲーム盤とボタンを自然な間隔で続けて置く。 */
+.main { display: block; }
+.word-board__play { height: auto; min-height: clamp(202px, 42vw, 300px); }
 </style>

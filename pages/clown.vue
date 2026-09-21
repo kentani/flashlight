@@ -276,4 +276,6 @@ p { font-size: clamp(1rem, 4vw, 1.2rem); font-weight: bold; margin: 0; }
 .race-field { height: 100%; min-height: 0; }
 .game-header > .game-progress-panel { width: 100%; }
 .game-panel, .game-header, .race-field { min-width: 0; }
+.game-panel { display: block; height: auto; }
+.race-field { height: auto; }
 </style>

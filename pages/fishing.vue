@@ -104,4 +104,8 @@ export default {
 .fishing-game__header > .game-progress-panel { width: 100%; }
 .fishing-game__panel, .fishing-game__header, .pond { min-width: 0; }
 @media (max-width: 480px) { .fishing-game__header p { max-width: none; } }
+.fishing-game__panel { display: block; height: auto; }
+
+/* 見出しから操作ボタンまでを、画面の中央にひとまとまりで置く。 */
+.fishing-game { align-items: center; }
 </style>

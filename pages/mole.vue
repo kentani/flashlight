@@ -467,4 +467,5 @@ p { font-size: 1.1rem; font-weight: bold; margin: 0; }
 .mole-field { min-height: 0; }
 .scoreboard { width: 100%; }
 .game-panel, .game-header, .scoreboard, .mole-field { min-width: 0; }
+.game-panel { display: block; height: auto; }
 </style>

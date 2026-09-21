@@ -35,4 +35,6 @@ header p { white-space: nowrap; }
 .track { aspect-ratio: auto; height: 100%; min-height: 0; }
 header > .game-progress-panel { width: 100%; }
 .panel, header, .track { min-width: 0; }
+.panel { display: block; height: auto; }
+.track { aspect-ratio: 4 / 3; height: auto; }
 </style>
