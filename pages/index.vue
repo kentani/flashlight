@@ -10,40 +10,20 @@
         <span class="menu-category__emoji" aria-hidden="true">{{ category.emoji }}</span>
         <h2 :id="category.id">{{ category.title }}</h2>
       </header>
-      <v-row
-        justify="center"
-        class="menu-grid"
-      >
-        <v-col
+      <div class="menu-grid">
+        <NuxtLink
           v-for="toy in category.toys"
           :key="toy.to"
-          cols="6"
-          sm="6"
-          md="4"
-          lg="3"
-          xl="2"
-          class="menu-column"
+          :to="toy.to"
+          class="menu-card"
+          :style="{ backgroundColor: toy.color }"
         >
-          <v-hover>
-            <template v-slot:default="{ hover }">
-              <v-card
-                :color="toy.color"
-                rounded="xl"
-                :elevation="hover ? 24 : 8"
-                nuxt
-                :to="toy.to"
-                class="menu-card"
-              >
-                <v-card-text class="menu-card__content text-body-1 font-weight-bold text-center">
-                  <span class="menu-card__sticker" aria-hidden="true">{{ toy.emoji }}</span>
-                  <v-icon class="menu-card__icon" aria-hidden="true">{{ toy.icon }}</v-icon>
-                  <p class="mb-0">{{ toy.title }}</p>
-                </v-card-text>
-              </v-card>
-            </template>
-          </v-hover>
-        </v-col>
-      </v-row>
+          <span class="menu-card__content">
+            <span class="menu-card__sticker" aria-hidden="true">{{ toy.emoji }}</span>
+            <span class="menu-card__title">{{ toy.title }}</span>
+          </span>
+        </NuxtLink>
+      </div>
     </section>
   </v-container>
 </template>
@@ -88,7 +68,7 @@ export default {
 .menu-page {
   max-width: 1280px;
   min-height: calc(100vh - 64px);
-  padding: 76px 24px 48px !important;
+  padding: 28px 24px 48px !important;
   flex-direction: column;
   align-items: stretch;
 }
@@ -126,26 +106,27 @@ export default {
 }
 
 .menu-grid {
-  margin: 0 !important;
-  padding: 8px 4px !important;
-}
-
-.menu-column {
-  display: flex;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  padding: 8px 4px;
 }
 
 .menu-card {
+  display: block;
   width: 100%;
   aspect-ratio: 1;
   overflow: hidden;
-  border: 4px solid #f4fdff !important;
-  box-shadow: 0 7px 0 rgba(27, 102, 135, .22) !important;
+  border: 4px solid #f4fdff;
+  border-radius: 26px;
+  box-shadow: 0 7px 0 rgba(27, 102, 135, .22);
+  text-decoration: none;
   transition: transform .16s ease, box-shadow .16s ease;
 }
 
 .menu-card:hover, .menu-card:focus-within {
   transform: translateY(-5px) rotate(-1deg);
-  box-shadow: 0 12px 0 rgba(27, 102, 135, .16) !important;
+  box-shadow: 0 12px 0 rgba(27, 102, 135, .16);
 }
 
 .menu-card__content {
@@ -177,14 +158,13 @@ export default {
   transform: rotate(-7deg);
 }
 
-.menu-card__content p {
+.menu-card__title {
   position: absolute;
   bottom: 18px;
   left: 50%;
   z-index: 1;
   width: max-content;
   max-width: calc(100% - 24px);
-  margin: 0;
   padding: 4px 13px;
   overflow: hidden;
   color: #174d68;
@@ -198,7 +178,7 @@ export default {
 
 @media (max-width: 599px) {
   .menu-page {
-    padding: 72px 16px 32px !important;
+    padding: 24px 16px 32px !important;
   }
 
   .menu-category + .menu-category {
@@ -215,15 +195,13 @@ export default {
     font-size: 1.75rem;
   }
 
-  .menu-column {
-    padding: 6px !important;
-  }
-
   .menu-grid {
-    padding: 4px !important;
+    gap: 10px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 4px;
   }
 
-  .menu-card__content p {
+  .menu-card__title {
     bottom: 12px;
     padding: 3px 8px;
     font-size: .98rem;

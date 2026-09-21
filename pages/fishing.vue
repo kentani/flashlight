@@ -1,7 +1,7 @@
 <template>
   <section class="fishing-game" aria-labelledby="fishing-title">
     <div class="fishing-game__panel" :class="{ 'is-ready': phase === 'ready' }">
-      <header class="fishing-game__header"><div><h1 id="fishing-title">つり</h1><p>{{ guide }}</p></div><div class="score" aria-live="polite"><div>のこり<strong>{{ timeLeft }}</strong>びょう</div><div>つれた<strong>{{ catches }}</strong>ひき</div></div></header>
+      <header class="fishing-game__header"><div><h1 id="fishing-title">つり</h1><p>{{ guide }}</p></div><GameProgressPanel :items="progressItems" /></header>
       <div ref="pond" class="pond">
         <span class="sun" aria-hidden="true">☀️</span><span class="shore" aria-hidden="true">🌿</span>
         <div v-if="phase === 'ready'" class="pond-preview" aria-hidden="true"><span>🐟</span><span>🐡</span><span>🦀</span></div>
@@ -14,28 +14,35 @@
           <button v-else-if="phase === 'reeling'" type="button" class="button reel" :class="{ 'is-nearly-caught': reelProgress >= reelTaps - 2 }" @click="reel"><span class="reel__label" aria-hidden="true">💪 れんだ！</span><span class="reel-meter" aria-hidden="true"><span :style="{ width: `${reelPower}%` }"></span></span><i>{{ reelProgress }} / {{ reelTaps }}</i><b :key="reelProgress" aria-hidden="true">✨</b></button>
           <div v-else-if="phase === 'catching'" class="celebration" aria-live="assertive"><span>{{ targetFish.emoji }}</span><strong>つれた！</strong><i>✨</i></div>
         </template>
-        <div v-if="hasPlayed && !isPlaying" class="result" role="alert"><div><p>{{ resultTitle }}</p><strong>{{ catches }}<small>ひき</small></strong><button type="button" class="button" @click="startGame">もういちど あそぶ</button><nuxt-link to="/" class="button">やめる</nuxt-link></div></div>
       </div>
-      <GameStartButton v-if="phase === 'ready'" @click="startGame">はじめる</GameStartButton>
+      <GameActionButtons v-if="phase === 'ready'" @primary="startGame">はじめる</GameActionButtons>
       <div v-if="isPlaying || hasPlayed" class="caught-fish" aria-label="つれたおさかな" aria-live="polite"><span v-for="(fish, index) in caughtFish" :key="`${fish}-${index}`" aria-hidden="true">{{ fish }}</span></div>
     </div>
+    <GameResultOverlay v-if="hasPlayed && !isPlaying" :title="resultTitle" celebration="🎣🐟✨" @retry="startGame">
+      <strong class="result-score">{{ catches }}<small>ひき</small></strong>
+      <p>おさかなを つかまえたよ！</p>
+    </GameResultOverlay>
   </section>
 </template>
 
 <script>
-import GameStartButton from '@/components/GameStartButton.vue'
+import GameActionButtons from '@/components/GameActionButtons.vue'
+import GameResultOverlay from '@/components/GameResultOverlay.vue'
+import GameProgressPanel from '@/components/GameProgressPanel.vue'
 
 const GAME_SECONDS = 15
 const REEL_TAPS = 7
+const TARGET_CATCHES = 5
 const FISH_EMOJIS = ['🐟', '🐡', '🐬', '🦀', '🐙']
 export default {
   name: 'FishingPage',
-  components: { GameStartButton },
+  components: { GameActionButtons, GameResultOverlay, GameProgressPanel },
   data () { return { timeLeft: GAME_SECONDS, catches: 0, isPlaying: false, hasPlayed: false, phase: 'ready', fishInPond: [], caughtFish: [], targetFish: { id: 0, power: 50, x: 50, lane: 1, emoji: '🐟' }, caughtFishId: null, fishId: 0, power: 0, castPower: 0, charging: false, reelProgress: 0, reelTaps: REEL_TAPS, countdownTimer: null, chargeTimer: null, actionTimer: null } },
   computed: {
+    progressItems () { return [{ label: 'のこり', value: this.timeLeft, max: GAME_SECONDS, unit: 'びょう', tone: 'green' }, { label: 'ゴール', value: this.catches, max: TARGET_CATCHES, unit: `/ ${TARGET_CATCHES}`, tone: 'yellow' }] },
     guide () { if (!this.isPlaying && !this.hasPlayed) return 'つりざおを ためて、おさかなを つろう！'; if (this.phase === 'reeling') return 'いっぱい タップして、ひきあげよう！'; if (this.phase === 'aiming') return 'きいろの しるしまで ためて、はなそう！'; return 'たくさん つれたね！' },
     message () { if (this.phase === 'reeling') return 'ひっぱれ！ ひっぱれ！'; if (this.phase === 'catching') return 'やったね！'; if (this.phase === 'casting') return this.castPower < this.targetFish.power - 12 ? 'みじかい！' : this.castPower > this.targetFish.power + 12 ? 'とおすぎ！' : 'ヒット！'; return 'きいろの しるしを ねらおう！' },
-    resultTitle () { return this.catches >= 5 ? 'つりの たつじん！' : this.catches >= 3 ? 'すごい つりびと！' : 'じょうずに つれたね！' },
+    resultTitle () { return this.catches >= TARGET_CATCHES ? 'つりの たつじん！' : this.catches >= 3 ? 'すごい つりびと！' : 'じょうずに つれたね！' },
     reelPower () { return Math.round((this.reelProgress / REEL_TAPS) * 100) },
     lineStyle () { const pond = this.$refs.pond; if (!pond) return {}; const x = pond.clientWidth * 0.83; const y = pond.clientHeight * 0.82; const fishX = pond.clientWidth * (this.targetFish.x / 100); const fishY = pond.clientHeight * ((28 + this.targetFish.lane * 23) / 100) + 28; const distanceRatio = Math.min(this.castPower / this.targetFish.power, 1.35); const endX = x + (fishX - x) * distanceRatio; const endY = y + (fishY - y) * distanceRatio; const dx = endX - x; const dy = endY - y; return { left: `${x}px`, top: `${y}px`, transform: `rotate(${Math.atan2(dy, dx)}rad)`, width: `${Math.hypot(dx, dy)}px` } }
   },
@@ -48,7 +55,7 @@ export default {
     beginCharge () { if (this.charging || this.phase !== 'aiming') return; this.charging = true; this.chargeTimer = setInterval(() => { this.power = this.power >= 100 ? 0 : this.power + 2 }, 45) },
     stopCharge () { clearInterval(this.chargeTimer); this.chargeTimer = null; this.charging = false },
     releaseCast () { if (!this.charging || this.phase !== 'aiming') return; this.stopCharge(); this.castPower = this.power; const hit = Math.abs(this.castPower - this.targetFish.power) <= 12; this.phase = 'casting'; this.actionTimer = setTimeout(() => { if (!this.isPlaying) return; this.phase = hit ? 'reeling' : 'aiming'; this.power = 0; this.reelProgress = 0 }, 550) },
-    reel () { if (this.phase !== 'reeling') return; this.reelProgress += 1; if (this.reelProgress < REEL_TAPS) return; this.caughtFishId = this.targetFish.id; this.phase = 'catching'; this.catches += 1; this.caughtFish.push(this.targetFish.emoji); this.actionTimer = setTimeout(() => { if (!this.isPlaying) return; const index = this.fishInPond.findIndex(fish => fish.id === this.targetFish.id); this.$set(this.fishInPond, index, this.newFish(this.targetFish.lane)); this.chooseTarget(); this.caughtFishId = null; this.phase = 'aiming'; this.power = 0 }, 900) },
+    reel () { if (this.phase !== 'reeling') return; this.reelProgress += 1; if (this.reelProgress < REEL_TAPS) return; this.caughtFishId = this.targetFish.id; this.phase = 'catching'; this.catches += 1; this.caughtFish.push(this.targetFish.emoji); if (this.catches >= TARGET_CATCHES) { this.actionTimer = setTimeout(() => this.finishGame(), 900); return } this.actionTimer = setTimeout(() => { if (!this.isPlaying) return; const index = this.fishInPond.findIndex(fish => fish.id === this.targetFish.id); this.$set(this.fishInPond, index, this.newFish(this.targetFish.lane)); this.chooseTarget(); this.caughtFishId = null; this.phase = 'aiming'; this.power = 0 }, 900) },
     finishGame () { this.stopCharge(); this.isPlaying = false; this.phase = 'finished'; this.clearTimers() },
     clearTimers () { clearInterval(this.countdownTimer); clearInterval(this.chargeTimer); clearTimeout(this.actionTimer); this.countdownTimer = null; this.chargeTimer = null; this.actionTimer = null; this.charging = false }
   }
@@ -62,6 +69,8 @@ export default {
 .pond-preview span:nth-child(1) { left: 24%; top: 30%; }
 .pond-preview span:nth-child(2) { animation-delay: -.6s; left: 55%; top: 48%; }
 .pond-preview span:nth-child(3) { animation-delay: -1.1s; left: 79%; top: 70%; }
+.result-score { color: #fff1a6; display: block; font-size: clamp(3.6rem, 18vw, 5.5rem); line-height: 1; text-shadow: 0 3px 0 #bd5c25; }
+.result-score small { color: #fff; font-size: 1.1rem; margin-left: 5px; }
 
 /* 他のゲームと同じく、遊びの舞台と開始ボタンを画面の中央に置く。 */
 .fishing-game { align-items: center; display: flex; }
@@ -71,4 +80,22 @@ export default {
 @media (max-width: 480px) {
   .pond { height: 90vw; min-height: 300px; }
 }
+
+/* どのゲームも、同じテレビ画面の大きさで遊ぶ。 */
+.fishing-game__panel { max-width: 680px; }
+.pond { aspect-ratio: 4 / 3; height: auto; min-height: 0; }
+
+/* 見出し、案内、進行カードを全ゲームで同じ順に並べる。 */
+.fishing-game__header { align-items: flex-start; flex-direction: column; gap: 8px; }
+.game-progress-panel { align-self: flex-end; }
+
+/* テレビ画面の上端を、ほかのゲームと同じ基準線にそろえる。 */
+.fishing-game__panel { transform: translateY(-41px); }
+@media (max-width: 520px) { .fishing-game__panel { transform: translateY(-49px); } }
+
+/* 共通の見出し位置: ヘッダー直後からゲームを始める。 */
+.fishing-game { padding-top: 28px; }
+@media (max-width: 520px) { .fishing-game { padding-top: 24px; } }
+.fishing-game { align-items: flex-start; }
+.fishing-game__panel { margin: 0 auto; transform: none; }
 </style>

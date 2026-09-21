@@ -9,12 +9,8 @@
           <p v-else>じょうずにたたけたね！</p>
         </div>
         <div class="scoreboard" aria-live="polite">
-          <div><span>のこり</span><strong>{{ timeLeft }}</strong><small>びょう</small></div>
-          <div class="score-card" :class="{ 'is-scoring': whackedHole !== null }">
-            <span>スコア</span>
-            <strong :key="'score-' + hitPulse">{{ score }}</strong>
-            <span v-if="whackedHole !== null" :key="'score-pop-' + hitPulse" class="score-pop" aria-hidden="true">+1</span>
-          </div>
+          <GameProgressPanel :items="progressItems" />
+          <span v-if="whackedHole !== null" :key="'score-pop-' + hitPulse" class="score-pop" aria-hidden="true">+1</span>
         </div>
       </header>
 
@@ -55,38 +51,34 @@
         </button>
       </div>
 
-      <div v-if="hasPlayed && !isPlaying" class="game-result" role="alert">
-        <div class="game-result__card">
-          <p class="game-result__title">{{ resultTitle }}</p>
-          <p>こんかいのスコア</p>
-          <strong>{{ score }}<small>てん</small></strong>
-          <p class="game-result__hint">{{ resultMessage }}</p>
-          <button type="button" class="result-button" @click="startGame">もういちど あそぶ</button>
-          <nuxt-link to="/" class="result-button">やめる</nuxt-link>
-        </div>
-      </div>
+      <GameActionButtons v-if="!isPlaying && !hasPlayed" @primary="startGame">はじめる</GameActionButtons>
 
-      <GameStartButton v-if="!isPlaying && !hasPlayed" @click="startGame">はじめる</GameStartButton>
-
-      <button v-if="isPlaying || hasPlayed" type="button" class="start-button" @click="startGame">
-        {{ isPlaying ? 'さいしょから やりなおす' : hasPlayed ? 'もういちど あそぶ' : 'はじめる' }}
+      <button v-if="isPlaying" type="button" class="start-button" @click="startGame">
+        さいしょから やりなおす
       </button>
     </div>
+    <GameResultOverlay v-if="hasPlayed && !isPlaying" :title="resultTitle" celebration="🐹✨" retry-label="もういちど あそぶ" @retry="startGame">
+      <strong class="result-score">{{ score }}<small>てん</small></strong>
+      <p>{{ resultMessage }}</p>
+    </GameResultOverlay>
   </section>
 </template>
 
 <script>
 import whackSound from '@/assets/sounds/ok.mp3'
-import GameStartButton from '@/components/GameStartButton.vue'
+import GameActionButtons from '@/components/GameActionButtons.vue'
+import GameResultOverlay from '@/components/GameResultOverlay.vue'
+import GameProgressPanel from '@/components/GameProgressPanel.vue'
 
 const MIN_MOLE_DURATION = 1250
 const MAX_MOLE_DURATION = 2200
 const BONUS_MOLE_DURATION = 3800
 const GAME_DURATION = 15
+const TARGET_SCORE = 20
 
 export default {
   name: 'MolePage',
-  components: { GameStartButton },
+  components: { GameActionButtons, GameResultOverlay, GameProgressPanel },
   data () {
     return {
       holes: [0, 1, 2, 3, 4, 5, 6, 7, 8],
@@ -111,6 +103,12 @@ export default {
     }
   },
   computed: {
+    progressItems () {
+      return [
+        { label: 'のこり', value: this.timeLeft, max: GAME_DURATION, unit: 'びょう', tone: 'green' },
+        { label: 'ゴール', value: this.score, max: TARGET_SCORE, unit: `/ ${TARGET_SCORE}`, tone: 'yellow' }
+      ]
+    },
     isFever () {
       return this.isPlaying && this.activeHole !== null && this.isBonusMole
     },
@@ -119,13 +117,13 @@ export default {
     },
     resultTitle () {
       if (this.isNewRecord) return 'しんきろく！'
-      if (this.score >= 20) return 'マスターです！'
+      if (this.score >= TARGET_SCORE) return 'マスターです！'
       if (this.score >= 10) return 'すごい！'
       return 'じかんだよ！'
     },
     resultMessage () {
       if (this.isNewRecord) return 'ベストスコアを こうしんしたよ！'
-      if (this.score >= 20) return 'もぐらたたきの たつじんだね！'
+      if (this.score >= TARGET_SCORE) return 'もぐらたたきの たつじんだね！'
       if (this.score >= 10) return 'とっても じょうず！'
       return 'もういちど あそぶ？'
     }
@@ -186,6 +184,10 @@ export default {
         this.feverPulse += 1
       }
       this.playWhackSound(this.isBonusMole)
+      if (this.score >= TARGET_SCORE) {
+        this.whackTimer = setTimeout(() => this.finishGame(), 180)
+        return
+      }
       this.whackTimer = setTimeout(() => {
         this.whackedHole = null
         if (!this.isBonusMole) this.showMole()
@@ -431,6 +433,8 @@ p { font-size: 1.1rem; font-weight: bold; margin: 0; }
 
 .start-button:active { box-shadow: 0 2px 0 #58435a; transform: translateY(4px); }
 .start-button:focus-visible { outline: 4px solid #fff; outline-offset: 3px; }
+.result-score { color: #fff2a8; display: block; font-size: clamp(3.6rem, 18vw, 5.5rem); line-height: 1; margin: 4px 0; text-shadow: 0 3px 0 #b84632; }
+.result-score small { color: #fff; font-size: 1.1rem; margin-left: 5px; }
 
 @media (max-width: 520px) {
   .mole-game { align-items: center; padding-top: 72px; }
@@ -440,4 +444,22 @@ p { font-size: 1.1rem; font-weight: bold; margin: 0; }
   .fever-status { gap: 4px; padding: 4px 9px; }
   .start-button { font-size: 1.25rem; padding-left: 24px; padding-right: 24px; white-space: nowrap; }
 }
+
+/* どのゲームも、同じテレビ画面の大きさで遊ぶ。 */
+.game-panel { max-width: 680px; }
+.mole-field { aspect-ratio: 4 / 3; height: auto; min-height: 0; }
+
+/* 見出し、案内、進行カードを全ゲームで同じ順に並べる。 */
+.game-header { align-items: flex-start; flex-direction: column; gap: 8px; }
+.scoreboard { align-self: flex-end; position: relative; }
+
+/* テレビ画面の上端を、ほかのゲームと同じ基準線にそろえる。 */
+.game-panel { transform: translateY(-41px); }
+@media (max-width: 520px) { .game-panel { transform: translateY(-51px); } }
+
+/* 共通の見出し位置: ヘッダー直後からゲームを始める。 */
+.mole-game { padding-top: 28px; }
+@media (max-width: 520px) { .mole-game { padding-top: 24px; } }
+.mole-game { align-items: flex-start; }
+.game-panel { transform: none; }
 </style>
