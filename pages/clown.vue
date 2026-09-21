@@ -6,9 +6,7 @@
           <h1 id="clown-title">ピエロから にげよう！</h1>
           <p aria-live="polite">{{ guide }}</p>
         </div>
-        <div class="distance" aria-label="ゴールまでのきょり">
-          <span>ゴール</span><strong>{{ runnerDistance }}</strong><small>/ {{ goal }}</small>
-        </div>
+        <GameProgressPanel :items="progressItems" />
       </header>
 
       <div class="race-field" :class="{ 'is-playing': isPlaying, 'is-caught': result === 'caught', 'is-safe': result === 'safe' }">
@@ -31,7 +29,7 @@
         <div v-if="wrongMove" class="wrong-move" aria-hidden="true">ちがうよ！</div>
       </div>
 
-      <GameStartButton v-if="!isPlaying && !result" @click="startGame">はじめる</GameStartButton>
+      <GameActionButtons v-if="!isPlaying && !result" @primary="startGame">はじめる</GameActionButtons>
       <div v-else-if="isPlaying && !isHiding" class="move-choices" aria-label="にげかたをえらぶ">
         <button
           v-for="move in moves"
@@ -45,13 +43,10 @@
         </button>
       </div>
       <div v-else-if="isHiding" class="hide-wait" aria-live="polite">🤫 しーっ… ピエロが いったよ！</div>
-      <div v-else-if="result === 'safe'" class="result-actions">
-        <button type="button" class="run-button is-ready" @click="startGame">
-          <span aria-hidden="true">🔁</span>もういちど
-        </button>
-        <nuxt-link to="/" class="run-button is-ready">やめる</nuxt-link>
-      </div>
     </div>
+    <GameResultOverlay v-if="result === 'safe'" title="クリア！" celebration="🏠✨🎉" @retry="startGame">
+      にげきれた！ おうちに とうちゃく！
+    </GameResultOverlay>
     <div v-if="result === 'caught'" class="crash-shards" aria-hidden="true">
       <i class="impact-point"></i><i class="crack crack--one"></i><i class="crack crack--two"></i><i class="crack crack--three"></i><i class="crack crack--four"></i><i class="crack crack--five"></i><i class="crack crack--six"></i>
       <i class="shard shard--one"></i><i class="shard shard--two"></i><i class="shard shard--three"></i><i class="shard shard--four"></i><i class="shard shard--five"></i><i class="shard shard--six"></i>
@@ -59,21 +54,22 @@
     <div v-if="result === 'caught'" class="caught-screen" role="alert">
       <div class="scary-clown" aria-hidden="true">🤡</div>
       <p>みーつけた！</p>
-      <button type="button" class="run-button is-ready" @click="startGame"><span aria-hidden="true">🔁</span>もういちど</button>
-      <nuxt-link to="/" class="run-button is-ready">やめる</nuxt-link>
+      <GameActionButtons @primary="startGame">もういちど</GameActionButtons>
     </div>
   </section>
 </template>
 
 <script>
-import GameStartButton from '@/components/GameStartButton.vue'
+import GameActionButtons from '@/components/GameActionButtons.vue'
+import GameResultOverlay from '@/components/GameResultOverlay.vue'
+import GameProgressPanel from '@/components/GameProgressPanel.vue'
 
 const GOAL = 6
 const ROUTE = ['run', 'hide', 'jump', 'run', 'jump', 'run']
 
 export default {
   name: 'ClownPage',
-  components: { GameStartButton },
+  components: { GameActionButtons, GameResultOverlay, GameProgressPanel },
   data () {
     return {
       goal: GOAL,
@@ -102,6 +98,9 @@ export default {
     }
   },
   computed: {
+    progressItems () {
+      return [{ label: 'ゴール', value: this.runnerDistance, max: this.goal, unit: `/ ${this.goal}`, tone: 'yellow' }]
+    },
     guide () {
       if (this.result === 'safe') return 'にげきれた！ おうちに とうちゃく！'
       if (this.result === 'caught') return 'つかまっちゃった…'
@@ -227,7 +226,7 @@ export default {
 
 <style scoped>
 .clown-game { align-items: center; background: radial-gradient(circle at 75% 12%, #29395f, #111a32 48%, #07101e); box-sizing: border-box; display: flex; min-height: 100vh; padding: 76px 16px 28px; touch-action: manipulation; user-select: none; width: 100%; }
-.game-panel { max-width: 680px; transform: translateY(clamp(-72px, -8vh, -40px)); width: 100%; }
+.game-panel { margin: auto; max-width: 680px; transform: translateY(clamp(-72px, -8vh, -40px)); width: 100%; }
 .game-header { align-items: flex-end; color: #f5f0dc; display: flex; gap: 16px; justify-content: space-between; margin-bottom: 16px; text-shadow: 0 2px 0 #11192e; }
 h1 { font-size: clamp(2rem, 8vw, 3.15rem); line-height: 1.05; margin: 0 0 7px; }
 p { font-size: clamp(1rem, 4vw, 1.2rem); font-weight: bold; margin: 0; }
@@ -257,5 +256,21 @@ p { font-size: clamp(1rem, 4vw, 1.2rem); font-weight: bold; margin: 0; }
 .caught-screen { align-items: center; background: radial-gradient(circle at center, rgba(99, 0, 20, .72), rgba(0, 0, 0, .96) 68%); color: #fff; display: flex; flex-direction: column; inset: 0; justify-content: center; position: fixed; text-align: center; text-shadow: 3px 3px 0 #160008, 0 0 18px #f31349; z-index: 21; }.scary-clown { animation: scary-pop .45s cubic-bezier(.18, .8, .2, 1) both, clown-wiggle .2s .45s ease-in-out infinite alternate; filter: contrast(1.85) saturate(2) brightness(.72) drop-shadow(0 0 28px #e60037); font-size: clamp(9rem, 42vw, 22rem); line-height: .8; }.caught-screen p { color: #ffecf0; font-size: clamp(2rem, 12vw, 4.7rem); margin: 12px 0 4px; }.caught-screen .run-button { margin-top: 16px; position: relative; z-index: 22; }
 @keyframes puff { from { opacity: 0; transform: scale(.5); } to { opacity: 1; transform: translateX(18px) scale(1.2); } } @keyframes pop { from { opacity: 0; transform: translateX(-50%) scale(.4); } to { opacity: 1; transform: translateX(-50%) scale(1); } } @keyframes clown-wiggle { to { transform: rotate(6deg); } } @keyframes runner-jump { to { transform: translateY(-22px) scaleX(-1); } } @keyframes runner-run { 50% { transform: translateX(22px) scaleX(-1); } } @keyframes runner-hide { 50% { opacity: .18; transform: translateX(26px) scale(.62) scaleX(-1); } } @keyframes button-bounce { 50% { transform: translateY(-3px); } } @keyframes choice-pulse { to { box-shadow: 0 5px 0 #58435a, 0 0 0 7px rgba(255, 226, 92, .58); transform: scale(1.04); } } @keyframes break-away { from { opacity: 0; transform: translate(0) rotate(0); } to { opacity: 1; transform: translate(var(--x), var(--y)) rotate(var(--rotate)); } } @keyframes crack-grow { from { opacity: 0; transform: rotate(var(--angle)) scaleX(0); } to { opacity: 1; transform: rotate(var(--angle)) scaleX(1); } } @keyframes impact { from { opacity: 0; transform: scale(3); } to { opacity: 1; transform: scale(1); } } @keyframes scary-pop { from { opacity: 0; transform: scale(.2) rotate(-12deg); } to { opacity: 1; transform: scale(1) rotate(0); } }
 .runner.is-moving-run { animation: runner-run .4s ease-out; }.runner.is-moving-hide { animation: runner-hide .55s ease-in-out; }.runner.is-moving-jump { animation: runner-jump .4s ease-out; }.runner.is-hidden { opacity: .25; transform: scale(.62) scaleX(-1); z-index: 2; }
-@media (max-width: 430px) { .clown-game { padding-left: 12px; padding-right: 12px; }.game-header { align-items: flex-start; flex-direction: column; gap: 8px; }.distance { align-self: flex-end; }.race-field { height: 66vw; min-height: 230px; }.character { bottom: 17%; } }
+@media (max-width: 430px) { .clown-game { padding-left: 12px; padding-right: 12px; }.game-header { align-items: flex-start; flex-direction: column; gap: 8px; }.distance { align-self: flex-end; }.character { bottom: 17%; } }
+
+/* どのゲームも、同じテレビ画面の大きさで遊ぶ。 */
+.race-field { aspect-ratio: 4 / 3; height: auto; min-height: 0; }
+
+/* 見出し、案内、進行カードを全ゲームで同じ順に並べる。 */
+.game-header { align-items: flex-start; flex-direction: column; gap: 8px; }
+.game-progress-panel { align-self: flex-end; }
+
+/* テレビ画面の上端を、ほかのゲームと同じ基準線にそろえる。 */
+.game-panel { transform: translateY(14px); }
+@media (max-width: 520px) { .game-panel { transform: translateY(-14px); } }
+
+/* 共通の見出し位置: ヘッダー直後からゲームを始める。 */
+.clown-game { padding-top: 28px; }
+.clown-game { align-items: flex-start; }
+.game-panel { margin: 0 auto; transform: none; }
 </style>
