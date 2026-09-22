@@ -71,15 +71,15 @@ body::-webkit-scrollbar {
   display: none;
 }
 
-html, body, #__nuxt, .v-application {
+html, body, #__nuxt, #__layout, .v-application {
   max-width: 100%;
   overflow-x: hidden;
   overscroll-behavior-x: none;
+  background-color: #edf7fb;
 }
 
 body {
   touch-action: pan-y;
-  background: #edf7fb;
 }
 
 .container {
