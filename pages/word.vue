@@ -1,17 +1,17 @@
 <template>
-  <div class="word-game" :class="gameClass">
-    <div class="main">
-      <div class="bubble bubble--one" aria-hidden="true"></div>
-      <div class="bubble bubble--two" aria-hidden="true"></div>
-      <div class="bubble bubble--three" aria-hidden="true"></div>
-      <header class="word-header">
+  <div class="game-page" :class="gameClass">
+    <GameScreenLayout class="word-game">
+      <template #heading>
+        <div class="bubble bubble--one" aria-hidden="true"></div>
+        <div class="bubble bubble--two" aria-hidden="true"></div>
+        <div class="bubble bubble--three" aria-hidden="true"></div>
         <div>
           <h1>もじえらび</h1>
           <p>おなじ もじを えらぼう！</p>
         </div>
-        <div class="word-status" aria-live="polite"><GameProgressPanel compact :items="progressItems" /></div>
-      </header>
-      <section class="word-board" aria-label="もじえらびのゲームばん">
+      </template>
+      <template #progress><div class="word-status" aria-live="polite"><GameProgressPanel compact :items="progressItems" /></div></template>
+      <template #board><section class="word-board" aria-label="もじえらびのゲームばん">
         <div class="word-board__play">
           <div class="section1">
             <div class="theme">
@@ -21,16 +21,18 @@
             </div>
           </div>
         </div>
-      </section>
-      <div class="word-controls">
-        <div v-if="isReady" class="section2"><div class="card-list">
-          <button v-for="word in words" :key="word.id" :class="[word.class, { selected: word.selected, result: word.result }]" class="selectable-card card" :disabled="gameOver || roundTransitioning" @click="selectWord(word.id)">
-            {{ word.text }}
-          </button>
-        </div></div>
-        <GameActionButtons v-else @primary="startGame">はじめる</GameActionButtons>
-      </div>
-    </div>
+      </section></template>
+      <template #actions>
+        <div class="word-controls">
+          <div v-if="isReady" class="section2"><div class="card-list">
+            <button v-for="word in words" :key="word.id" :class="[word.class, { selected: word.selected, result: word.result }]" class="selectable-card card" :disabled="gameOver || roundTransitioning" @click="selectWord(word.id)">
+              {{ word.text }}
+            </button>
+          </div></div>
+          <GameActionButtons v-else @primary="startGame">はじめる</GameActionButtons>
+        </div>
+      </template>
+    </GameScreenLayout>
 
     <div v-if="gameOver && !cleared" class="crash-shards" aria-hidden="true">
       <i class="impact-point"></i>
@@ -60,6 +62,7 @@ import ngSound from '@/assets/sounds/ng.mp3'
 import GameActionButtons from '@/components/GameActionButtons.vue'
 import GameResultOverlay from '@/components/GameResultOverlay.vue'
 import GameProgressPanel from '@/components/GameProgressPanel.vue'
+import GameScreenLayout from '@/components/GameScreenLayout.vue'
 
 const TARGET_SUCCESSES = 5
 const MAX_MISTAKES = 3
@@ -67,7 +70,7 @@ const WORD_COUNT = 4
 
 export default {
   name: 'WordPage',
-  components: { GameActionButtons, GameResultOverlay, GameProgressPanel },
+  components: { GameActionButtons, GameResultOverlay, GameProgressPanel, GameScreenLayout },
   data: () => ({
     themeWord: '',
     words: [],
@@ -245,7 +248,7 @@ export default {
 .section2 { max-width: 1120px; margin: auto; }.card-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }.section2 .card { display: grid; min-height: clamp(78px, 18vw, 116px); place-items: center; border: 4px solid rgba(255, 255, 255, .92); box-shadow: 0 6px 0 rgba(57, 113, 141, .22); color: #315f76; text-align: center; font-size: clamp(42px, 12vw, 82px); line-height: 1; font-weight: bold; cursor: pointer; transition: transform .15s, box-shadow .15s, filter .15s; }.section2 .card:not(:disabled):hover { filter: brightness(1.06); transform: translateY(-2px) rotate(-1deg); }.section2 .card:not(:disabled):active { box-shadow: 0 2px 0 rgba(57, 113, 141, .22); transform: translateY(4px) scale(.96); }.section2 .card:disabled { cursor: default; }.section2 .card.selected { box-shadow: 0 2px 18px rgba(49, 95, 118, .48); }.section2 .card.a { background: #a8d4e9; }.section2 .card.b { background: #b9ddea; }.section2 .card.c { background: #c9e4ee; }.section2 .card.d { background: #b5d3e5; }.section2 .card.sm, .section2 .card.md, .section2 .card.lg, .section2 .card.xl { font-size: clamp(42px, 12vw, 82px); }.section2 .card.a, .section2 .card.b, .section2 .card.c, .section2 .card.d { width: auto; }
 .section3 { max-width: 1120px; margin: 9px auto; text-align: center; }.section3 p { display: inline-block; margin: 0; padding: 4px 12px; border-radius: 999px; background: rgba(255, 255, 255, .56); color: #315f76; font-weight: bold; font-size: clamp(19px, 5.2vw, 27px); letter-spacing: 1px; }.card.result { border: 5px solid #c4a45e; animation: correct-pop .35s ease-out; }
 .result-screen { position: fixed; z-index: 5; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; background: rgba(26, 66, 85, .78); font-family: "Yomogi", cursive; text-align: center; animation: appear .35s ease-out; }.result-screen--failed { background: rgba(26, 66, 85, .1); text-shadow: 2px 3px 0 #315f76; }.result-screen__title { font-size: clamp(50px, 15vw, 110px); font-weight: bold; margin: 0; }.result-screen p:not(.result-screen__title) { font-size: 24px; }.retry-button { display: block; margin-top: 12px; padding: 14px 32px; border: 4px solid #fff; border-radius: 999px; background: #54acdb; color: #fff; font: bold 24px "Yomogi", cursive; cursor: pointer; text-decoration: none; }
-.is-crashing .main { animation: crash .45s steps(2) 2; filter: contrast(1.15) saturate(.35) brightness(.9); }.crash-shards { position: fixed; z-index: 4; inset: 0; pointer-events: none; overflow: hidden; background: rgba(0, 0, 0, .45); }.shard { position: absolute; display: block; inset: 0; background: linear-gradient(135deg, rgba(255, 255, 255, .12), transparent 22%, rgba(0, 0, 0, .22) 75%), rgba(37, 53, 66, .38); box-shadow: inset 18px 20px 30px rgba(255, 255, 255, .05), inset -20px -24px 35px rgba(0, 0, 0, .35); backdrop-filter: blur(1px); animation: break-away .75s cubic-bezier(.15, .7, .2, 1) both; }.shard--one { --x: -30px; --y: -18px; --rotate: -1.5deg; clip-path: polygon(0 0, 49% 0, 43% 35%, 0 51%); transform-origin: top left; }.shard--two { --x: 36px; --y: -20px; --rotate: 2.5deg; clip-path: polygon(49% 0, 100% 0, 100% 30%, 60% 40%, 43% 35%); transform-origin: top right; animation-delay: .05s; }.shard--three { --x: -34px; --y: 36px; --rotate: 2.5deg; clip-path: polygon(0 51%, 43% 35%, 55% 65%, 26% 100%, 0 100%); transform-origin: bottom left; animation-delay: .1s; }.shard--four { --x: 31px; --y: 8px; --rotate: -2deg; clip-path: polygon(43% 35%, 60% 40%, 100% 30%, 100% 65%, 55% 65%); transform-origin: center right; animation-delay: .14s; }.shard--five { --x: -8px; --y: 42px; --rotate: -1deg; clip-path: polygon(26% 100%, 55% 65%, 74% 100%); transform-origin: bottom center; animation-delay: .18s; }.shard--six { --x: 36px; --y: 38px; --rotate: 2deg; clip-path: polygon(55% 65%, 100% 65%, 100% 100%, 74% 100%); transform-origin: bottom right; animation-delay: .22s; }.impact-point { position: absolute; z-index: 2; top: 42%; left: 51%; width: 18px; height: 18px; border: 2px solid rgba(255, 255, 255, .55); border-radius: 50%; background: #0b1117; box-shadow: 0 0 0 5px rgba(0, 0, 0, .5), 0 0 18px rgba(255, 255, 255, .25); animation: impact .35s ease-out both; }.crack { --angle: 0deg; --length: 35vw; position: absolute; z-index: 3; top: 43%; left: 52%; width: var(--length); height: 2px; transform-origin: left center; transform: rotate(var(--angle)); background: linear-gradient(90deg, rgba(236, 247, 250, .9), rgba(0, 0, 0, .95) 7%, rgba(0, 0, 0, .9) 85%, transparent); box-shadow: 0 1px 1px rgba(255, 255, 255, .3); animation: crack-grow .35s ease-out both; }.crack--one { --angle: -142deg; --length: 43vw; }.crack--two { --angle: -84deg; --length: 40vw; animation-delay: .04s; }.crack--three { --angle: -29deg; --length: 52vw; animation-delay: .08s; }.crack--four { --angle: 24deg; --length: 47vw; animation-delay: .11s; }.crack--five { --angle: 79deg; --length: 46vw; animation-delay: .15s; }.crack--six { --angle: 142deg; --length: 38vw; animation-delay: .18s; }
+.crash-shards { position: fixed; z-index: 4; inset: 0; pointer-events: none; overflow: hidden; background: rgba(0, 0, 0, .45); }.shard { position: absolute; display: block; inset: 0; background: linear-gradient(135deg, rgba(255, 255, 255, .12), transparent 22%, rgba(0, 0, 0, .22) 75%), rgba(37, 53, 66, .38); box-shadow: inset 18px 20px 30px rgba(255, 255, 255, .05), inset -20px -24px 35px rgba(0, 0, 0, .35); backdrop-filter: blur(1px); animation: break-away .75s cubic-bezier(.15, .7, .2, 1) both; }.shard--one { --x: -30px; --y: -18px; --rotate: -1.5deg; clip-path: polygon(0 0, 49% 0, 43% 35%, 0 51%); transform-origin: top left; }.shard--two { --x: 36px; --y: -20px; --rotate: 2.5deg; clip-path: polygon(49% 0, 100% 0, 100% 30%, 60% 40%, 43% 35%); transform-origin: top right; animation-delay: .05s; }.shard--three { --x: -34px; --y: 36px; --rotate: 2.5deg; clip-path: polygon(0 51%, 43% 35%, 55% 65%, 26% 100%, 0 100%); transform-origin: bottom left; animation-delay: .1s; }.shard--four { --x: 31px; --y: 8px; --rotate: -2deg; clip-path: polygon(43% 35%, 60% 40%, 100% 30%, 100% 65%, 55% 65%); transform-origin: center right; animation-delay: .14s; }.shard--five { --x: -8px; --y: 42px; --rotate: -1deg; clip-path: polygon(26% 100%, 55% 65%, 74% 100%); transform-origin: bottom center; animation-delay: .18s; }.shard--six { --x: 36px; --y: 38px; --rotate: 2deg; clip-path: polygon(55% 65%, 100% 65%, 100% 100%, 74% 100%); transform-origin: bottom right; animation-delay: .22s; }.impact-point { position: absolute; z-index: 2; top: 42%; left: 51%; width: 18px; height: 18px; border: 2px solid rgba(255, 255, 255, .55); border-radius: 50%; background: #0b1117; box-shadow: 0 0 0 5px rgba(0, 0, 0, .5), 0 0 18px rgba(255, 255, 255, .25); animation: impact .35s ease-out both; }.crack { --angle: 0deg; --length: 35vw; position: absolute; z-index: 3; top: 43%; left: 52%; width: var(--length); height: 2px; transform-origin: left center; transform: rotate(var(--angle)); background: linear-gradient(90deg, rgba(236, 247, 250, .9), rgba(0, 0, 0, .95) 7%, rgba(0, 0, 0, .9) 85%, transparent); box-shadow: 0 1px 1px rgba(255, 255, 255, .3); animation: crack-grow .35s ease-out both; }.crack--one { --angle: -142deg; --length: 43vw; }.crack--two { --angle: -84deg; --length: 40vw; animation-delay: .04s; }.crack--three { --angle: -29deg; --length: 52vw; animation-delay: .08s; }.crack--four { --angle: 24deg; --length: 47vw; animation-delay: .11s; }.crack--five { --angle: 79deg; --length: 46vw; animation-delay: .15s; }.crack--six { --angle: 142deg; --length: 38vw; animation-delay: .18s; }
 @keyframes crash { 0% { transform: translate(0); } 33% { transform: translate(-16px, 9px) skew(5deg); } 66% { transform: translate(14px, -7px) skew(-6deg); } } @keyframes break-away { from { opacity: 0; transform: translate(0) rotate(0); } to { opacity: 1; transform: translate(var(--x), var(--y)) rotate(var(--rotate)); } } @keyframes crack-grow { from { opacity: 0; transform: rotate(var(--angle)) scaleX(0); } to { opacity: 1; transform: rotate(var(--angle)) scaleX(1); } } @keyframes impact { from { opacity: 0; transform: scale(3); } to { opacity: 1; transform: scale(1); } } @keyframes appear { from { opacity: 0; transform: scale(1.15); } to { opacity: 1; transform: scale(1); } } @keyframes float { from { transform: translateY(0) scale(.9); } to { transform: translateY(-16px) scale(1.08); } } @keyframes correct-pop { 0% { transform: scale(.92); } 65% { transform: scale(1.04) rotate(1deg); } 100% { transform: scale(1); } }
 @media (min-width: 700px) { .main { padding-top: 32px; }.game-rule { justify-content: space-between; }.card-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }.section2 .card { min-height: 120px; } }
 .word-board { background: linear-gradient(145deg, rgba(246, 253, 255, .92), rgba(207, 235, 247, .96)); border: clamp(5px, 1.4vw, 8px) solid #54acdb; border-radius: clamp(28px, 7vw, 42px); box-shadow: inset 0 0 0 4px rgba(255, 255, 255, .75), 0 10px 0 rgba(57, 137, 178, .2); margin: 0 auto; max-width: 760px; padding: clamp(12px, 2.8vw, 22px); position: relative; }
@@ -289,4 +292,12 @@ export default {
 /* 開始画面はゲーム盤とボタンを自然な間隔で続けて置く。 */
 .main { display: block; }
 .word-board__play { height: auto; min-height: clamp(202px, 42vw, 300px); }
+
+.word-status { display: block; width: 100%; }
+.word-board { max-width: none; }
+.word-board__play { height: 100%; min-height: 0; }
+.word-controls { width: 100%; }
+.word-controls .card-list { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.word-controls .section2 .card { min-height: 76px; }
+.is-crashing ::v-deep .game-screen-layout__content { animation: crash .45s steps(2) 2; filter: contrast(1.15) saturate(.35) brightness(.9); }
 </style>

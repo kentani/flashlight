@@ -22,7 +22,7 @@ describe('word game challenge', () => {
     expect(wrapper.vm.maxMistakes).toBe(3)
     expect(wrapper.findAll('.selectable-card')).toHaveLength(0)
     expect(wrapper.find('.game-start-button').text()).toBe('はじめる')
-    expect(wrapper.find('.word-header .word-status').exists()).toBe(true)
+    expect(wrapper.find('.game-screen-layout__progress .word-status').exists()).toBe(true)
     expect(wrapper.find('.word-board .word-status').exists()).toBe(false)
     expect(wrapper.find('.word-board__play .section1').exists()).toBe(true)
     expect(wrapper.find('.word-board .selectable-card').exists()).toBe(false)

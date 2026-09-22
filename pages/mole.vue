@@ -1,67 +1,73 @@
 <template>
-  <section class="mole-game" aria-labelledby="mole-title">
-    <div class="game-panel">
-      <header class="game-header">
+  <div class="game-page">
+    <GameScreenLayout class="mole-game" aria-labelledby="mole-title">
+      <template #heading>
         <div>
           <h1 id="mole-title">もぐらたたき</h1>
           <p v-if="!isPlaying && !hasPlayed">もぐらが出てきたら、すぐにタップ！</p>
           <p v-else-if="isPlaying">もぐらを見つけてタップしよう！</p>
           <p v-else>じょうずにたたけたね！</p>
         </div>
+      </template>
+      <template #progress>
         <div class="scoreboard" aria-live="polite">
           <GameProgressPanel :items="progressItems" />
           <span v-if="whackedHole !== null" :key="'score-pop-' + hitPulse" class="score-pop" aria-hidden="true">+1</span>
         </div>
-      </header>
+      </template>
 
-      <div class="mole-field" :class="{ 'is-playing': isPlaying, 'is-fever': isFever, 'is-hit': whackedHole !== null }">
-        <div v-if="isFever" class="fever-status" :class="feverPulse % 2 ? 'is-pulse-odd' : 'is-pulse-even'" aria-live="polite">
-          <span class="fever-status__sparkle" aria-hidden="true">★</span>
-          <strong>フィーバー！</strong>
-          <span class="fever-status__hits">れんだ {{ bonusHits }} かい！</span>
-          <span class="fever-status__meter" :class="{ 'is-max': feverMeter === 100, 'is-pulse-odd': feverPulse % 2 }" aria-hidden="true">
-            <i :style="{ width: feverMeter + '%' }"></i>
-            <b v-for="step in 5" :key="step" :class="{ 'is-filled': bonusHits >= step }">★</b>
-          </span>
-          <span :key="feverPulse" class="fever-status__burst" aria-hidden="true">✨</span>
+      <template #board>
+        <div class="mole-field" :class="{ 'is-playing': isPlaying, 'is-fever': isFever, 'is-hit': whackedHole !== null }">
+          <div v-if="isFever" class="fever-status" :class="feverPulse % 2 ? 'is-pulse-odd' : 'is-pulse-even'" aria-live="polite">
+            <span class="fever-status__sparkle" aria-hidden="true">★</span>
+            <strong>フィーバー！</strong>
+            <span class="fever-status__hits">れんだ {{ bonusHits }} かい！</span>
+            <span class="fever-status__meter" :class="{ 'is-max': feverMeter === 100, 'is-pulse-odd': feverPulse % 2 }" aria-hidden="true">
+              <i :style="{ width: feverMeter + '%' }"></i>
+              <b v-for="step in 5" :key="step" :class="{ 'is-filled': bonusHits >= step }">★</b>
+            </span>
+            <span :key="feverPulse" class="fever-status__burst" aria-hidden="true">✨</span>
+          </div>
+          <button
+            v-for="hole in holes"
+            :key="hole"
+            type="button"
+            class="hole"
+            :class="{ 'has-mole': activeHole === hole, 'bonus-mole': activeHole === hole && isBonusMole, whacked: whackedHole === hole }"
+            :aria-label="activeHole === hole ? isBonusMole ? 'たくさんたたけるモグラをたたく' : 'もぐらをたたく' : 'もぐらの穴'"
+            :disabled="!isPlaying || activeHole !== hole"
+            @touchend.prevent="handleHoleTouch(hole)"
+            @click="handleHoleClick(hole)"
+          >
+            <span class="dirt"></span>
+            <span class="mole" aria-hidden="true">🐹</span>
+            <span v-if="whackedHole === hole" :key="hitPulse" class="hit-effect" aria-hidden="true">
+              <span class="impact">💥</span>
+              <span class="hammer">🔨</span>
+              <span class="star star-one">★</span>
+              <span class="star star-two">★</span>
+              <span class="tap-cheer">ポン！</span>
+              <span class="spark spark-one">✦</span>
+              <span class="spark spark-two">✦</span>
+              <span class="spark spark-three">✦</span>
+            </span>
+          </button>
         </div>
-        <button
-          v-for="hole in holes"
-          :key="hole"
-          type="button"
-          class="hole"
-          :class="{ 'has-mole': activeHole === hole, 'bonus-mole': activeHole === hole && isBonusMole, whacked: whackedHole === hole }"
-          :aria-label="activeHole === hole ? isBonusMole ? 'たくさんたたけるモグラをたたく' : 'もぐらをたたく' : 'もぐらの穴'"
-          :disabled="!isPlaying || activeHole !== hole"
-          @touchend.prevent="handleHoleTouch(hole)"
-          @click="handleHoleClick(hole)"
-        >
-          <span class="dirt"></span>
-          <span class="mole" aria-hidden="true">🐹</span>
-          <span v-if="whackedHole === hole" :key="hitPulse" class="hit-effect" aria-hidden="true">
-            <span class="impact">💥</span>
-            <span class="hammer">🔨</span>
-            <span class="star star-one">★</span>
-            <span class="star star-two">★</span>
-            <span class="tap-cheer">ポン！</span>
-            <span class="spark spark-one">✦</span>
-            <span class="spark spark-two">✦</span>
-            <span class="spark spark-three">✦</span>
-          </span>
+      </template>
+
+      <template #actions>
+        <GameActionButtons v-if="!isPlaying && !hasPlayed" @primary="startGame">はじめる</GameActionButtons>
+
+        <button v-if="isPlaying" type="button" class="start-button" @click="startGame">
+          さいしょから やりなおす
         </button>
-      </div>
-
-      <GameActionButtons v-if="!isPlaying && !hasPlayed" @primary="startGame">はじめる</GameActionButtons>
-
-      <button v-if="isPlaying" type="button" class="start-button" @click="startGame">
-        さいしょから やりなおす
-      </button>
-    </div>
+      </template>
+    </GameScreenLayout>
     <GameResultOverlay v-if="hasPlayed && !isPlaying" :title="resultTitle" celebration="🐹✨" retry-label="もういちど あそぶ" @retry="startGame">
       <strong class="result-score">{{ score }}<small>てん</small></strong>
       <p>{{ resultMessage }}</p>
     </GameResultOverlay>
-  </section>
+  </div>
 </template>
 
 <script>
@@ -69,6 +75,7 @@ import whackSound from '@/assets/sounds/ok.mp3'
 import GameActionButtons from '@/components/GameActionButtons.vue'
 import GameResultOverlay from '@/components/GameResultOverlay.vue'
 import GameProgressPanel from '@/components/GameProgressPanel.vue'
+import GameScreenLayout from '@/components/GameScreenLayout.vue'
 
 const MIN_MOLE_DURATION = 1250
 const MAX_MOLE_DURATION = 2200
@@ -78,7 +85,7 @@ const TARGET_SCORE = 20
 
 export default {
   name: 'MolePage',
-  components: { GameActionButtons, GameResultOverlay, GameProgressPanel },
+  components: { GameActionButtons, GameResultOverlay, GameProgressPanel, GameScreenLayout },
   data () {
     return {
       holes: [0, 1, 2, 3, 4, 5, 6, 7, 8],
@@ -468,4 +475,5 @@ p { font-size: 1.1rem; font-weight: bold; margin: 0; }
 .scoreboard { width: 100%; }
 .game-panel, .game-header, .scoreboard, .mole-field { min-width: 0; }
 .game-panel { display: block; height: auto; }
+
 </style>

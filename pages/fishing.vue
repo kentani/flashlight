@@ -1,41 +1,51 @@
 <template>
-  <section class="fishing-game" aria-labelledby="fishing-title">
-    <div class="fishing-game__panel" :class="{ 'is-ready': phase === 'ready' }">
-      <header class="fishing-game__header"><div><h1 id="fishing-title">つり</h1><p>{{ guide }}</p></div><GameProgressPanel :items="progressItems" /></header>
-      <div ref="pond" class="pond">
-        <span class="sun" aria-hidden="true">☀️</span><span class="shore" aria-hidden="true">🌿</span>
-        <div v-if="phase === 'ready'" class="pond-preview" aria-hidden="true"><span>🐟</span><span>🐡</span><span>🦀</span></div>
-        <template v-if="isPlaying">
-          <p class="message" aria-live="polite">{{ message }}</p>
-          <div v-for="fish in fishInPond" :key="fish.id" class="fish" :class="{ target: fish.id === targetFish.id, caught: caughtFishId === fish.id }" :style="fishStyle(fish)" aria-hidden="true"><span>{{ fish.emoji }}</span><i v-if="fish.id === targetFish.id && phase === 'aiming'">ねらい</i></div>
-          <div class="rod" :class="{ casting: phase === 'casting' || phase === 'reeling' }" aria-hidden="true"></div>
-          <div v-if="phase === 'casting' || phase === 'reeling'" class="line" :style="lineStyle" aria-hidden="true"><span>🪝</span></div>
-          <div v-if="phase === 'aiming'" class="controls"><p>おさかなまでの きょり</p><div class="meter" aria-hidden="true"><span class="target-mark" :style="{ left: `${targetFish.power}%` }"></span><span class="power" :style="{ width: `${power}%` }"></span></div><button type="button" class="button cast" @pointerdown.prevent="beginCharge" @pointerup.prevent="releaseCast" @pointercancel="stopCharge" @pointerleave="releaseCast"><span aria-hidden="true">🎣</span>{{ charging ? 'ためてるよ…' : 'おして ためる' }}</button></div>
-          <button v-else-if="phase === 'reeling'" type="button" class="button reel" :class="{ 'is-nearly-caught': reelProgress >= reelTaps - 2 }" @click="reel"><span class="reel__label" aria-hidden="true">💪 れんだ！</span><span class="reel-meter" aria-hidden="true"><span :style="{ width: `${reelPower}%` }"></span></span><i>{{ reelProgress }} / {{ reelTaps }}</i><b :key="reelProgress" aria-hidden="true">✨</b></button>
-          <div v-else-if="phase === 'catching'" class="celebration" aria-live="assertive"><span>{{ targetFish.emoji }}</span><strong>つれた！</strong><i>✨</i></div>
-        </template>
-      </div>
-      <GameActionButtons v-if="phase === 'ready'" @primary="startGame">はじめる</GameActionButtons>
-      <div v-if="isPlaying || hasPlayed" class="caught-fish" aria-label="つれたおさかな" aria-live="polite"><span v-for="(fish, index) in caughtFish" :key="`${fish}-${index}`" aria-hidden="true">{{ fish }}</span></div>
-    </div>
+  <div class="game-page">
+    <GameScreenLayout class="fishing-game" aria-labelledby="fishing-title">
+      <template #heading>
+        <div><h1 id="fishing-title">つり</h1><p>{{ guide }}</p></div>
+      </template>
+      <template #progress>
+        <GameProgressPanel :items="progressItems" />
+      </template>
+      <template #board>
+        <div ref="pond" class="pond">
+          <span class="sun" aria-hidden="true">☀️</span><span class="shore" aria-hidden="true">🌿</span>
+          <div v-if="phase === 'ready'" class="pond-preview" aria-hidden="true"><span>🐟</span><span>🐡</span><span>🦀</span></div>
+          <template v-if="isPlaying">
+            <p class="message" aria-live="polite">{{ message }}</p>
+            <div v-for="fish in fishInPond" :key="fish.id" class="fish" :class="{ target: fish.id === targetFish.id, caught: caughtFishId === fish.id }" :style="fishStyle(fish)" aria-hidden="true"><span>{{ fish.emoji }}</span><i v-if="fish.id === targetFish.id && phase === 'aiming'">ねらい</i></div>
+            <div class="rod" :class="{ casting: phase === 'casting' || phase === 'reeling' }" aria-hidden="true"></div>
+            <div v-if="phase === 'casting' || phase === 'reeling'" class="line" :style="lineStyle" aria-hidden="true"><span>🪝</span></div>
+            <div v-if="phase === 'aiming'" class="controls"><p>おさかなまでの きょり</p><div class="meter" aria-hidden="true"><span class="target-mark" :style="{ left: `${targetFish.power}%` }"></span><span class="power" :style="{ width: `${power}%` }"></span></div><button type="button" class="button cast" @pointerdown.prevent="beginCharge" @pointerup.prevent="releaseCast" @pointercancel="stopCharge" @pointerleave="releaseCast"><span aria-hidden="true">🎣</span>{{ charging ? 'ためてるよ…' : 'おして ためる' }}</button></div>
+            <button v-else-if="phase === 'reeling'" type="button" class="button reel" :class="{ 'is-nearly-caught': reelProgress >= reelTaps - 2 }" @click="reel"><span class="reel__label" aria-hidden="true">💪 れんだ！</span><span class="reel-meter" aria-hidden="true"><span :style="{ width: `${reelPower}%` }"></span></span><i>{{ reelProgress }} / {{ reelTaps }}</i><b :key="reelProgress" aria-hidden="true">✨</b></button>
+            <div v-else-if="phase === 'catching'" class="celebration" aria-live="assertive"><span>{{ targetFish.emoji }}</span><strong>つれた！</strong><i>✨</i></div>
+          </template>
+        </div>
+      </template>
+      <template #actions>
+        <GameActionButtons v-if="phase === 'ready'" @primary="startGame">はじめる</GameActionButtons>
+        <div v-if="isPlaying || hasPlayed" class="caught-fish" aria-label="つれたおさかな" aria-live="polite"><span v-for="(fish, index) in caughtFish" :key="`${fish}-${index}`" aria-hidden="true">{{ fish }}</span></div>
+      </template>
+    </GameScreenLayout>
     <GameResultOverlay v-if="hasPlayed && !isPlaying" :title="resultTitle" :celebration="catches ? '🎣🐟✨' : '🎣💭'" @retry="startGame">
       <strong class="result-score">{{ catches }}<small>ひき</small></strong>
       <p>{{ resultMessage }}</p>
     </GameResultOverlay>
-  </section>
+  </div>
 </template>
 
 <script>
 import GameActionButtons from '@/components/GameActionButtons.vue'
 import GameResultOverlay from '@/components/GameResultOverlay.vue'
 import GameProgressPanel from '@/components/GameProgressPanel.vue'
+import GameScreenLayout from '@/components/GameScreenLayout.vue'
 
 const REEL_TAPS = 7
 const TARGET_CATCHES = 5
 const FISH_EMOJIS = ['🐟', '🐡', '🐬', '🦀', '🐙']
 export default {
   name: 'FishingPage',
-  components: { GameActionButtons, GameResultOverlay, GameProgressPanel },
+  components: { GameActionButtons, GameResultOverlay, GameProgressPanel, GameScreenLayout },
   data () { return { catches: 0, isPlaying: false, hasPlayed: false, phase: 'ready', fishInPond: [], caughtFish: [], targetFish: { id: 0, power: 50, x: 50, lane: 1, emoji: '🐟' }, caughtFishId: null, fishId: 0, power: 0, castPower: 0, charging: false, reelProgress: 0, reelTaps: REEL_TAPS, chargeTimer: null, actionTimer: null } },
   computed: {
     progressItems () { return [{ label: 'ゴール', value: this.catches, max: TARGET_CATCHES, unit: `/ ${TARGET_CATCHES}`, tone: 'yellow' }] },
@@ -108,4 +118,5 @@ export default {
 
 /* 見出しから操作ボタンまでを、画面の中央にひとまとまりで置く。 */
 .fishing-game { align-items: center; }
+
 </style>

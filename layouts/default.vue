@@ -158,4 +158,10 @@ body {
 .theme--dark.v-btn--active:hover::before, .theme--dark.v-btn--active::before {
   opacity: 0;
 }
+
+.game-page {
+  min-width: 0;
+  width: 100%;
+}
+
 </style>
