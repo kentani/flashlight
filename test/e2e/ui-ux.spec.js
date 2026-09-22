@@ -37,6 +37,20 @@ test.describe('UI/UX の基本操作', () => {
     await expect(toolCategory.getByRole('link', { name: /パスコード/ })).toBeVisible()
   })
 
+  test('メニューの全おもちゃに専用アイコンが表示される', async ({ page }) => {
+    await page.goto('.')
+
+    const cards = page.locator('.menu-card')
+    await expect(cards).toHaveCount(14)
+    await expect(page.locator('.menu-card__sticker')).toHaveCount(14)
+
+    for (const icon of await page.locator('.menu-card__sticker').all()) {
+      await expect(icon).toHaveAttribute('src', /\/flashlight\/menu-icons\/[a-z-]+\.svg$/)
+      await expect(icon).toHaveJSProperty('complete', true)
+      expect(await icon.evaluate(image => image.naturalWidth)).toBeGreaterThan(0)
+    }
+  })
+
   test('くるまレースは大きなボタンで車線を動かせる', async ({ page }) => {
     await page.goto('race')
 

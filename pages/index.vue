@@ -19,7 +19,12 @@
           :style="{ backgroundColor: toy.color }"
         >
           <span class="menu-card__content">
-            <span class="menu-card__sticker" aria-hidden="true">{{ toy.emoji }}</span>
+            <img
+              class="menu-card__sticker"
+              :src="toy.image"
+              alt=""
+              draggable="false"
+            >
             <span class="menu-card__title">{{ toy.title }}</span>
           </span>
         </NuxtLink>
@@ -30,23 +35,23 @@
 
 <script>
 const GAMES = [
-  { title: 'もじえらび', to: '/word', icon: 'mdi-alpha-a-circle-outline', emoji: '🔤', color: '#55b875' },
-  { title: 'つり', to: '/fishing', icon: 'mdi-fish', emoji: '🎣', color: '#4986d5' },
-  { title: 'もぐらたたき', to: '/mole', icon: 'mdi-hammer', emoji: '🐹', color: '#a97a51' },
-  { title: 'ピエロ', to: '/clown', icon: 'mdi-run-fast', emoji: '🤡', color: '#e85b67' },
-  { title: 'くるまレース', to: '/race', icon: 'mdi-car-sports', emoji: '🏎️', color: '#e84a45' }
+  { title: 'もじえらび', to: '/word', image: '/flashlight/menu-icons/word.svg', color: '#55b875' },
+  { title: 'つり', to: '/fishing', image: '/flashlight/menu-icons/fishing.svg', color: '#4986d5' },
+  { title: 'もぐらたたき', to: '/mole', image: '/flashlight/menu-icons/mole.svg', color: '#a97a51' },
+  { title: 'ピエロ', to: '/clown', image: '/flashlight/menu-icons/clown.svg', color: '#e85b67' },
+  { title: 'くるまレース', to: '/race', image: '/flashlight/menu-icons/race.svg', color: '#e84a45' }
 ]
 
 const TOOLS = [
-  { title: 'ライト', to: '/flashlight', icon: 'mdi-flashlight', emoji: '🔦', color: '#6252c7' },
-  { title: 'おえかき', to: '/drawing', icon: 'mdi-palette', emoji: '🎨', color: '#ee6b90' },
-  { title: 'おんがく', to: '/music', icon: 'mdi-music', emoji: '🎵', color: '#4aaee8' },
-  { title: 'スイッチ', to: '/switch', icon: 'mdi-light-switch-off', emoji: '💡', color: '#f3a72d' },
-  { title: 'おさかな', to: '/fish', icon: 'mdi-fish', emoji: '🐟', color: '#2eb7b1' },
-  { title: 'あなごぬき', to: '/anago', icon: 'mdi-fish', emoji: '🐠', color: '#ee8056' },
-  { title: 'ぽけ', to: '/poke', icon: 'mdi-card-account-details-outline', emoji: '👆', color: '#a66ac8' },
-  { title: 'しんごうき', to: '/traffic-light', icon: 'mdi-traffic-light', emoji: '🚦', color: '#49656f' },
-  { title: 'パスコード', to: '/passcode', icon: 'mdi-cellphone-lock', emoji: '📱', color: '#405a70' }
+  { title: 'ライト', to: '/flashlight', image: '/flashlight/menu-icons/flashlight.svg', color: '#6252c7' },
+  { title: 'おえかき', to: '/drawing', image: '/flashlight/menu-icons/drawing.svg', color: '#ee6b90' },
+  { title: 'おんがく', to: '/music', image: '/flashlight/menu-icons/music.svg', color: '#4aaee8' },
+  { title: 'スイッチ', to: '/switch', image: '/flashlight/menu-icons/switch.svg', color: '#f3a72d' },
+  { title: 'おさかな', to: '/fish', image: '/flashlight/menu-icons/fish.svg', color: '#2eb7b1' },
+  { title: 'あなごぬき', to: '/anago', image: '/flashlight/menu-icons/anago.svg', color: '#ee8056' },
+  { title: 'ぽけ', to: '/poke', image: '/flashlight/menu-icons/poke.svg', color: '#a66ac8' },
+  { title: 'しんごうき', to: '/traffic-light', image: '/flashlight/menu-icons/traffic-light.svg', color: '#49656f' },
+  { title: 'パスコード', to: '/passcode', image: '/flashlight/menu-icons/passcode.svg', color: '#405a70' }
 ]
 
 const CATEGORIES = [
@@ -151,11 +156,21 @@ export default {
 }
 
 .menu-card__sticker {
-  margin-bottom: 8px;
-  font-family: sans-serif;
-  font-size: clamp(3.2rem, 7vw, 6.3rem);
+  display: block;
+  width: min(74%, 150px);
+  height: min(74%, 150px);
+  margin: -12px 0 18px;
   filter: drop-shadow(0 4px 0 rgba(20, 84, 110, .18));
-  transform: rotate(-7deg);
+  object-fit: contain;
+  pointer-events: none;
+  transform: rotate(-4deg);
+  transition: transform .16s ease;
+  user-select: none;
+}
+
+.menu-card:hover .menu-card__sticker,
+.menu-card:focus-visible .menu-card__sticker {
+  transform: rotate(2deg) scale(1.05);
 }
 
 .menu-card__title {
@@ -164,10 +179,11 @@ export default {
   left: 50%;
   z-index: 1;
   width: max-content;
-  max-width: calc(100% - 24px);
-  padding: 4px 13px;
+  max-width: calc(100% - 16px);
+  padding: 4px 10px;
   overflow: hidden;
   color: #174d68;
+  font-size: clamp(.95rem, 1.9vw, 1.2rem);
   text-overflow: ellipsis;
   text-shadow: none;
   white-space: nowrap;
