@@ -282,6 +282,6 @@ p { font-size: clamp(1rem, 4vw, 1.2rem); font-weight: bold; margin: 0; }
 .game-panel { display: block; height: auto; }
 .race-field { height: auto; }
 
-.clown-game { color: #f5f0dc; text-shadow: 0 2px 0 #11192e; }
+.clown-game ::v-deep .game-screen-layout__heading { color: #f5f0dc; text-shadow: 0 2px 0 #11192e; }
 
 </style>

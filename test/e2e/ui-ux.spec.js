@@ -115,6 +115,14 @@ test.describe('UI/UX の基本操作', () => {
     expect(Math.abs(after.y - before.y)).toBeLessThanOrEqual(1)
   })
 
+  test('ピエロの文字影は見出しだけに使い、進行表示と終了操作を読みやすく保つ', async ({ page }) => {
+    await page.goto('clown')
+
+    await expect(page.locator('.game-screen-layout__heading')).not.toHaveCSS('text-shadow', 'none')
+    await expect(page.locator('.game-progress-panel__label strong')).toHaveCSS('text-shadow', 'none')
+    await expect(page.getByRole('link', { name: 'やめる' })).toHaveCSS('text-shadow', 'none')
+  })
+
   test('しんごうきは大きなボタンで色と合図を切り替えられる', async ({ page }) => {
     await page.goto('traffic-light')
     const goSignal = page.getByRole('button', { name: /すすめ/ })
