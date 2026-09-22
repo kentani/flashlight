@@ -100,7 +100,7 @@ export default {
     meta: {
       mobileApp: true,
       mobileAppIOS: true,
-      appleStatusBarStyle: 'black-translucent',
+      appleStatusBarStyle: 'default',
     },
     manifest: {
       lang: 'ja',
@@ -109,7 +109,7 @@ export default {
       description: 'おもちゃばこ',
       display: 'standalone',
       theme_color: '#54ACDB',
-      background_color: '#54ACDB',
+      background_color: '#EDF7FB',
       orientation: 'any',
       scope: '/flashlight/',
       start_url: '/flashlight/',
