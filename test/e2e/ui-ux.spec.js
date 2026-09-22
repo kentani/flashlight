@@ -1,6 +1,10 @@
 const { test, expect } = require('@playwright/test')
 
 test.describe('UI/UX の基本操作', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+  })
+
   test('主要画面は横スクロールせず、最初の遊びを選べる', async ({ page }) => {
     for (const route of ['.', 'flashlight', 'traffic-light', 'race']) {
       await page.goto(route)
@@ -48,14 +52,15 @@ test.describe('UI/UX の基本操作', () => {
     await up.click()
   })
 
-  test('ゲームは中央の舞台の下のはじめるボタンから遊びを始められる', async ({ page }) => {
+  test('ゲームは共通の基準線で並び、舞台の下から遊びを始められる', async ({ page }) => {
     const games = [
       { route: 'clown', stage: '.race-field' },
       { route: 'race', stage: '.track' },
       { route: 'mole', stage: '.mole-field' },
       { route: 'fishing', stage: '.pond' },
-      { route: 'word', stage: '.main' }
+      { route: 'word', stage: '.word-board' }
     ]
+    let reference
     for (const game of games) {
       await page.goto(game.route)
       const start = page.getByRole('button', { name: 'はじめる' })
@@ -64,13 +69,36 @@ test.describe('UI/UX の基本操作', () => {
       const startBox = await start.boundingBox()
       const stageBox = await stage.boundingBox()
       expect(startBox.y).toBeGreaterThanOrEqual(stageBox.y + stageBox.height)
+      const regions = await page.locator('.game-screen-layout__heading, .game-screen-layout__progress, .game-screen-layout__board, .game-screen-layout__actions').evaluateAll(elements => elements.map(element => {
+        const rect = element.getBoundingClientRect()
+        return { x: rect.x, y: rect.y, width: rect.width, height: rect.height }
+      }))
+      expect(regions).toHaveLength(4)
+      if (reference) {
+        regions.forEach((region, index) => {
+          for (const key of ['x', 'y', 'width', 'height']) {
+            expect(Math.abs(region[key] - reference[index][key]), `${game.route}: ${index} ${key}`).toBeLessThanOrEqual(1)
+          }
+        })
+      } else {
+        reference = regions
+      }
       const viewport = page.viewportSize()
+      expect(regions[3].y + regions[3].height).toBeLessThanOrEqual(viewport.height)
       const stageCenter = stageBox.y + stageBox.height / 2
       expect(Math.abs(stageCenter - viewport.height / 2)).toBeLessThanOrEqual(36)
       await start.click()
       if (game.route === 'race') {
         await expect(page.getByRole('button', { name: /うえ/ })).toBeVisible()
         await expect(page.getByRole('button', { name: /した/ })).toBeVisible()
+      } else if (game.route === 'clown') {
+        await expect(page.locator('.move-choices .move-button')).toHaveCount(3)
+      } else if (game.route === 'mole') {
+        await expect(page.getByRole('button', { name: /さいしょから/ })).toBeVisible()
+      } else if (game.route === 'fishing') {
+        await expect(page.locator('.controls .cast')).toBeVisible()
+      } else {
+        await expect(page.locator('.selectable-card')).toHaveCount(4)
       }
     }
   })
@@ -85,6 +113,14 @@ test.describe('UI/UX の基本操作', () => {
     const after = await stage.boundingBox()
 
     expect(Math.abs(after.y - before.y)).toBeLessThanOrEqual(1)
+  })
+
+  test('ピエロの文字影は見出しだけに使い、進行表示と終了操作を読みやすく保つ', async ({ page }) => {
+    await page.goto('clown')
+
+    await expect(page.locator('.game-screen-layout__heading')).not.toHaveCSS('text-shadow', 'none')
+    await expect(page.locator('.game-progress-panel__label strong')).toHaveCSS('text-shadow', 'none')
+    await expect(page.getByRole('link', { name: 'やめる' })).toHaveCSS('text-shadow', 'none')
   })
 
   test('しんごうきは大きなボタンで色と合図を切り替えられる', async ({ page }) => {

@@ -25,7 +25,6 @@ describe('fishing game', () => {
 
     expect(wrapper.vm.isPlaying).toBe(true)
     expect(wrapper.find('.game-start-button').exists()).toBe(false)
-    expect(wrapper.vm.timeLeft).toBe(15)
     expect(wrapper.findAll('.fish')).toHaveLength(3)
     expect(wrapper.vm.phase).toBe('aiming')
 
@@ -78,14 +77,13 @@ describe('fishing game', () => {
     expect(Number.parseFloat(wrapper.vm.lineStyle.width)).toBeGreaterThan(exactCastLength)
   })
 
-  test('finishes after fifteen seconds and shows the result', async () => {
+  test('continues until five fish are caught', async () => {
     wrapper.vm.startGame()
 
     jest.advanceTimersByTime(15000)
     await wrapper.vm.$nextTick()
 
-    expect(wrapper.vm.isPlaying).toBe(false)
-    expect(wrapper.vm.timeLeft).toBe(0)
-    expect(wrapper.find('.result').exists()).toBe(true)
+    expect(wrapper.vm.isPlaying).toBe(true)
+    expect(wrapper.find('.result').exists()).toBe(false)
   })
 })
